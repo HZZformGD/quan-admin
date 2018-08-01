@@ -26,4 +26,10 @@ export default {
   disableDynamicImport: true,
   publicPath: '/',
   hash: true,
+  proxy: {
+    '/': {
+      target: 'http://10.10.60.219:8080',
+      changeOrigin: true
+    }
+  },
 };

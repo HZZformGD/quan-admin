@@ -28,8 +28,10 @@ export default class LoginPage extends Component {
       dispatch({
         type: 'login/login',
         payload: {
-          ...values,
-          type,
+          LoginForm: {
+            username: values.userName,
+            password: values.password
+          }
         },
       });
     }

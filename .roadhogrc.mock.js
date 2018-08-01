@@ -174,4 +174,4 @@ const proxy = {
   }
 };
 
-export default (noProxy ? { "/*": "http://test.poadmin.com/" } : delay(proxy, 1000));
+export default (noProxy ? {} : delay(proxy, 1000));

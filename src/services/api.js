@@ -61,7 +61,7 @@ export async function queryFakeList(params) {
 }
 
 export async function fakeAccountLogin(params) {
-  return request('/api/login/account', {
+  return request('/common/auth/sign-in', {
     method: 'POST',
     body: params,
   });
@@ -78,12 +78,17 @@ export async function queryNotices() {
   return request('/api/notices');
 }
 
-export async function getDecorationList() {
-  return request('/poadmin/user/medal-list');
+export async function getDecorationList(params) {
+  return request('/poadmin/user/medal-list', {
+    method: 'POST',
+    body: params
+  });
 }
 
 export async function queryDetail(params) {
-  return request('/api/get_decoration_detail', {
+  return request('/poadmin/user/user-medal-list', {
+    method: 'POST',
+    body: params
   })
 }
 
@@ -94,8 +99,33 @@ export async function getToken(params) {
 export async function saveDecoration(params) {
   return request('/poadmin/user/edit-medal', {
     method: 'POST',
-    body: {
-      Medal: params
-    }
+    body: params
+  })
+}
+
+export async function changeStatus(params) {
+  return request('/poadmin/user/medal-status', {
+    method: 'POST',
+    body: params
+  })
+}
+
+export async function searchUser(params) {
+  return request('/poadmin/user/user-search', {
+    method: 'POST',
+    body: params
+  })
+}
+export async function authMedal(params) {
+  return request('/poadmin/user/medal-auth',{
+    method: 'POST',
+    body: params
+  })
+}
+
+export async function changeUserStatus(params) {
+  return request('/poadmin/user/user-medal-status',{
+    method: 'POST',
+    body: params
   })
 }

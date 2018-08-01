@@ -91,8 +91,8 @@ export const getRouterData = app => {
     '/decoration/decoration-list':{
       component: dynamicWrapper(app, ['decoration'], () => import ('../routes/Dashboard/Decoration')),
     },
-    '/decoration/decoration-detail/:id':{
-      component: dynamicWrapper(app, ['detail'], () => import ('../routes/Dashboard/Detail')),
+    '/decoration/decoration-detail/:medal_id':{
+      component: dynamicWrapper(app, ['decoration'], () => import ('../routes/Dashboard/Detail')),
     },
 
     '/form/basic-form': {

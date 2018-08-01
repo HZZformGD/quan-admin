@@ -59,12 +59,16 @@
       > span {
         line-height: 20px;
       }
+      &:first-child{
+        width: 150px;
+      }
       > p {
         margin-top: 4px;
         margin-bottom: 0;
         line-height: 22px;
       }
     }
+
   }
   .extraContentSearch {
     margin-left: 16px;
@@ -72,7 +76,10 @@
   }
   :global {
     .ant-list-item-meta{
-      width: 100px;
+      max-width: 100px;
+    }
+    .ant-list-item-content{
+      justify-content: flex-start;
     }
   }
 
@@ -173,7 +180,7 @@
 @media screen and (max-width: 1400px) {
   .standardList {
     .listContent {
-      text-align: right;
+      text-align: left;
       & > div:last-child {
         top: 0;
       }

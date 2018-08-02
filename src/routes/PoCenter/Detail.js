@@ -14,18 +14,23 @@ import {
   message,
   Select,
   Spin,
+  notification,
+  Form,
   Avatar,
+  Tabs,
 } from 'antd';
 
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
-
 import styles from './Detail.less';
 
 const RadioButton = Radio.Button;
 const RadioGroup = Radio.Group;
 const Option = Select.Option;
-
+const TabPane = Tabs.TabPane
 const { Search } = Input;
+const FormItem = Form.Item;
+const TextArea = Input.TextArea
+@Form.create()
 
 @connect(({ decoration, loading }) => ({
   decoration,
@@ -36,6 +41,7 @@ export default class BasicList extends PureComponent {
   constructor(props) {
     super(props)
     this.lastFetchId = 0
+    this.input = {}
     this.fetchUser = debounce(this.fetchUser, 800);
   }
 
@@ -43,12 +49,19 @@ export default class BasicList extends PureComponent {
     keyword: '',
     modalVisiale: false,
     data: [],
-    value: [],
     fetching: false,
     medal_id: 0,
     currentPage: 1,
-    status: -1
+    status: -1,
+    checkType: 1,
+    listString: '',
+    checkStatus: false,
+    listArr: [],
+    value: [],
+    tabsKey: 1
   }
+
+
 
   componentDidMount() {
     const { match } = this.props;
@@ -101,6 +114,9 @@ export default class BasicList extends PureComponent {
       fetching: false,
     });
   }
+  areaChange(e) {
+    console.info(this, e)
+  }
   onSearchKeyword(e) {
     this.setState({
       keyword: e
@@ -114,12 +130,27 @@ export default class BasicList extends PureComponent {
     })
     this.getDetail(1, status)
   }
+  tabsChange(e) {
+    this.setState({
+      tabsKey: e
+    })
+  }
   comfirm() {
     let user_list = []
 
-    this.state.value.map((item) => {
-      user_list.push(item.key)
-    })
+    if(this.state.tabsKey == 1) {
+      this.state.listArr.map((item) => {
+        user_list.push(item.uid)
+      })
+    } else {
+      this.state.value.map((item) => {
+        user_list.push(item.key)
+      })
+    }
+
+    if (user_list.length == 0) {
+      return
+    }
     this.props.dispatch({
       type: 'decoration/authMedal',
       payload: {
@@ -193,12 +224,65 @@ export default class BasicList extends PureComponent {
     }
 
   }
+
+  checkThem() {
+    this.props.form.validateFields((err, fieldsValue) => {
+      if (err) {
+        return;
+      }
+      this.setState({
+        checkStatus: true
+      })
+      console.info(fieldsValue.liststring)
+      this.props.dispatch({
+        type: 'decoration/checkUser',
+        payload: {
+          medal_id: this.state.medal_id,
+          user_list: fieldsValue.liststring
+        }
+      }).then((res) => {
+        if (res.code == 200) {
+          let words = ''
+          if (res.data.auth_user.length || res.data.invalid_user.length) {
+            if (res.data.auth_user.length) {
+              words += `这些用户已经授权过了【${res.data.auth_user.join('，')}】。`
+            }
+            if (res.data.invalid_user.length) {
+              words += `这些用户是无效的【${res.data.invalid_user.join('，')}】`
+            }
+            notification.info({
+              description: words + '请核对好之后再检测',
+              duration: 10,
+              message: '注意注意'
+            })
+          }
+          if (res.data.un_auth_user.length) {
+            this.setState({
+              listArr: res.data.un_auth_user
+            })
+          }
+
+
+        } else {
+          message.error(res.message)
+        }
+        this.setState({
+          checkStatus: false
+        })
+      })
+    })
+
+
+  }
+
   render() {
     const {
       decoration,
       loading,
     } = this.props;
-    const { modalVisiale, fetching, data, value } = this.state
+    const { getFieldDecorator } = this.props.form
+
+    const { modalVisiale, fetching, data, value, listArr, tabsKey } = this.state
     const { decorations } = decoration
     const Info = ({ title, value, bordered, color }) => (
       <div className={styles.headerInfo}>
@@ -215,7 +299,7 @@ export default class BasicList extends PureComponent {
           <RadioButton value={1}>已发放</RadioButton>
           <RadioButton value={0}>未发放</RadioButton>
         </RadioGroup>
-        <Search className={styles.extraContentSearch} placeholder="请用户名或者uid" onSearch={this.onSearchKeyword.bind(this)} />
+        <Search className={styles.extraContentSearch} placeholder="请输入用户名或者uid" onSearch={this.onSearchKeyword.bind(this)} />
       </div>
     );
 
@@ -233,7 +317,6 @@ export default class BasicList extends PureComponent {
 
     const ListContent = ({ data: { username, uid, } }) => (
       <div className={styles.listContent}>
-
         <div className={styles.listContentItem}>
           <span>姓名</span>
           <p>{username}</p>
@@ -245,6 +328,9 @@ export default class BasicList extends PureComponent {
       </div>
     );
 
+    const listStringConfig = {
+      rules: [{ type: 'string', required: true, message: '输入检测的用户不能为空' }]
+    }
 
 
     return (
@@ -305,23 +391,45 @@ export default class BasicList extends PureComponent {
             title="颁发勋章"
             wrapClassName="vertical-center-modal"
             visible={modalVisiale}
-            onOk={() => this.comfirm()}
             okText='颁发'
+            footer={[
+              <Button key="back" onClick={() => this.cancel(false)}>取消</Button>,
+              <Button key="submit" type="primary" disabled={tabsKey == 1 ? listArr.length == 0 : value.length == 0}  onClick={() => this.comfirm()}>
+                颁发
+              </Button>,
+            ]}
             onCancel={() => this.cancel(false)}
           >
-            <Select
-              mode="multiple"
-              labelInValue
-              value={value}
-              placeholder="请输入uid或者用户名"
-              notFoundContent={fetching ? <Spin size="small" /> : null}
-              filterOption={false}
-              onSearch={this.fetchUser}
-              onChange={this.handleChange}
-              style={{ width: '100%' }}
-            >
-              {data.map(d => <Option key={d.value}>{d.text}</Option>)}
-            </Select>
+            <Tabs defaultActiveKey="1" onChange={this.tabsChange.bind(this)}>
+              <TabPane tab="普通" key="1" >
+                <Form>
+                  <FormItem>
+                    {getFieldDecorator('liststring', listStringConfig)(
+                      <TextArea placeholder='输入用户名或uid并以英文逗号","隔开,举个栗子- 君鸿,junver,2335111' />
+                    )}
+                  </FormItem>
+                </Form>
+
+                <Button loading={this.state.checkStatus} className={styles.checkBtn} onClick={() => this.checkThem()}>检测</Button>
+              </TabPane>
+              <TabPane tab="搜索" key="2">
+                <Select
+                  mode="multiple"
+                  labelInValue
+                  value={value}
+                  placeholder="请输入uid或者用户名"
+                  notFoundContent={fetching ? <Spin size="small" /> : null}
+                  filterOption={false}
+                  onSearch={this.fetchUser}
+                  onChange={this.handleChange}
+                  style={{ width: '100%' }}
+                >
+                  {data.map(d => <Option key={d.value}>{d.text}</Option>)}
+                </Select>
+              </TabPane>
+
+            </Tabs>
+
           </Modal>
         }
       </PageHeaderLayout>

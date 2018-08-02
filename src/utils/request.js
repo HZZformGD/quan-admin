@@ -44,12 +44,15 @@ function checkStatus(response) {
  */
 export default function request(url, options) {
   let token = localStorage.getItem('token') || ''
-  if (url.indexOf('?')> -1) {
-    url += `&token=${token}`
-  } else{
-    url += `?token=${token}`
+  if (!!!options.noToken) {
+    if (url.indexOf('?') > -1) {
+      url += `&token=${token}`
+    } else {
+      url += `?token=${token}`
+    }
   }
-  console.info(url)
+
+
   const defaultOptions = {
     credentials: 'include',
   };

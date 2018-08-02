@@ -99,13 +99,13 @@ class BasicLayout extends React.PureComponent {
   };
 
   getChildContext() {
-    const { location, routerData,menu } = this.props;
+    const { location, routerData, menu } = this.props;
     return {
       location,
       breadcrumbNameMap: getBreadcrumbNameMap(getMenuData(), routerData),
     };
   }
-  componentWillMount () {
+  componentWillMount() {
 
   }
   componentDidMount() {
@@ -115,9 +115,6 @@ class BasicLayout extends React.PureComponent {
       });
     });
     const { dispatch } = this.props;
-    dispatch({
-      type: 'user/fetchCurrent',
-    })
     dispatch({
       type: 'menu/fetch'
     })
@@ -205,9 +202,9 @@ class BasicLayout extends React.PureComponent {
   };
 
   render() {
+    let currentUser = JSON.parse(localStorage.getItem('userInfo'))
     const {
       menu,
-      currentUser,
       collapsed,
       fetchingNotices,
       notices,

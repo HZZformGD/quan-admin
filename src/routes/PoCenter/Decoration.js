@@ -12,6 +12,7 @@ import styles from './Decoration.less';
 
 const FormItem = Form.Item;
 const RangePicker = DatePicker.RangePicker;
+const { TextArea } = Input
 
 @connect(({ decoration, global = {}, loading }) => ({
   decoration,
@@ -69,7 +70,8 @@ export default class CardList extends PureComponent {
         url: e.show_icon
       }],
       remark: e.remark,
-      id: e.medal_id
+      id: e.medal_id,
+      notification: e.notification
     })
   }
   create() {
@@ -99,7 +101,8 @@ export default class CardList extends PureComponent {
             medal_icon: cover,
             granttime: values['range-picker'][0],
             deadline: values['range-picker'][1],
-            remark: values.remark
+            remark: values.remark,
+            notification: values.notification
           },
           medal_id: values.id
         }
@@ -174,7 +177,7 @@ export default class CardList extends PureComponent {
     let { list, total } = this.props.decoration
     let { uploadToken } = this.props
     const { getFieldDecorator } = this.props.form
-    const { fileList, rangeTime, title, cover, remark, id } = this.state
+    const { fileList, rangeTime, title, cover, remark, id, notification } = this.state
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },
@@ -197,9 +200,15 @@ export default class CardList extends PureComponent {
       initialValue: title || ''
     }
     const remarkConfig = {
-      rules: [{ type: 'string', required: true, message: '记得填写备注啊！亲' }, { validator: this.lengthCheck }],
+      rules: [{ type: 'string', required: false, message: '记得填写备注啊！亲' }, { validator: this.lengthCheck }],
       initialValue: remark || ''
     }
+
+    const notificationConfig = {
+      rules: [{ type: 'string', required: true, message: '记得填写通知文案啊！' }],
+      initialValue: notification ||'恭喜你获得小红柚勋章！在西子圈Po版块参与并通过“小红柚”评选，从此你将是Po里优质的年轻代表~请继续在Po分享优质内容哟。'
+    }
+
     const idConfig = {
       initialValue: id || 0
     }
@@ -214,7 +223,6 @@ export default class CardList extends PureComponent {
         this.getList(page);
       }
     };
-    console.info(paginationProps)
 
     const uploadButton = (
       <div>
@@ -253,7 +261,7 @@ export default class CardList extends PureComponent {
                   <div className={styles.details}>
                     <span className={styles.endTime}>到期时间：{item.deadline}</span>
                     <span className={styles.detailsLink}>
-                      <Link to={`/decoration/decoration-detail/` + item.medal_id}>详情></Link>
+                      <Link to={`/po-center/decoration-detail/` + item.medal_id}>详情></Link>
 
                     </span>
                   </div>
@@ -288,14 +296,6 @@ export default class CardList extends PureComponent {
               </FormItem>
               <FormItem
                 {...formItemLayout}
-                label="生效时间"
-              >
-                {getFieldDecorator('range-picker', rangeConfig)(
-                  <RangePicker />
-                )}
-              </FormItem>
-              <FormItem
-                {...formItemLayout}
                 label="勋章名称"
               >
                 {getFieldDecorator('name', nameConfig)(
@@ -304,10 +304,27 @@ export default class CardList extends PureComponent {
               </FormItem>
               <FormItem
                 {...formItemLayout}
+                label="生效时间"
+              >
+                {getFieldDecorator('range-picker', rangeConfig)(
+                  <RangePicker />
+                )}
+              </FormItem>
+              <FormItem
+                {...formItemLayout}
                 label="勋章说明"
               >
                 {getFieldDecorator('remark', remarkConfig)(
                   <Input placeholder="请输入勋章说明" />
+                )}
+              </FormItem>
+
+              <FormItem
+                {...formItemLayout}
+                label="通知文案"
+              >
+                {getFieldDecorator('notification', notificationConfig)(
+                  <TextArea autosize={true} className={styles.textArea} placeholder="输入授权成功后的通知文案" />
                 )}
               </FormItem>
 

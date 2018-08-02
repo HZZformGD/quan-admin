@@ -39,8 +39,9 @@ export default {
         })
         yield put({
           type: 'user/saveCurrentUser',
-          payload: userData
+          payload: (userData)
         })
+        localStorage.setItem('userInfo', JSON.stringify(userData))
         reloadAuthorized();
         const urlParams = new URL(window.location.href);
         const params = getPageQuery();

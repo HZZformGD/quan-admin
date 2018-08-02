@@ -64,6 +64,7 @@ export async function fakeAccountLogin(params) {
   return request('/common/auth/sign-in', {
     method: 'POST',
     body: params,
+    noToken: true
   });
 }
 
@@ -117,14 +118,28 @@ export async function searchUser(params) {
   })
 }
 export async function authMedal(params) {
-  return request('/poadmin/user/medal-auth',{
+  return request('/poadmin/user/medal-auth', {
     method: 'POST',
     body: params
   })
 }
 
 export async function changeUserStatus(params) {
-  return request('/poadmin/user/user-medal-status',{
+  return request('/poadmin/user/user-medal-status', {
+    method: 'POST',
+    body: params
+  })
+}
+
+export async function checkUserList(params) {
+  return request('/poadmin/user/user-check', {
+    method: 'POST',
+    body: params
+  })
+}
+
+export async function addTopic(params) {
+  return request('/miniadmin/topic-list/edit', {
     method: 'POST',
     body: params
   })

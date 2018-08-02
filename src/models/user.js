@@ -32,8 +32,13 @@ export default {
         list: action.payload,
       };
     },
+    getCurrentUser(state, {  }){
+      console.info(state,'newnewnew')
+      return {
+        ...state
+      }
+    },
     saveCurrentUser(state, action) {
-      console.info(action.payload,'saveCurrentUser')
       return {
         ...state,
         currentUser: action.payload || {},

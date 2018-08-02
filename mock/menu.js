@@ -4,7 +4,7 @@ const menuData = [
   {
     name: '勋章',
     icon: 'dashboard',
-    path: 'decoration',
+    path: 'po-center',
     children: [
       {
         name: '分析页',

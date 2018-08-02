@@ -1,4 +1,13 @@
-import { getDecorationList, changeStatus, saveDecoration, queryDetail, searchUser, authMedal, changeUserStatus } from '../services/api';
+import {
+  getDecorationList,
+  changeStatus,
+  saveDecoration,
+  queryDetail,
+  searchUser,
+  authMedal,
+  changeUserStatus,
+  checkUserList
+} from '../../services/api';
 
 export default {
   namespace: 'decoration',
@@ -57,6 +66,10 @@ export default {
     },
     *changeUserStatus({ payload }, { call, put }) {
       const response = yield call(changeUserStatus, payload)
+      return response
+    },
+    *checkUser({ payload }, { call, put }) {
+      const response = yield call(checkUserList, payload)
       return response
     }
   },

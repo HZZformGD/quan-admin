@@ -1,11 +1,12 @@
 import React, { PureComponent } from 'react';
 import moment from 'moment';
 import { connect } from 'dva';
-import debounce from 'lodash/debounce';
+import Ellipsis from 'components/Ellipsis';
+
 import {
   List,
   Card,
-  Row,
+  Tooltip,
   Col,
   Radio,
   Input,
@@ -42,7 +43,6 @@ export default class BasicList extends PureComponent {
     super(props)
     this.lastFetchId = 0
     this.input = {}
-    this.fetchUser = debounce(this.fetchUser, 800);
   }
 
   state = {
@@ -69,43 +69,17 @@ export default class BasicList extends PureComponent {
     this.setState({
       medal_id: match.params.medal_id
     })
-    // this.getDetail()
-
+    this.getList()
   }
 
-  getDetail(page = 1, status = -1, keyword = '') {
-    const { dispatch, match } = this.props;
+  getList(page = 1, status = -1, keyword = '') {
+    const { dispatch } = this.props;
     dispatch({
-      type: 'topic/getDetailList',
-      payload: { medal_id: match.params.medal_id, keyword, page, status }
+      type: 'topic/getList',
+      payload: { keyword, page, status }
     })
   }
 
-  fetchUser = (keyword) => {
-    console.log('fetching user', keyword);
-    this.lastFetchId += 1;
-    const fetchId = this.lastFetchId;
-    this.setState({ data: [], fetching: true });
-    this.props.dispatch({
-      type: 'topic/searchUser',
-      payload: {
-        keyword,
-        medal_id: this.state.medal_id
-      }
-    }).then(res => {
-      if (res.code == 200) {
-        if (fetchId !== this.lastFetchId) { // for fetch callback order
-          return;
-        }
-        let { user } = res.data
-        const data = [{ text: user.username, value: user.uid }]
-        this.setState({ data, fetching: false });
-      } else {
-        message.error(res.message)
-        this.setState({ fetching: false });
-      }
-    });
-  }
 
   handleChange = (value) => {
     this.setState({
@@ -149,6 +123,16 @@ export default class BasicList extends PureComponent {
           remark: fieldsValue.remark,
           path: fieldsValue.path,
         }
+      }).then((res) => {
+        if (res.code == 200) {
+          this.setState({
+            modalVisiale: false
+          })
+          message.success(res.message)
+          this.getList()
+        } else {
+          message.error(res.message)
+        }
       })
     })
 
@@ -160,8 +144,13 @@ export default class BasicList extends PureComponent {
   }
   openModal() {
     this.setState({
-      modalVisiale: true
+      modalVisiale: true,
+      topicWords: '',
+      remark: '',
+      id: 0,
+      path: 'pages/rank/rank'
     })
+
   }
 
   authIt({ status, uid }) {
@@ -207,9 +196,27 @@ export default class BasicList extends PureComponent {
 
   }
 
-  checkThem() {
-
-
+  edit(item) {
+    this.setState({
+      modalVisiale: true,
+      topicWords: item.title,
+      remark: item.remark,
+      id: item.id,
+      path: item.path
+    })
+  }
+  pushIt(id) {
+    this.props.dispatch({
+      type: 'topic/pushIt',
+      payload: {id: id}
+    }).then((res) => {
+      if (res.code == 200) {
+        this.getList()
+        message.success(res.message)
+      } else {
+        message.error(res.message)
+      }
+    })
   }
 
   render() {
@@ -221,6 +228,7 @@ export default class BasicList extends PureComponent {
     const { getFieldDecorator } = this.props.form
 
     const { modalVisiale, topicWords, remark, id, path } = this.state
+
     // const { decorations } = decoration
     // const Info = ({ title, value, bordered, color }) => (
     //   <div className={styles.headerInfo}>
@@ -241,30 +249,57 @@ export default class BasicList extends PureComponent {
     //   </div>
     // );
 
-    // const paginationProps = {
-    //   pageSize: 10,
-    //   total: decorations.total,
-    //   onChange: (page) => {
-    //     console.info(page)
-    //     this.setState({
-    //       currentPage: page
-    //     })
-    //     this.getDetail(page);
-    //   }
-    // };
+    const paginationProps = {
+      pageSize: 10,
+      total: topic.total,
+      onChange: (page) => {
+        console.info(page)
+        this.setState({
+          currentPage: page
+        })
+        this.getDetail(page);
+      }
+    };
 
-    // const ListContent = ({ data: { username, uid, } }) => (
-    //   <div className={styles.listContent}>
-    //     <div className={styles.listContentItem}>
-    //       <span>姓名</span>
-    //       <p>{username}</p>
-    //     </div>
-    //     <div className={styles.listContentItem}>
-    //       <span>uid</span>
-    //       <p>{uid}</p>
-    //     </div>
-    //   </div>
-    // );
+    console.info({__html:''})
+    const ListContent = ({ data }) => (
+      <div className={styles.listContent}>
+        <div className={styles.listContentItem}>
+          <span>id</span>
+          <p>{data.id}</p>
+        </div>
+        <div className={styles.listContentItem}>
+          <span>话题</span>
+          <Tooltip title={data.title}>
+            <Ellipsis lines={2}>{data.title}</Ellipsis>
+
+          </Tooltip>
+        </div>
+        <div className={styles.listContentItem}>
+          <span>备注</span>
+          <Ellipsis lines={2}>{data.remark}</Ellipsis>
+        </div>
+
+        <div className={styles.listContentItem}>
+          {data.pushed_at > 0 ? moment(data.pushed_at*1000).format('YYYY-MM-DD HH:mm') : ''}
+        </div>
+
+      </div>
+    );
+
+    let OperationBtn = (item) => {
+      if (item.status == 1) {
+        return (
+          [<Button disabled={true}>已推送</Button>]
+        )
+      } else {
+        return (
+          [<Button type="primary" onClick={() => this.pushIt(item.id)}>推送</Button>, <Button onClick={() => this.edit(item)}>编辑</Button>]
+        )
+      }
+    }
+
+
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },
@@ -277,7 +312,6 @@ export default class BasicList extends PureComponent {
     };
     const idConfig = {
       initialValue: id || 0
-
     }
     const topicWordsConfig = {
       rules: [{ type: 'string', required: true, message: '输入的话题不能为空哦' }],
@@ -317,10 +351,7 @@ export default class BasicList extends PureComponent {
               dataSource={topic.list}
               renderItem={item => (
                 <List.Item
-                  actions={[<Button type={item.status == 1 ? 'danger' : 'primary'} onClick={() => this.authIt(item)}>{item.status == 1 ? '撤销' : '授权'}</Button>]}>
-                  <List.Item.Meta
-                    avatar={<Avatar src={item.avatar} shape="square" size="large" />}
-                  />
+                  actions={OperationBtn(item)}>
                   <ListContent data={item} />
                 </List.Item>
               )}

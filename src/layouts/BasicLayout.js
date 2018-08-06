@@ -14,7 +14,6 @@ import SiderMenu from '../components/SiderMenu';
 import NotFound from '../routes/Exception/404';
 import { getRoutes } from '../utils/utils';
 import Authorized from '../utils/Authorized';
-import { getMenuData } from '../common/menu';
 import logo from '../assets/logo.svg';
 
 const { Content, Header, Footer } = Layout;
@@ -24,20 +23,7 @@ const { AuthorizedRoute, check } = Authorized;
  * 根据菜单取得重定向地址.
  */
 const redirectData = [];
-const getRedirect = item => {
-  if (item && item.children) {
-    if (item.children[0] && item.children[0].path) {
-      redirectData.push({
-        from: `${item.path}`,
-        to: `${item.children[0].path}`,
-      });
-      item.children.forEach(children => {
-        getRedirect(children);
-      });
-    }
-  }
-};
-getMenuData().forEach(getRedirect);
+
 
 /**
  * 获取面包屑映射
@@ -98,11 +84,12 @@ class BasicLayout extends React.PureComponent {
     isMobile,
   };
 
+
   getChildContext() {
     const { location, routerData, menu } = this.props;
     return {
       location,
-      breadcrumbNameMap: getBreadcrumbNameMap(getMenuData(), routerData),
+      breadcrumbNameMap: getBreadcrumbNameMap(menu.list, routerData),
     };
   }
   componentWillMount() {
@@ -201,7 +188,22 @@ class BasicLayout extends React.PureComponent {
     }
   };
 
+
+
   render() {
+    const getRedirect = item => {
+      if (item && item.children) {
+        if (item.children[0] && item.children[0].path) {
+          redirectData.push({
+            from: `${item.path}`,
+            to: `${item.children[0].path}`,
+          });
+          item.children.forEach(children => {
+            getRedirect(children);
+          });
+        }
+      }
+    };
     let currentUser = JSON.parse(localStorage.getItem('userInfo'))
     const {
       menu,
@@ -212,8 +214,10 @@ class BasicLayout extends React.PureComponent {
       match,
       location,
     } = this.props;
-    const { isMobile: mb } = this.state;
     const bashRedirect = this.getBaseRedirect();
+    menu.list.forEach(getRedirect)
+
+    const { isMobile: mb } = this.state;
     const layout = (
       <Layout>
         <SiderMenu

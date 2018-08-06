@@ -144,3 +144,18 @@ export async function addTopic(params) {
     body: params
   })
 }
+
+export async function getTopicList(params) {
+  return request('/miniadmin/topic-list/list', {
+    method: 'POST',
+    body: params
+  })
+}
+
+export async function pushTopic(params) {
+  console.info(params)
+  return request('/miniadmin/topic-list/push', {
+    method: 'POST',
+    body: params
+  })
+}

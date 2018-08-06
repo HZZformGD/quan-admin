@@ -1,14 +1,13 @@
-import { addTopic } from '../../services/api';
+import { addTopic, getTopicList, pushTopic } from '../../services/api';
 
 export default {
   namespace: 'topic',
 
   state: {
-    topic: {
-      list: [],
-      count: 100
-    },
-    isloading: false,
+
+    list: [],
+    total: 100
+
   },
 
   effects: {
@@ -17,6 +16,18 @@ export default {
       // redirect on client when network broken
       return response
     },
+    *getList({ payload }, { call, put }) {
+      const response = yield call(getTopicList, payload)
+      const data = response.data
+      yield put({
+        type: 'saveList',
+        payload: data
+      })
+    },
+    *pushIt({ payload }, { call, put }) {
+      const response = yield call(pushTopic, payload)
+      return response
+    }
   },
 
   reducers: {
@@ -25,5 +36,12 @@ export default {
         error: action.payload,
       };
     },
+    saveList(state, action) {
+      return {
+        ...state,
+        list: action.payload.list || [],
+        total: action.payload.total || 0
+      }
+    }
   },
 };

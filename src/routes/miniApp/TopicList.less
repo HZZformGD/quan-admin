@@ -52,6 +52,36 @@
   .listContent {
     display: flex;
     font-size: 0;
+
+    .listContentItem {
+      color: @text-color-secondary;
+      display: inline-block;
+      vertical-align: middle;
+      font-size: @font-size-base;
+      margin-left: 40px;
+      > span {
+        line-height: 20px;
+      }
+      &:first-child{
+        width: 25px;
+      }
+      &:nth-child(2){
+        width: 300px;
+      }
+      &:nth-child(3){
+        width: 170px;
+      }
+      > p {
+        margin-top: 4px;
+        margin-bottom: 0;
+        line-height: 22px;
+      }
+    }
+
+  }
+  .listHeader {
+    display: flex;
+    font-size: 0;
     .listContentItem {
       color: @text-color-secondary;
       display: inline-block;
@@ -98,6 +128,14 @@
 .checkBtn{
   margin-top: 10px;
 
+}
+.flexHeader{
+  display: flex;
+  justify-content: space-between;
+}
+.operation{
+  width: 150px;
+  text-align: center;
 }
 @media screen and (max-width: @screen-xs) {
   .standardList {

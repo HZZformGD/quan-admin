@@ -209,8 +209,8 @@ export default class SiderMenu extends PureComponent {
       <Sider
         trigger={null}
         collapsible
-        collapsed={collapsed}
         breakpoint="lg"
+        collapsed={collapsed}
         onCollapse={onCollapse}
         width={256}
         className={styles.sider}
@@ -218,7 +218,7 @@ export default class SiderMenu extends PureComponent {
         <div className={styles.logo} key="logo">
           <Link to="/">
             <img src={logo} alt="logo" />
-            <h1>Ant Design Pro</h1>
+            <h1>社区管理后台</h1>
           </Link>
         </div>
         <Menu

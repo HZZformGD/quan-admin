@@ -43,21 +43,8 @@ export default {
         })
         localStorage.setItem('userInfo', JSON.stringify(userData))
         reloadAuthorized();
-        const urlParams = new URL(window.location.href);
-        const params = getPageQuery();
-        let { redirect } = params;
-        if (redirect) {
-          const redirectUrlParams = new URL(redirect);
-          if (redirectUrlParams.origin === urlParams.origin) {
-            redirect = redirect.substr(urlParams.origin.length);
-            if (redirect.startsWith('/#')) {
-              redirect = redirect.substr(2);
-            }
-          } else {
-            window.location.href = redirect;
-            return;
-          }
-        }
+        let redirect = '/welcome'
+
         yield put(routerRedux.replace(redirect || '/'));
       } else {
         notification.error({

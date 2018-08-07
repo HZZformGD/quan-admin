@@ -88,6 +88,11 @@ export default function request(url, options) {
       return response.json();
     })
     .catch(e => {
+      let isLoginApi = false
+      if (url.indexOf('sign-in') > -1) {
+        isLoginApi = true
+      }
+
       const { dispatch } = store;
       const status = e.name;
       if (status === 401) {
@@ -96,15 +101,15 @@ export default function request(url, options) {
         });
         return;
       }
-      if (status === 403) {
+      if (status === 403 && !isLoginApi) {
         dispatch(routerRedux.push('/exception/403'));
         return;
       }
-      if (status <= 504 && status >= 500) {
+      if ((status <= 504 && status >= 500) && !isLoginApi) {
         dispatch(routerRedux.push('/exception/500'));
         return;
       }
-      if (status >= 404 && status < 422) {
+      if ((status >= 404 && status < 422) && !isLoginApi) {
         dispatch(routerRedux.push('/exception/404'));
       }
     });

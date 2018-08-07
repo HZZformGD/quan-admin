@@ -318,14 +318,25 @@ export default class BasicList extends PureComponent {
     const ListContent = ({ data: { username, uid, } }) => (
       <div className={styles.listContent}>
         <div className={styles.listContentItem}>
-          <span>姓名</span>
           <p>{username}</p>
         </div>
         <div className={styles.listContentItem}>
-          <span>uid</span>
           <p>{uid}</p>
         </div>
       </div>
+    );
+    const ListHeader = () => (
+      <div className={styles.flexHeader}>
+        <div className={styles.listHeader}>
+          <span className={styles.listContentItem}>头像</span>
+          <span className={styles.listContentItem}>姓名</span>
+          <span className={styles.listContentItem}>uid</span>
+        </div>
+        <div className={styles.operation}>
+          操作
+        </div>
+      </div>
+
     );
 
     const listStringConfig = {
@@ -367,6 +378,7 @@ export default class BasicList extends PureComponent {
             <Button type="dashed" onClick={() => this.openModal()} style={{ width: '100%', marginBottom: 8 }} icon="plus">
               颁发勋章
             </Button>
+            <ListHeader></ListHeader>
             <List
               size="large"
               rowKey="id"

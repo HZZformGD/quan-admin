@@ -92,6 +92,28 @@
   margin-top: 10px;
 
 }
+.flexHeader{
+  display: flex;
+  justify-content: space-between;
+  .listHeader{
+    display: flex;
+    .listContentItem{
+      &:nth-child(1){
+        width: 100px;
+      }
+      &:nth-child(2){
+        margin-left: 40px;
+        width: 150px;
+      }
+      &:nth-child(3){
+        margin-left: 40px;
+      }
+    }
+  }
+  .operation{
+    width:70px;
+  }
+}
 @media screen and (max-width: @screen-xs) {
   .standardList {
     :global {

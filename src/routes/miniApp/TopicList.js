@@ -23,6 +23,7 @@ import {
 
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import styles from './TopicList.less';
+import { div } from 'gl-matrix/src/gl-matrix/vec4';
 
 const RadioButton = Radio.Button;
 const RadioGroup = Radio.Group;
@@ -58,7 +59,8 @@ export default class BasicList extends PureComponent {
     remark: '',
     topicWords: '',
     path: 'pages/rank/rank',
-    id: 0
+    id: 0,
+    title: '新增话题'
   }
 
 
@@ -148,7 +150,8 @@ export default class BasicList extends PureComponent {
       topicWords: '',
       remark: '',
       id: 0,
-      path: 'pages/rank/rank'
+      path: 'pages/rank/rank',
+      title: '新增话题'
     })
 
   }
@@ -202,13 +205,14 @@ export default class BasicList extends PureComponent {
       topicWords: item.title,
       remark: item.remark,
       id: item.id,
-      path: item.path
+      path: item.path,
+      title: '编辑话题'
     })
   }
   pushIt(id) {
     this.props.dispatch({
       type: 'topic/pushIt',
-      payload: {id: id}
+      payload: { id: id }
     }).then((res) => {
       if (res.code == 200) {
         this.getList()
@@ -227,7 +231,7 @@ export default class BasicList extends PureComponent {
 
     const { getFieldDecorator } = this.props.form
 
-    const { modalVisiale, topicWords, remark, id, path } = this.state
+    const { modalVisiale, topicWords, remark, id, path, title } = this.state
 
     // const { decorations } = decoration
     // const Info = ({ title, value, bordered, color }) => (
@@ -261,30 +265,41 @@ export default class BasicList extends PureComponent {
       }
     };
 
-    console.info({__html:''})
     const ListContent = ({ data }) => (
       <div className={styles.listContent}>
         <div className={styles.listContentItem}>
-          <span>id</span>
           <p>{data.id}</p>
         </div>
         <div className={styles.listContentItem}>
-          <span>话题</span>
           <Tooltip title={data.title}>
             <Ellipsis lines={2}>{data.title}</Ellipsis>
 
           </Tooltip>
         </div>
         <div className={styles.listContentItem}>
-          <span>备注</span>
           <Ellipsis lines={2}>{data.remark}</Ellipsis>
         </div>
 
         <div className={styles.listContentItem}>
-          {data.pushed_at > 0 ? moment(data.pushed_at*1000).format('YYYY-MM-DD HH:mm') : ''}
+          {data.pushed_at > 0 ? moment(data.pushed_at * 1000).format('YYYY-MM-DD HH:mm') : ''}
         </div>
 
       </div>
+    );
+
+    const ListHeader = () => (
+      <div className={styles.flexHeader}>
+        <div className={styles.listHeader}>
+          <span className={styles.listContentItem}>id</span>
+          <span className={styles.listContentItem}>话题</span>
+          <span className={styles.listContentItem}>备注</span>
+          <span className={styles.listContentItem}>时间</span>
+        </div>
+        <div className={styles.operation}>
+          操作
+        </div>
+      </div>
+
     );
 
     let OperationBtn = (item) => {
@@ -343,6 +358,8 @@ export default class BasicList extends PureComponent {
             <Button type="dashed" onClick={() => this.openModal()} style={{ width: '100%', marginBottom: 8 }} icon="plus">
               增加话题
             </Button>
+            <ListHeader></ListHeader>
+
             <List
               size="large"
               rowKey="id"
@@ -361,7 +378,7 @@ export default class BasicList extends PureComponent {
         {
           modalVisiale &&
           <Modal
-            title="新增勋章"
+            title={title}
             wrapClassName="vertical-center-modal"
             visible={modalVisiale}
             footer={[

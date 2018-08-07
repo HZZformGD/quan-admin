@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import styles from './Welcome.less'
-// import moment from 'moment'
+import moment from 'moment'
 
 export default class WelcomePage extends Component {
   state = {

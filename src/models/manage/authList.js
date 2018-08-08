@@ -1,7 +1,7 @@
-import { addTopic, getTopicList, pushTopicAll, pushTopicApart } from '../../services/api';
+import { addTopic, getTopicList, pushTopic } from '../../services/api';
 
 export default {
-  namespace: 'topic',
+  namespace: 'authList',
 
   state: {
     list: [],
@@ -27,14 +27,8 @@ export default {
         });
       }
     },
-    *pushItToAll({ payload }, { call, put }) {
-      const response = yield call(pushTopicAll, payload);
-      if (response.code == 200) {
-        return response;
-      }
-    },
-    *pushItApart({ payload }, { call, put }) {
-      const response = yield call(pushTopicApart, payload);
+    *pushIt({ payload }, { call, put }) {
+      const response = yield call(pushTopic, payload);
       if (response.code == 200) {
         return response;
       }

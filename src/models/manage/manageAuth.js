@@ -1,24 +1,24 @@
-import { addTopic, getTopicList, pushTopic } from '../../services/api';
+import { authEditorByUid, administratorsList, delEditorByUid } from '../../services/api';
 
 export default {
   namespace: 'manageAuth',
 
   state: {
-    list: [],
+    administrators: [],
     total: 100,
+    roles: []
   },
 
   effects: {
-    *addTopic({ payload }, { call, put }) {
-      const response = yield call(addTopic, payload);
+    *authEditor({ payload }, { call, put }) {
+      const response = yield call(authEditorByUid, payload);
       // redirect on client when network broken
       if (response.code == 200) {
         return response;
       }
     },
     *getList({ payload }, { call, put }) {
-      const response = yield call(getTopicList, payload);
-      console.info(response);
+      const response = yield call(administratorsList, payload);
       if (response.code == 200) {
         const data = response.data;
         yield put({
@@ -27,8 +27,8 @@ export default {
         });
       }
     },
-    *pushIt({ payload }, { call, put }) {
-      const response = yield call(pushTopic, payload);
+    *delEditor({ payload }, { call, put }) {
+      const response = yield call(delEditorByUid, payload);
       if (response.code == 200) {
         return response;
       }
@@ -44,8 +44,9 @@ export default {
     saveList(state, action) {
       return {
         ...state,
-        list: action.payload.list || [],
+        administrators: action.payload.administrators || [],
         total: action.payload.total || 0,
+        roles: action.payload.roles || []
       };
     },
   },

@@ -61,12 +61,7 @@ export default {
           currentAuthority: 'guest',
         },
       });
-      yield call(accountLogout, payload);
-
-      yield put({
-        type: 'clearOldToken',
-        payload: true,
-      });
+      yield call(accountLogout);
 
       reloadAuthorized();
 

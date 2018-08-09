@@ -4,30 +4,25 @@ import { connect } from 'dva';
 import {
   Table,
   Card,
-  Tooltip,
-  Radio,
-  Input,
+  Popconfirm,
   Modal,
   Button,
-  message,
+  Icon,
   Select,
   Spin,
-  notification,
+  Input,
   Form,
   Avatar,
-  Tabs,
+  message
 } from 'antd';
 
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import styles from './ManageAuth.less';
 
-const RadioButton = Radio.Button;
-const RadioGroup = Radio.Group;
+const ButtonGroup = Button.Group;
 const Option = Select.Option;
-const TabPane = Tabs.TabPane;
-const { Search } = Input;
 const FormItem = Form.Item;
-const TextArea = Input.TextArea;
+
 @Form.create()
 @connect(({ manageAuth, loading }) => ({
   manageAuth,
@@ -41,175 +36,80 @@ export default class ManageAuth extends PureComponent {
   }
 
   state = {
-    keyword: '',
-    modalVisiale: false,
-    data: [],
-    fetching: false,
-    medal_id: 0,
-    currentPage: 1,
-    status: -1,
-    checkType: 1,
-    listString: '',
-    remark: '',
-    topicWords: '',
-    path: 'pages/rank/rank',
-    id: 0,
-    title: '新增话题',
+    processId: 0
   };
 
   componentWillMount() {
     console.info(this.props);
+    this.getList()
   }
 
   getList(page = 1, status = -1, keyword = '') {
     const { dispatch } = this.props;
+    dispatch({
+      type: 'manageAuth/getList',
+      payload: { page }
+    })
   }
 
-  handleChange = value => {
-    this.setState({
-      value,
-      data: [],
-      fetching: false,
-    });
-  };
-  areaChange(e) {
-    console.info(this, e);
-  }
-  onSearchKeyword(e) {
-    this.setState({
-      keyword: e,
-    });
-    this.getDetail(1, -1, e);
-  }
-  onStatusChange(e) {
-    let status = e.target.value;
-    this.setState({
-      status,
-    });
-    this.getDetail(1, status);
-  }
-  tabsChange(e) {
-    this.setState({
-      tabsKey: e,
-    });
-  }
-  comfirm() {
-    this.props.form.validateFields((err, fieldsValue) => {
-      if (err) {
-        return;
-      }
-      this.props
-        .dispatch({
-          type: 'topic/addTopic',
-          payload: {
-            id: fieldsValue.id,
-            title: fieldsValue.topic,
-            remark: fieldsValue.remark,
-            path: fieldsValue.path,
-          },
-        })
-        .then(res => {
-          if (res.code == 200) {
-            this.setState({
-              modalVisiale: false,
-            });
-            message.success(res.message);
-            this.getList();
-          } else {
-            message.error(res.message);
-          }
-        });
-    });
-  }
+
   cancel() {
     this.setState({
       modalVisiale: false,
     });
   }
-  openModal() {
+  openModal(e) {
     this.setState({
       modalVisiale: true,
-      topicWords: '',
-      remark: '',
-      id: 0,
-      path: 'pages/rank/rank',
-      title: '新增话题',
+      roleValue: e.role.name,
+      uid: e.uid,
+      username: e.username
     });
   }
 
-  authIt({ status, uid }) {
-    if (status == 1) {
-      Modal.warning({
-        title: '警告',
-        content: '确认要撤销该用户的勋章吗',
-        onOk: () => {
-          this.props
-            .dispatch({
-              type: 'topic/changeUserStatus',
-              payload: {
-                status,
-                uid,
-                medal_id: this.state.medal_id,
-              },
-            })
-            .then(res => {
-              if (res.code == 200) {
-                message.success(res.message);
-                this.getDetail();
-              } else {
-                message.error(res.message);
-              }
-            });
-        },
-      });
-    } else {
-      this.props
-        .dispatch({
-          type: 'topic/changeUserStatus',
-          payload: {
-            status,
-            uid,
-            medal_id: this.state.medal_id,
-          },
-        })
-        .then(res => {
-          if (res.code == 200) {
-            message.success(res.message);
-            this.getDetail();
-          } else {
-            message.error(res.message);
-          }
-        });
-    }
-  }
-
-  edit(item) {
-    this.setState({
-      modalVisiale: true,
-      topicWords: item.title,
-      remark: item.remark,
-      id: item.id,
-      path: item.path,
-      title: '编辑话题',
-    });
-  }
-  pushIt(id) {
-    this.props
-      .dispatch({
-        type: 'topic/pushIt',
-        payload: { id: id },
-      })
-      .then(res => {
+  comfirmAuth() {
+    this.props.form.validateFields((err, values) => {
+      if (err) {
+        return
+      }
+      this.props.dispatch({
+        type: 'manageAuth/authEditor',
+        payload: values
+      }).then((res) => {
         if (res.code == 200) {
-          this.getList();
-          message.success(res.message);
-        } else {
-          message.error(res.message);
+          this.setState({
+            modalVisiale: false
+          })
+          message.success(res.message)
+          this.getList()
         }
-      });
+      })
+    })
+  }
+
+  doNotDel() {
+
+  }
+
+  delEditor(uid) {
+    this.props.dispatch({
+      type: 'manageAuth/delEditor',
+      payload: { uid }
+    }).then((res) => {
+      if (res.code == 200) {
+        message.success(res.message)
+        this.getList()
+      }
+    })
   }
 
   render() {
+    const { modalVisiale, roleValue, uid, username } = this.state
+    const { getFieldDecorator } = this.props.form;
+    const { manageAuth } = this.props
+    const data = manageAuth.administrators
+    const roles = manageAuth.roles
+
     const columns = [
       {
         title: '头像',
@@ -219,8 +119,8 @@ export default class ManageAuth extends PureComponent {
       },
       {
         title: '昵称',
-        dataIndex: 'nickname',
-        key: 'nickname',
+        dataIndex: 'username',
+        key: 'username',
       },
       {
         title: 'uid',
@@ -229,47 +129,40 @@ export default class ManageAuth extends PureComponent {
       },
       {
         title: '当前角色',
-        dataIndex: 'roleName',
-        key: 'roleName',
+        render: (text, record) => (
+          <span>{record.role ? record.role.description : ''}</span>
+        )
       },
       {
         title: '操作',
-        key: 'id',
         render: (text, record) => (
-          <span>
-            <Button size="small">授权</Button>
+          <ButtonGroup size="small">
+            <Button onClick={() => this.openModal(record)}>角色管理</Button>
+            <Popconfirm title="确定要删除这个小编吗?" onConfirm={() => this.delEditor(record.uid)} onCancel={() => this.doNotDel()} okText="是的" cancelText="不了">
+              <Button type="danger">
+                {'删除'}
+              </Button>
+            </Popconfirm>
 
-            <Button type="danger" size="small">
-              删除
-            </Button>
-          </span>
+          </ButtonGroup >
         ),
       },
     ];
 
-    const data = [
-      {
-        id: 1,
-        nickname: 'John',
-        uid: '32123',
-        avatar: 'http://uc.xizi.com/avatar.php?uid=2332222',
-        roleName: '管理员',
-      },
-      {
-        key: '2',
-        nickname: 'Jim Green',
-        uid: '42123',
-        avatar: 'http://uc.xizi.com/avatar.php?uid=2332222',
-        roleName: '普通小编',
-      },
-      {
-        key: '3',
-        nickname: 'Black',
-        uid: '123123',
-        avatar: 'http://uc.xizi.com/avatar.php?uid=2332222',
-        roleName: '高级小编',
-      },
-    ];
+    const validUid = {
+      rules: [{ required: true, message: 'uid不能为空' }],
+      initialValue: uid || ''
+    }
+
+    const validRole = {
+      rules: [{ required: true, message: '请选择角色' }],
+      initialValue: roleValue || null
+    }
+
+    const validUsername = {
+      rules: [{ required: true, message: '请选择角色' }],
+      initialValue: username || ''
+    }
 
     return (
       <PageHeaderLayout>
@@ -281,10 +174,55 @@ export default class ManageAuth extends PureComponent {
             style={{ marginTop: 24 }}
             bodyStyle={{ padding: '0 32px 40px 32px' }}
           >
-            <Table dataSource={data} columns={columns} />
+            <Table dataSource={data} columns={columns} className={styles.table} />
           </Card>
         </div>
-      </PageHeaderLayout>
+        {
+          modalVisiale &&
+          <Modal
+            title="角色授权"
+            wrapClassName="vertical-center-modal"
+            visible={modalVisiale}
+            footer={[
+              <Button key="back" onClick={() => this.cancel(false)}>
+                取消
+            </Button>,
+              <Button
+                key="submit"
+                type="primary"
+                onClick={() => this.comfirmAuth()}
+              >
+                确认授权
+                <Icon type="quanxianguanli"></Icon>
+              </Button>,
+            ]}
+            onCancel={() => this.cancel(false)}
+          >
+            <Form>
+              <FormItem>
+                {getFieldDecorator('uid', validUid)(
+                  <Input hidden={true} />
+                )}
+
+              </FormItem>
+              <FormItem>
+                {
+                  getFieldDecorator('username', validUsername)(
+                    <Input disabled={true} />
+                  )
+                }
+              </FormItem>
+              <FormItem>
+                {getFieldDecorator('name', validRole)(
+                  <Select>
+                    {roles.map((item) => <Option value={item.name} key={item.name}>{item.description}</Option>)}
+                  </Select>
+                )}
+              </FormItem>
+            </Form>
+          </Modal>
+        }
+      </PageHeaderLayout >
     );
   }
 }

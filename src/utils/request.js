@@ -94,9 +94,8 @@ export default function request(url, options) {
       const { dispatch } = store;
       const status = e.name;
       if (status === 401) {
-        dispatch({
-          type: 'login/logout',
-        });
+        dispatch(routerRedux.push('/user/login'))
+        localStorage.removeItem('token')
         return { code: status };
       }
       if (status === 403 && !isLoginApi) {

@@ -120,8 +120,13 @@ export const getRouterData = app => {
       ),
     },
     '/manager-center/role-manager': {
-      component: dynamicWrapper(app, ['manage/roleManager'], () =>
+      component: dynamicWrapper(app, ['manage/roleManager','manage/assignDetail'], () =>
         import('../routes/ManageCenter/RoleManager')
+      ),
+    },
+    '/manager-center/assign-detail': {
+      component: dynamicWrapper(app, ['manage/assignDetail'], () =>
+        import('../routes/ManageCenter/AssignDetail')
       ),
     },
     // '/form/step-form/confirm': {

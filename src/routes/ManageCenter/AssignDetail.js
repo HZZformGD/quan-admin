@@ -23,8 +23,8 @@ const Option = Select.Option;
 const FormItem = Form.Item;
 
 @Form.create()
-@connect(({ authList, loading }) => ({
-  authList,
+@connect(({ assignDetail, loading }) => ({
+  assignDetail,
   loading: loading.models.decoration,
 }))
 export default class AuthList extends PureComponent {
@@ -43,15 +43,18 @@ export default class AuthList extends PureComponent {
     isEdit: false
   };
 
-  componentWillMount() {
+
+  componentDidMount() {
     this.getList()
   }
 
-  getList(page = 1, status = -1, keyword = '') {
-    const { dispatch } = this.props;
+  getList() {
+    const { dispatch, assignDetail } = this.props;
     dispatch({
-      type: 'authList/getList',
-      payload: { page }
+      type: 'assignDetail/getList',
+      payload: {
+        name: assignDetail.name
+      }
     })
   }
 
@@ -79,7 +82,7 @@ export default class AuthList extends PureComponent {
         return
       }
       this.props.dispatch({
-        type: 'authList/editAuth',
+        type: 'assignDetail/editAuth',
         payload: values
       }).then((res) => {
         if (res.code == 200) {
@@ -99,13 +102,13 @@ export default class AuthList extends PureComponent {
 
   del(name) {
     this.props.dispatch({
-      type: 'authList/removeAuth',
-      payload: {name}
+      type: 'assignDetail/removeAuth',
+      payload: { name }
     }).then((res) => {
       if (res.code == 200) {
         message.success(res.message)
         this.getList()
-      }else {
+      } else {
         message.error(res.message)
       }
     })
@@ -128,11 +131,13 @@ export default class AuthList extends PureComponent {
   }
 
   render() {
-    const { modalVisiale, name, description, module_id, controller_id, action_id, isEdit } = this.state
-    const { getFieldDecorator } = this.props.form;
-    const { authList } = this.props
-    const data = authList.list
 
+    console.info(this.props)
+    const { modalVisiale, isEdit } = this.state
+    const { getFieldDecorator } = this.props.form;
+    const { assignDetail } = this.props
+    const name = assignDetail.name
+    const description = assignDetail.description
     const columns = [
       {
         title: '名称',
@@ -184,26 +189,6 @@ export default class AuthList extends PureComponent {
       },
     ];
 
-    const nameConfig = {
-      rules: [{ required: true, type: 'string', message: '权限名称不能为空' }],
-      initialValue: name || ''
-    }
-    const descriptionConfig = {
-      rules: [{ required: true, type: 'string', message: '权限描述不能为空' }, { validator: this.lengthCheck }],
-      initialValue: description || ''
-    }
-    const moduleIdConfig = {
-      rules: [{ required: true, type: 'string', message: '权限module_id不能为空' }],
-      initialValue: module_id || ''
-    }
-    const controllerIdConfig = {
-      rules: [{ required: true, type: 'string', message: '权限controller_id不能为空' }],
-      initialValue: controller_id || ''
-    }
-    const actionIdConfig = {
-      rules: [{ required: true, type: 'string', message: '权限action_id不能为空' }],
-      initialValue: action_id || ''
-    }
 
 
     return (
@@ -218,7 +203,6 @@ export default class AuthList extends PureComponent {
             extra={<Button type="primary" onClick={() => this.openModal()}>新建权限</Button>}
           >
 
-            <Table dataSource={data} columns={columns} className={styles.table} />
           </Card>
         </div>
         {
@@ -242,41 +226,7 @@ export default class AuthList extends PureComponent {
             onCancel={() => this.cancel(false)}
           >
             <Form>
-              <FormItem>
-                {
-                  getFieldDecorator('name', nameConfig)(
-                    <Input placeholder="输入权限名称" disabled={isEdit} />
-                  )
-                }
-              </FormItem>
-              <FormItem>
-                {
-                  getFieldDecorator('description', descriptionConfig)(
-                    <Input placeholder="输入权限描述" />
-                  )
-                }
-              </FormItem>
-              <FormItem>
-                {
-                  getFieldDecorator('module_id', moduleIdConfig)(
-                    <Input placeholder="输入权限module_id" />
-                  )
-                }
-              </FormItem>
-              <FormItem>
-                {
-                  getFieldDecorator('controller_id', controllerIdConfig)(
-                    <Input placeholder="输入权限controller_id" />
-                  )
-                }
-              </FormItem>
-              <FormItem>
-                {
-                  getFieldDecorator('action_id', actionIdConfig)(
-                    <Input placeholder="输入权限action_id" />
-                  )
-                }
-              </FormItem>
+
             </Form>
           </Modal>
         }

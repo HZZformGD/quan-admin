@@ -24,7 +24,7 @@ export default {
     javascriptEnabled: true,
   },
   disableDynamicImport: true,
-  publicPath: '/admin/',
+  publicPath: '/',
   hash: true,
   proxy: {
     '/': {

@@ -1,17 +1,17 @@
 import { permissionList, editAuth, removeAuthByName } from '../../services/api';
 
 export default {
-  namespace: 'authList',
+  namespace: 'assignDetail',
 
   state: {
-    list: [],
-    total: 100,
+    name: '',
+    description: '',
+    authList: []
   },
 
   effects: {
     *getList({ payload }, { call, put }) {
       const response = yield call(permissionList, payload);
-
       if (response.code == 200) {
         const data = response.data;
         console.info(data)
@@ -27,18 +27,20 @@ export default {
         return response;
       }
     },
-    *removeAuth({ payload }, { call, put }) {
-      const response = yield call(removeAuthByName, payload);
-      if (response.code == 200) {
-        return response;
-      }
+    *setDetail({ payload }, { call, put }) {
+      yield put({
+        type: 'saveDetail',
+        payload: payload
+      })
     }
   },
 
   reducers: {
-    trigger(state, action) {
+    saveDetail(state, action) {
       return {
-        error: action.payload,
+        ...state,
+        name: action.payload.name,
+        description: action.payload.description,
       };
     },
     saveList(state, action) {

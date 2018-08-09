@@ -425,7 +425,7 @@ export default class BasicList extends PureComponent {
         </div>
 
         <div className={styles.listContentItem}>
-          {data.pushed_at > 0 ? moment(data.pushed_at * 1000).format('YYYY-MM-DD HH:mm') : ''}
+          {data.pushed_at > 0 ? moment(data.pushed_at * 1000).format('YYYY-MM-DD HH:mm') : '未推送'}
         </div>
       </div>
     );

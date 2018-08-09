@@ -12,15 +12,15 @@ export default class WelcomePage extends Component {
     let hour = moment().hour();
     let minute = moment().minute();
     let greetings = '';
-    if (hour < 9) {
+    if (hour <= 9) {
       greetings = '早上好';
-    } else if (hour < 11 && minute < 30) {
+    } else if (hour <= 11) {
       greetings = '上午好';
-    } else if (11 < hour && hour < 13) {
+    } else if (11 < hour && hour <= 13) {
       greetings = '中午好';
-    } else if (13 < hour && hour < 18) {
+    } else if (13 < hour && hour <= 18) {
       greetings = '下午好';
-    } else {
+    } else if(hour > 18){
       greetings = '晚上好';
     }
     return (

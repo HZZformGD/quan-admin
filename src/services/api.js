@@ -70,7 +70,7 @@ export async function fakeAccountLogin(params) {
 
 export async function accountLogout() {
   return request('/common/auth/sign-out', {
-    method: 'POST',
+    method: 'get',
     noToken: false,
   });
 }
@@ -189,4 +189,75 @@ export async function pushTopicApart(params) {
     body: params,
     noToken: false,
   });
+}
+export async function permissionList(params) {
+  return request('/common/manager/permissions', {
+    method: 'POST',
+    body: params,
+    noToken: false
+  })
+}
+
+export async function authEditorByUid(params) {
+  return request('/common/manager/admin-assign', {
+    method: 'POST',
+    body: params,
+    noToken: false
+  })
+}
+
+export async function editAuth(params) {
+  return request('/common/manager/edit-permission', {
+    method: 'POST',
+    body: params,
+    noToken: false
+  })
+}
+
+export async function removeAuthByName(params) {
+  return request('/common/manager/remove-permission', {
+    method: 'POST',
+    body: params,
+    noToken: false
+  })
+}
+
+export async function delEditorByUid(params) {
+  return request('/common/manager/remove-admin', {
+    method: 'POST',
+    body: params,
+    noToken: false
+  })
+}
+
+export async function administratorsList(params) {
+  return request('/common/manager/administrators', {
+    method: 'POST',
+    body: params,
+    noToken: false
+  })
+}
+
+export async function rolesList(params) {
+  return request('/common/manager/roles', {
+    method: 'POST',
+    body: params,
+    noToken: false
+  })
+}
+
+export async function editRoleByName(params) {
+  return request('/common/manager/edit-role', {
+    method: 'POST',
+    body: params,
+    noToken: false
+  })
+}
+
+export async function removeRoleByName(params) {
+  return request('/common/manager/remove-role', {
+    method: 'POST',
+    body: params,
+    noToken: false
+  })
 }

@@ -261,3 +261,18 @@ export async function removeRoleByName(params) {
     noToken: false
   })
 }
+
+export async function roleAssign(params) {
+  return request(`/common/manager/role-assign?name=${params.name}`, {
+    method: 'get',
+    noToken: false
+  })
+}
+
+export async function toDistributed(params) {
+  return request(`/common/manager/role-assign`, {
+    method: 'POST',
+    body: params,
+    noToken: false
+  })
+}

@@ -5,7 +5,7 @@ export default {
 
   state: {
     administrators: [],
-    total: 100,
+    total: 0,
     roles: []
   },
 

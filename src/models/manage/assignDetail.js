@@ -1,4 +1,4 @@
-import { permissionList, editAuth, removeAuthByName } from '../../services/api';
+import { roleAssign, editAuth, removeAuthByName, toDistributed } from '../../services/api';
 
 export default {
   namespace: 'assignDetail',
@@ -11,10 +11,9 @@ export default {
 
   effects: {
     *getList({ payload }, { call, put }) {
-      const response = yield call(permissionList, payload);
+      const response = yield call(roleAssign, payload);
       if (response.code == 200) {
         const data = response.data;
-        console.info(data)
         yield put({
           type: 'saveList',
           payload: data,
@@ -32,6 +31,18 @@ export default {
         type: 'saveDetail',
         payload: payload
       })
+    },
+    *changeList({ payload }, { call, put }) {
+      yield put({
+        type: 'saveCheck',
+        payload: payload
+      })
+    },
+    *distributed({ payload }, { call, put }) {
+      const responese = yield call(toDistributed,payload)
+      if (responese.code == 200) {
+        return responese
+      }
     }
   },
 
@@ -46,9 +57,19 @@ export default {
     saveList(state, action) {
       return {
         ...state,
-        list: action.payload.permissions || [],
-        total: action.payload.total || 0,
+        authList: action.payload.permissions || []
       };
     },
+    saveCheck(state, action) {
+      let list = state.authList
+      const { mIndex, cIndex, aIndex, isChecked } = action.payload
+      let status = isChecked ? 1 : 0
+      list[mIndex].children[cIndex].children[aIndex].checked = status
+      console.info(list)
+      return {
+        ...state,
+        authList: list
+      }
+    }
   },
 };

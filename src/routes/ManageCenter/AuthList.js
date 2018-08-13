@@ -132,7 +132,7 @@ export default class AuthList extends PureComponent {
     const { getFieldDecorator } = this.props.form;
     const { authList } = this.props
     const data = authList.list
-
+    const total = authList.total
     const columns = [
       {
         title: '名称',
@@ -204,7 +204,16 @@ export default class AuthList extends PureComponent {
       rules: [{ required: true, type: 'string', message: '权限action_id不能为空' }],
       initialValue: action_id || ''
     }
-
+    const paginationProps = {
+      pageSize: 10,
+      total: total,
+      onChange: page => {
+        this.setState({
+          currentPage: page,
+        });
+        this.getList(page);
+      },
+    }
 
     return (
       <PageHeaderLayout>
@@ -218,7 +227,7 @@ export default class AuthList extends PureComponent {
             extra={<Button type="primary" onClick={() => this.openModal()}>新建权限</Button>}
           >
 
-            <Table dataSource={data} columns={columns} className={styles.table} />
+            <Table dataSource={data} pagination={paginationProps} columns={columns} className={styles.table} />
           </Card>
         </div>
         {

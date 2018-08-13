@@ -1,26 +1,21 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
+import { routerRedux } from 'dva/router';
 
 import {
-  Table,
   Card,
   Popconfirm,
-  Modal,
   Button,
-  Input,
-  Select,
+  Checkbox,
   Spin,
   message,
   Form,
-  Avatar,
 } from 'antd';
 
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
-import styles from './AuthList.less';
+import styles from './AssignDetail.less';
 
-const ButtonGroup = Button.Group;
-const Option = Select.Option;
-const FormItem = Form.Item;
+const CheckboxGroup = Checkbox.Group;
 
 @Form.create()
 @connect(({ assignDetail, loading }) => ({
@@ -35,12 +30,7 @@ export default class AuthList extends PureComponent {
   }
 
   state = {
-    name: '',
-    description: '',
-    module_id: '',
-    controller_id: '',
-    action_id: '',
-    isEdit: false
+    selectArr: []
   };
 
 
@@ -64,40 +54,50 @@ export default class AuthList extends PureComponent {
       modalVisiale: false,
     });
   }
-  openModal() {
-    this.setState({
-      modalVisiale: true,
-      isEdit: false,
-      name: '',
-      description: '',
-      module_id: '',
-      controller_id: '',
-      action_id: ''
-    });
-  }
-
-  comfirmAuth() {
-    this.props.form.validateFields((err, values) => {
-      if (err) {
-        return
-      }
-      this.props.dispatch({
-        type: 'assignDetail/editAuth',
-        payload: values
-      }).then((res) => {
-        if (res.code == 200) {
-          this.setState({
-            modalVisiale: false
-          })
-          this.getList()
-          message.success(res.message)
-        }
+  confirmAssign() {
+    const { assignDetail, dispatch } = this.props
+    let arr = []
+    assignDetail.authList.map((item) => {
+      item.children.map((child) => {
+        child.children.map((action) => {
+          if (action.checked) {
+            arr.push(action.name)
+          }
+        })
       })
     })
+    dispatch({
+      type: 'assignDetail/distributed',
+      payload: { permissions: arr, name: assignDetail.name }
+    }).then((res) => {
+      if (res.code == 200) {
+        message.success(res.message)
+        dispatch(routerRedux.push('/manager-center/role-manager'))
+      }
+    })
+
+    console.info(arr)
   }
 
-  doNotDel() {
 
+  checkBoxChange(event) {
+    let { checked, dataName, dataMindex, dataCindex, dataAindex } = event.target
+    let postArr = this.state.selectArr
+    if (checked) {
+      postArr.push(dataName)
+    } else {
+      let index = postArr.indexOf(dataName);
+      postArr.splice(index, 1)
+    }
+    this.props.dispatch({
+      type: 'assignDetail/changeList',
+      payload: {
+        isChecked: checked,
+        mIndex: dataMindex,
+        cIndex: dataCindex,
+        aIndex: dataAindex
+      }
+    })
   }
 
   del(name) {
@@ -121,75 +121,49 @@ export default class AuthList extends PureComponent {
     })
   }
 
-  lengthCheck = (rule, value, callback) => {
-    const form = this.props.form;
-    if (value && value.length > 20) {
-      callback('长度不能超过20');
-    } else {
-      callback();
-    }
+  renderTreeNodes = (data) => {
+    return data.map((item) => {
+      if (item.children) {
+        return (
+          <TreeNode title={item.name} key={item.name} dataRef={item}>
+            {this.renderTreeNodes(item.children)}
+          </TreeNode>
+        );
+      }
+      return <TreeNode title={item.description} key={item.name} />;
+    });
   }
 
   render() {
 
-    console.info(this.props)
+    console.info(this.props.assignDetail)
     const { modalVisiale, isEdit } = this.state
     const { getFieldDecorator } = this.props.form;
     const { assignDetail } = this.props
-    const name = assignDetail.name
-    const description = assignDetail.description
-    const columns = [
-      {
-        title: '名称',
-        dataIndex: 'name',
-        key: 'name',
-      },
-      {
-        title: '描述',
-        dataIndex: 'description',
-        key: 'description',
-      },
-      {
-        title: 'module_id',
-        dataIndex: 'module_id',
-        key: 'module_id',
-        render: (text, record) => (
-          <span>{record.module_id ? record.module_id : ''}</span>
-        )
-      },
-      {
-        title: 'controller_id',
-        dataIndex: 'controller_id',
-        key: 'controller_id',
-        render: (text, record) => (
-          <span>{record.controller_id ? record.controller_id : ''}</span>
-        )
-      },
-      {
-        title: 'action_id',
-        dataIndex: 'action_id',
-        key: 'action_id',
-        render: (text, record) => (
-          <span>{record.action_id ? record.action_id : ''}</span>
-        )
-      },
-      {
-        title: '操作',
-        render: (text, record) => (
-          <ButtonGroup size="small">
-            <Button onClick={() => this.edit(record)}>编辑</Button>
-            <Popconfirm title="确定要删除这个权限吗?" onConfirm={() => this.del(record)} onCancel={() => this.doNotDel()} okText="是的" cancelText="不了">
-              <Button type="danger"  >
-                {'删除'}
-              </Button>
-            </Popconfirm>
-
-          </ButtonGroup >
-        ),
-      },
-    ];
+    let authList = assignDetail.authList
+    let dec = assignDetail.description
 
 
+
+    const Content = ({ data }) => (
+      <div className='tree'>
+        {data.map((modules, mIndex) => (
+          <div className={styles.treeModules} key={modules.name + '_' + mIndex}>
+            <h3>{'- 模块: ' + modules.name}</h3>
+            {modules.children.map((contro, cIndex) => (
+              <div className={styles.treeContro} key={contro.name + '_' + cIndex}>
+                <p>{'- 控制器: ' + contro.name}</p>
+                {contro.children.map((action, aIndex) => {
+                  return (
+                    <Checkbox className={styles.treeAction} dataName={action.name} dataMindex={mIndex} dataCindex={cIndex} key={action.name + '_' + aIndex} dataAindex={aIndex} checked={action.checked == 1} onChange={this.checkBoxChange.bind(this)} >{action.description}</Checkbox>
+                  )
+                })}
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+    )
 
     return (
       <PageHeaderLayout>
@@ -197,39 +171,15 @@ export default class AuthList extends PureComponent {
           <Card
             className={styles.listCard}
             bordered={false}
-            title="权限列表"
+            title={dec}
             style={{ marginTop: 24 }}
             bodyStyle={{ padding: '0 32px 40px 32px' }}
-            extra={<Button type="primary" onClick={() => this.openModal()}>新建权限</Button>}
+            extra={<Button type="primary" onClick={() => this.confirmAssign()}>确定分配</Button>}
           >
-
+            <Content data={authList} />
           </Card>
         </div>
-        {
-          modalVisiale &&
-          <Modal
-            title={isEdit ? '编辑权限' : '新增权限'}
-            wrapClassName="vertical-center-modal"
-            visible={modalVisiale}
-            footer={[
-              <Button key="back" onClick={() => this.cancel(false)}>
-                取消
-            </Button>,
-              <Button
-                key="submit"
-                type="primary"
-                onClick={() => this.comfirmAuth()}
-              >
-                确认
-              </Button>,
-            ]}
-            onCancel={() => this.cancel(false)}
-          >
-            <Form>
 
-            </Form>
-          </Modal>
-        }
       </PageHeaderLayout >
     );
   }

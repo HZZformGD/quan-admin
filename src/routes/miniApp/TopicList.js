@@ -5,7 +5,7 @@ import Ellipsis from 'components/Ellipsis';
 import debounce from 'lodash/debounce';
 
 import {
-  List,
+  Table,
   Card,
   Tooltip,
   Col,
@@ -26,7 +26,7 @@ import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import styles from './TopicList.less';
 
 const RadioButton = Radio.Button;
-const RadioGroup = Radio.Group;
+const ButtonGroup = Button.Group;
 const Option = Select.Option;
 const TabPane = Tabs.TabPane;
 const { Search } = Input;
@@ -378,25 +378,71 @@ export default class BasicList extends PureComponent {
       data,
     } = this.state;
 
-    // const { decorations } = decoration
-    // const Info = ({ title, value, bordered, color }) => (
-    //   <div className={styles.headerInfo}>
-    //     <span >{title}</span>
-    //     <p style={{ color }}>{value}</p>
-    //     {bordered && <em />}
-    //   </div>
-    // );
+    const columns = [
+      {
+        title: 'id',
+        dataIndex: 'id',
+        key: 'id',
+        width: 50,
+      },
+      {
+        title: '话题',
+        key: 'title',
+        width: 300,
+        render: (text, record) => (
+          <Tooltip title={record.title}>
+            <Ellipsis lines={2}>{record.title}</Ellipsis>
+          </Tooltip>
+        )
+      },
 
-    // const extraContent = (
-    //   <div className={styles.extraContent}>
-    //     <RadioGroup defaultValue={-1} onChange={this.onStatusChange.bind(this)}>
-    //       <RadioButton value={-1}>全部</RadioButton>
-    //       <RadioButton value={1}>已发放</RadioButton>
-    //       <RadioButton value={0}>未发放</RadioButton>
-    //     </RadioGroup>
-    //     <Search className={styles.extraContentSearch} placeholder="请输入用户名或者uid" onSearch={this.onSearchKeyword.bind(this)} />
-    //   </div>
-    // );
+      {
+        title: '备注',
+        dataIndex: 'remark',
+        key: 'remark',
+        width: 150,
+        render: (text, record) => (
+          <Tooltip title={record.remark}>
+            <Ellipsis lines={2}>{record.remark}</Ellipsis>
+          </Tooltip>
+        )
+      },
+      {
+        title: '推送时间',
+        dataIndex: 'pushed_at',
+        key: 'pushed_at',
+        render: (text, record) => (
+          <span>{record.pushed_at > 0 ? moment(record.pushed_at * 1000).format('YYYY-MM-DD HH:mm') : '未推送'}</span>
+        )
+      },
+      {
+        title: '推送人数',
+        dataIndex: 'count',
+        key: 'count'
+      },
+      {
+        title: '操作',
+        render: (text, record) => {
+          if (record.status == 1) {
+            return (<Button disabled={true}>已推送</Button>)
+          } else {
+            return (
+              <ButtonGroup size="small">
+                <Button type="primary" onClick={() => this.openPushModal(record.id)}>
+                  批量
+                </Button>
+                <Button type="primary" onClick={() => this.pushIt(record.id)}>
+                  推送
+                </Button>
+                <Button onClick={() => this.edit(item)}>编辑</Button>
+              </ButtonGroup >
+            )
+          }
+
+        },
+      },
+    ];
+
 
     const paginationProps = {
       pageSize: 10,
@@ -497,30 +543,17 @@ export default class BasicList extends PureComponent {
             title="话题列表"
             style={{ marginTop: 24 }}
             bodyStyle={{ padding: '0 32px 40px 32px' }}
-            // extra={extraContent}
+            extra={
+              <Button
+                type="primary"
+                onClick={() => this.openModal()}
+                style={{ width: '100%', marginBottom: 8 }}
+              >
+                增加话题
+              </Button>
+            }
           >
-            <Button
-              type="dashed"
-              onClick={() => this.openModal()}
-              style={{ width: '100%', marginBottom: 8 }}
-              icon="plus"
-            >
-              增加话题
-            </Button>
-            <ListHeader />
-
-            <List
-              size="large"
-              rowKey="id"
-              // loading={loading}
-              // pagination={paginationProps}
-              dataSource={topic.list}
-              renderItem={item => (
-                <List.Item actions={OperationBtn(item)}>
-                  <ListContent data={item} />
-                </List.Item>
-              )}
-            />
+            <Table dataSource={topic.list} columns={columns} className={styles.table} />
           </Card>
         </div>
         {modalVisiale && (

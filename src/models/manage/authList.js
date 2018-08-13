@@ -5,7 +5,7 @@ export default {
 
   state: {
     list: [],
-    total: 100,
+    total: 0,
   },
 
   effects: {

@@ -192,11 +192,11 @@ export default class AuthList extends PureComponent {
     ];
 
     const nameConfig = {
-      rules: [{ required: true, type: 'string', message: '角色名称不能为空' }],
+      rules: [{ required: true, type: 'string', message: '角色name不能为空' }],
       initialValue: name || ''
     }
     const descriptionConfig = {
-      rules: [{ required: true, type: 'string', message: '角色描述不能为空' }, { validator: this.lengthCheck }],
+      rules: [{ required: true, type: 'string', message: '角色名称不能为空' }, { validator: this.lengthCheck }],
       initialValue: description || ''
     }
 
@@ -241,14 +241,14 @@ export default class AuthList extends PureComponent {
               <FormItem>
                 {
                   getFieldDecorator('name', nameConfig)(
-                    <Input placeholder="输入权限名称" disabled={isEdit} />
+                    <Input placeholder="输入权限name" disabled={isEdit} />
                   )
                 }
               </FormItem>
               <FormItem>
                 {
                   getFieldDecorator('description', descriptionConfig)(
-                    <Input placeholder="输入权限描述" />
+                    <Input placeholder="输入权限名称" />
                   )
                 }
               </FormItem>

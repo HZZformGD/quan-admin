@@ -36,7 +36,8 @@ export default class ManageAuth extends PureComponent {
   }
 
   state = {
-    processId: 0
+    processId: 0,
+    currentPage: 1
   };
 
   componentWillMount() {
@@ -108,6 +109,7 @@ export default class ManageAuth extends PureComponent {
     const { getFieldDecorator } = this.props.form;
     const { manageAuth } = this.props
     const data = manageAuth.administrators
+    const total = manageAuth.total
     const roles = manageAuth.roles
 
     const columns = [
@@ -164,6 +166,17 @@ export default class ManageAuth extends PureComponent {
       initialValue: username || ''
     }
 
+    const paginationProps = {
+      pageSize: 10,
+      total: total,
+      onChange: page => {
+        this.setState({
+          currentPage: page,
+        });
+        this.getList(page);
+      },
+    }
+
     return (
       <PageHeaderLayout>
         <div className={styles.standardList}>
@@ -174,7 +187,7 @@ export default class ManageAuth extends PureComponent {
             style={{ marginTop: 24 }}
             bodyStyle={{ padding: '0 32px 40px 32px' }}
           >
-            <Table dataSource={data} columns={columns} className={styles.table} />
+            <Table pagination={paginationProps} dataSource={data} columns={columns} className={styles.table} />
           </Card>
         </div>
         {

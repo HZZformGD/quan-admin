@@ -8,7 +8,7 @@ import {
   Table,
   Card,
   Tooltip,
-  Col,
+  Popconfirm,
   Radio,
   Input,
   Modal,
@@ -431,10 +431,12 @@ export default class BasicList extends PureComponent {
                 <Button type="primary" onClick={() => this.openPushModal(record.id)}>
                   批量
                 </Button>
-                <Button type="primary" onClick={() => this.pushIt(record.id)}>
-                  推送
+                <Popconfirm title="确定要全局推送这个话题吗?" onConfirm={() => this.pushIt(record.id)} okText="是的" cancelText="不了">
+                  <Button type="primary" >
+                    推送
                 </Button>
-                <Button onClick={() => this.edit(item)}>编辑</Button>
+                </Popconfirm>
+                <Button onClick={() => this.edit(record)}>编辑</Button>
               </ButtonGroup >
             )
           }

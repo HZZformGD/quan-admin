@@ -40,12 +40,17 @@ export default class AuthList extends PureComponent {
 
   getList() {
     const { dispatch, assignDetail } = this.props;
-    dispatch({
-      type: 'assignDetail/getList',
-      payload: {
-        name: assignDetail.name
-      }
-    })
+    if (assignDetail.name == '') {
+      dispatch(routerRedux.push('/manager-center/role-manager'))
+    } else {
+      dispatch({
+        type: 'assignDetail/getList',
+        payload: {
+          name: assignDetail.name
+        }
+      })
+    }
+
   }
 
 

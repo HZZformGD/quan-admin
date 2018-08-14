@@ -87,7 +87,7 @@ export async function queryNotices() {
 }
 
 export async function getDecorationList(params) {
-  return request('/poadmin/user/medal-list', {
+  return request('/poadmin/medal/medal-list', {
     method: 'POST',
     body: params,
     noToken: false,
@@ -95,7 +95,7 @@ export async function getDecorationList(params) {
 }
 
 export async function queryDetail(params) {
-  return request('/poadmin/user/user-medal-list', {
+  return request('/poadmin/medal/user-medal-list', {
     method: 'POST',
     body: params,
     noToken: false,
@@ -111,7 +111,7 @@ export async function getToken(params) {
 }
 
 export async function saveDecoration(params) {
-  return request('/poadmin/user/edit-medal', {
+  return request('/poadmin/medal/edit-medal', {
     method: 'POST',
     body: params,
     noToken: false,
@@ -119,7 +119,7 @@ export async function saveDecoration(params) {
 }
 
 export async function changeStatus(params) {
-  return request('/poadmin/user/medal-status', {
+  return request('/poadmin/medal/medal-status', {
     method: 'POST',
     body: params,
     noToken: false,
@@ -127,14 +127,14 @@ export async function changeStatus(params) {
 }
 
 export async function searchUser(params) {
-  return request('/poadmin/user/user-search', {
+  return request('/poadmin/medal/user-search', {
     method: 'POST',
     body: params,
     noToken: false,
   });
 }
 export async function authMedal(params) {
-  return request('/poadmin/user/medal-auth', {
+  return request('/poadmin/medal/medal-auth', {
     method: 'POST',
     body: params,
     noToken: false,
@@ -142,7 +142,7 @@ export async function authMedal(params) {
 }
 
 export async function changeUserStatus(params) {
-  return request('/poadmin/user/user-medal-status', {
+  return request('/poadmin/medal/user-medal-status', {
     method: 'POST',
     body: params,
     noToken: false,
@@ -150,7 +150,7 @@ export async function changeUserStatus(params) {
 }
 
 export async function checkUserList(params) {
-  return request('/poadmin/user/user-check', {
+  return request('/poadmin/medal/user-check', {
     method: 'POST',
     body: params,
     noToken: false,

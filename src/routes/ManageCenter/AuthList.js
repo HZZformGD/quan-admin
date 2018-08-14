@@ -93,6 +93,11 @@ export default class AuthList extends PureComponent {
     })
   }
 
+  search () {
+    this.props.form.validateFields((err, values) => {
+      console.info(values)
+    })
+  }
   doNotDel() {
 
   }
@@ -100,12 +105,12 @@ export default class AuthList extends PureComponent {
   del(name) {
     this.props.dispatch({
       type: 'authList/removeAuth',
-      payload: {name}
+      payload: { name }
     }).then((res) => {
       if (res.code == 200) {
         message.success(res.message)
         this.getList()
-      }else {
+      } else {
         message.error(res.message)
       }
     })
@@ -226,7 +231,40 @@ export default class AuthList extends PureComponent {
             bodyStyle={{ padding: '0 32px 40px 32px' }}
             extra={<Button type="primary" onClick={() => this.openModal()}>新建权限</Button>}
           >
+            <Form className={styles.inputArea}>
+              <FormItem className={styles.inputItem}>
+                {
+                  getFieldDecorator('module_id_search', {
+                    rules: [{ required: false, type: 'string' }],
+                    initialValue: ''
+                  })(
+                    <Input placeholder="输入权限module_id" />
+                  )
+                }
+              </FormItem>
+              <FormItem className={styles.inputItem}>
+                {
+                  getFieldDecorator('controller_id_search', {
+                    rules: [{ required: false, type: 'string' }],
+                    initialValue: ''
+                  })(
+                    <Input placeholder="输入权限controller_id" />
+                  )
+                }
+              </FormItem>
+              <FormItem className={styles.inputItem}>
+                {
+                  getFieldDecorator('action_id_search', {
+                    rules: [{ required: false, type: 'string' }],
+                    initialValue: ''
+                  })(
+                    <Input placeholder="输入权限action_id" />
+                  )
+                }
+              </FormItem>
+              <Button onClick={() => this.search()}>搜索</Button>
 
+            </Form>
             <Table dataSource={data} pagination={paginationProps} columns={columns} className={styles.table} />
           </Card>
         </div>

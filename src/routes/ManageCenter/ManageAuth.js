@@ -22,6 +22,7 @@ import styles from './ManageAuth.less';
 const ButtonGroup = Button.Group;
 const Option = Select.Option;
 const FormItem = Form.Item;
+const Search = Input.Search
 
 @Form.create()
 @connect(({ manageAuth, loading }) => ({
@@ -49,7 +50,7 @@ export default class ManageAuth extends PureComponent {
     const { dispatch } = this.props;
     dispatch({
       type: 'manageAuth/getList',
-      payload: { page }
+      payload: { page, keyword }
     })
   }
 
@@ -91,7 +92,13 @@ export default class ManageAuth extends PureComponent {
   doNotDel() {
 
   }
-
+  searchByWords(e) {
+    this.setState({
+      keyword: e,
+      currentPage: 1
+    })
+    this.getList(1, -1, e)
+  }
   delEditor(uid) {
     this.props.dispatch({
       type: 'manageAuth/delEditor',
@@ -131,12 +138,15 @@ export default class ManageAuth extends PureComponent {
       },
       {
         title: '当前角色',
+        dataIndex: 'role',
+        key: 'role',
         render: (text, record) => (
           <span>{record.role ? record.role.description : ''}</span>
         )
       },
       {
         title: '操作',
+
         render: (text, record) => (
           <ButtonGroup size="small">
             <Button onClick={() => this.openModal(record)}>角色管理</Button>
@@ -169,6 +179,7 @@ export default class ManageAuth extends PureComponent {
     const paginationProps = {
       pageSize: 10,
       total: total,
+      current: this.state.currentPage,
       onChange: page => {
         this.setState({
           currentPage: page,
@@ -176,6 +187,7 @@ export default class ManageAuth extends PureComponent {
         this.getList(page);
       },
     }
+
 
     return (
       <PageHeaderLayout>
@@ -186,6 +198,7 @@ export default class ManageAuth extends PureComponent {
             title="管理权限"
             style={{ marginTop: 24 }}
             bodyStyle={{ padding: '0 32px 40px 32px' }}
+            extra={<Search placeholder="输入uid或者用户名" onSearch={this.searchByWords.bind(this)} enterButton />}
           >
             <Table pagination={paginationProps} dataSource={data} columns={columns} className={styles.table} />
           </Card>

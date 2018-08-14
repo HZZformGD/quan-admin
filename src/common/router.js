@@ -103,6 +103,11 @@ export const getRouterData = app => {
         import('../routes/PoCenter/Detail')
       ),
     },
+    '/po-center/post-list': {
+      component: dynamicWrapper(app, ['poCenter/postList'], () =>
+        import('../routes/PoCenter/PostList')
+      )
+    },
     '/mini-app/topic-reply-list': {
       component: dynamicWrapper(app, ['miniApp/topic', 'poCenter/decoration'], () =>
         import('../routes/miniApp/TopicList')
@@ -120,7 +125,7 @@ export const getRouterData = app => {
       ),
     },
     '/manager-center/role-manager': {
-      component: dynamicWrapper(app, ['manage/roleManager','manage/assignDetail'], () =>
+      component: dynamicWrapper(app, ['manage/roleManager', 'manage/assignDetail'], () =>
         import('../routes/ManageCenter/RoleManager')
       ),
     },

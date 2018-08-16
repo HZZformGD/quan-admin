@@ -478,33 +478,7 @@ export default class BasicList extends PureComponent {
       </div>
     );
 
-    const ListHeader = () => (
-      <div className={styles.flexHeader}>
-        <div className={styles.listHeader}>
-          <span className={styles.listContentItem}>id</span>
-          <span className={styles.listContentItem}>话题</span>
-          <span className={styles.listContentItem}>备注</span>
-          <span className={styles.listContentItem}>推送时间</span>
-        </div>
-        <div className={styles.operation}>操作</div>
-      </div>
-    );
 
-    let OperationBtn = item => {
-      if (item.status == 1) {
-        return [<Button disabled={true}>已推送</Button>];
-      } else {
-        return [
-          <Button type="primary" onClick={() => this.openPushModal(item.id)}>
-            批量
-          </Button>,
-          <Button type="primary" onClick={() => this.pushIt(item.id)}>
-            推送
-          </Button>,
-          <Button onClick={() => this.edit(item)}>编辑</Button>,
-        ];
-      }
-    };
 
     const formItemLayout = {
       labelCol: {

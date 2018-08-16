@@ -9,6 +9,7 @@ import styles from './PostList.less'
 
 export default class PostList extends PureComponent {
   render() {
+    const arr = []
     return (
       <PageHeaderLayout>
         <div className={styles.standardList}>

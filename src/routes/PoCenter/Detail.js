@@ -13,6 +13,7 @@ import {
   Button,
   message,
   Select,
+  Table,
   Spin,
   notification,
   Form,
@@ -187,6 +188,7 @@ export default class BasicList extends PureComponent {
       Modal.warning({
         title: '警告',
         content: '确认要撤销该用户的勋章吗',
+        okText: '是的',
         onOk: () => {
           this.props
             .dispatch({
@@ -292,6 +294,13 @@ export default class BasicList extends PureComponent {
 
     const extraContent = (
       <div className={styles.extraContent}>
+        <Button
+          type="primary"
+          onClick={() => this.openModal()}
+          className={styles.extraContentButton}
+        >
+          颁发勋章
+        </Button>
         <RadioGroup defaultValue={-1} onChange={this.onStatusChange.bind(this)}>
           <RadioButton value={-1}>全部</RadioButton>
           <RadioButton value={1}>已发放</RadioButton>
@@ -302,6 +311,7 @@ export default class BasicList extends PureComponent {
           placeholder="请输入用户名或者uid"
           onSearch={this.onSearchKeyword.bind(this)}
         />
+
       </div>
     );
 
@@ -317,26 +327,43 @@ export default class BasicList extends PureComponent {
       },
     };
 
-    const ListContent = ({ data: { username, uid } }) => (
-      <div className={styles.listContent}>
-        <div className={styles.listContentItem}>
-          <p>{username}</p>
-        </div>
-        <div className={styles.listContentItem}>
-          <p>{uid}</p>
-        </div>
-      </div>
-    );
-    const ListHeader = () => (
-      <div className={styles.flexHeader}>
-        <div className={styles.listHeader}>
-          <span className={styles.listContentItem}>头像</span>
-          <span className={styles.listContentItem}>姓名</span>
-          <span className={styles.listContentItem}>uid</span>
-        </div>
-        <div className={styles.operation}>操作</div>
-      </div>
-    );
+
+    const columns = [
+      {
+        title: '头像',
+        dataIndex: 'avatar',
+        key: 'avatar',
+        render: (text, record) => (
+          <Avatar shape="square" size="large" src={record.avatar}></Avatar>
+        )
+      },
+      {
+        title: '昵称',
+        key: 'username',
+        dataIndex: 'username'
+      },
+
+      {
+        title: 'uid',
+        dataIndex: 'uid',
+        key: 'uid'
+      },
+      {
+        title: '操作',
+        render: (text, record) => (
+          <Button
+            type={record.status == 1 ? 'danger' : 'primary'}
+            onClick={() => this.authIt(record)}
+          >
+            {record.status == 1 ? '撤销' : '授权'}
+          </Button>
+
+        ),
+      },
+    ];
+
+
+
 
     const listStringConfig = {
       rules: [{ type: 'string', required: true, message: '输入检测的用户不能为空' }],
@@ -377,39 +404,9 @@ export default class BasicList extends PureComponent {
             bodyStyle={{ padding: '0 32px 40px 32px' }}
             extra={extraContent}
           >
-            <Button
-              type="dashed"
-              onClick={() => this.openModal()}
-              style={{ width: '100%', marginBottom: 8 }}
-              icon="plus"
-            >
-              颁发勋章
-            </Button>
-            <ListHeader />
-            <List
-              size="large"
-              rowKey="id"
-              loading={loading}
-              pagination={paginationProps}
-              dataSource={decorations.list}
-              renderItem={item => (
-                <List.Item
-                  actions={[
-                    <Button
-                      type={item.status == 1 ? 'danger' : 'primary'}
-                      onClick={() => this.authIt(item)}
-                    >
-                      {item.status == 1 ? '撤销' : '授权'}
-                    </Button>,
-                  ]}
-                >
-                  <List.Item.Meta
-                    avatar={<Avatar src={item.avatar} shape="square" size="large" />}
-                  />
-                  <ListContent data={item} />
-                </List.Item>
-              )}
-            />
+
+            <Table pagination={paginationProps} columns={columns} dataSource={decorations.list}></Table>
+
           </Card>
         </div>
         {modalVisiale && (

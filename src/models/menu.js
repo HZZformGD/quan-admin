@@ -32,7 +32,7 @@ export default {
 
       yield put({
         type: 'queryList',
-        payload: Array.isArray(menu) ? menu : [],
+        payload: Array.isArray(menu) ? menu  : [],
       });
     },
   },
@@ -41,7 +41,7 @@ export default {
     queryList(state, action) {
       return {
         ...state,
-        list: action.payload,
+        list: action.payload || [],
       };
     },
   },

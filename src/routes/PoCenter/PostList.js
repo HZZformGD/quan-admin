@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { Link } from 'dva/router';
-import { message, Card, Form, Upload, DatePicker, Button, Icon, List, Modal, Input } from 'antd';
+import { message, Card, Form, Upload, Avatar, Button, Icon, List, Modal, Input } from 'antd';
 import Ellipsis from 'components/Ellipsis';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 
@@ -9,6 +9,16 @@ import styles from './PostList.less'
 
 export default class PostList extends PureComponent {
   render() {
+    const List = (item) => (
+      <div className={styles.listContent}>
+        <div className={styles.listLeft}>
+          <Avatar src={item.avatar}></Avatar>
+
+        </div>
+        <div className={styles.listMiddle}></div>
+        <div className={styles.listRight}></div>
+      </div>
+    )
     const arr = []
     return (
       <PageHeaderLayout>

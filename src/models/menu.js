@@ -27,7 +27,11 @@ export default {
   effects: {
     *fetch({ payload }, { call, put }) {
       const response = yield call(queryMenus, payload);
-      const menu = formatter(response.data.meData)
+      let meData = []
+      if (response.code == 200) {
+        meData = response.data.meData
+      }
+      const menu = formatter(meData)
       // const menu = yield call(queryMenus, payload);
 
       yield put({

@@ -9,9 +9,11 @@ export function setAuthority(authority) {
 }
 
 export function setToken(token) {
-  return localStorage.setItem('token', token);
+  localStorage.setItem('token', token);
+  return true;
 }
 
 export function clearToken() {
-  return localStorage.removeItem('token')
+  localStorage.removeItem('token');
+  return true;
 }

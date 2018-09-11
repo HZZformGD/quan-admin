@@ -43,15 +43,14 @@ function checkStatus(response) {
  * @return {object}           An object containing either "data" or "err"
  */
 export default function request(url, options) {
-  let token = localStorage.getItem('token') || ''
-  if (!!!options.noToken) {
+  let token = localStorage.getItem('token') || '';
+  if (!options.noToken) {
     if (url.indexOf('?') > -1) {
-      url += `&token=${token}`
+      url += `&token=${token}`;
     } else {
-      url += `?token=${token}`
+      url += `?token=${token}`;
     }
   }
-
 
   const defaultOptions = {
     credentials: 'include',
@@ -81,36 +80,35 @@ export default function request(url, options) {
   return fetch(url, newOptions)
     .then(checkStatus)
     .then(response => {
-
       if (newOptions.method === 'DELETE' || response.status === 204) {
         return response.text();
       }
       return response.json();
     })
     .catch(e => {
-      let isLoginApi = false
+      let isLoginApi = false;
       if (url.indexOf('sign-in') > -1) {
-        isLoginApi = true
+        isLoginApi = true;
       }
 
       const { dispatch } = store;
       const status = e.name;
       if (status === 401) {
-        dispatch({
-          type: 'login/logout',
-        });
-        return;
+        dispatch(routerRedux.push('/user/login'))
+        localStorage.removeItem('token')
+        return { code: status };
       }
       if (status === 403 && !isLoginApi) {
         dispatch(routerRedux.push('/exception/403'));
-        return;
+        return { code: status };
       }
-      if ((status <= 504 && status >= 500) && !isLoginApi) {
+      if (status <= 504 && status >= 500 && !isLoginApi) {
         dispatch(routerRedux.push('/exception/500'));
-        return;
+        return { code: status };
       }
-      if ((status >= 404 && status < 422) && !isLoginApi) {
+      if (status >= 404 && status < 422 && !isLoginApi) {
         dispatch(routerRedux.push('/exception/404'));
+        return { code: status };
       }
     });
 }

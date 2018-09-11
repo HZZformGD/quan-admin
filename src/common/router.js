@@ -1,6 +1,6 @@
 import React, { createElement } from 'react';
-import { Spin } from '_antd@3.6.4@antd';
-import pathToRegexp from '_path-to-regexp@2.2.1@path-to-regexp';
+import { Spin } from 'antd';
+import pathToRegexp from 'path-to-regexp';
 import Loadable from 'react-loadable';
 import { getMenuData } from './menu';
 
@@ -72,11 +72,12 @@ function getFlatMenuData(menus) {
 export const getRouterData = app => {
   const routerConfig = {
     '/': {
-      component: dynamicWrapper(app, ['user', 'login', 'menu'], () => import('../layouts/BasicLayout')),
+      component: dynamicWrapper(app, ['user', 'login', 'menu'], () =>
+        import('../layouts/BasicLayout')
+      ),
     },
     '/welcome': {
-      component: dynamicWrapper(app,[] ,() => import('../routes/Welcome/Welcome')),
-
+      component: dynamicWrapper(app, [], () => import('../routes/Welcome/Welcome')),
     },
     // '/decoration/analysis': {
     //   component: dynamicWrapper(app, ['chart'], () => import('../routes/Dashboard/Analysis')),
@@ -93,24 +94,46 @@ export const getRouterData = app => {
 
     // },
     '/po-center/decoration-list': {
-      component: dynamicWrapper(app, ['poCenter/decoration'], () => import('../routes/PoCenter/Decoration')),
+      component: dynamicWrapper(app, ['poCenter/decoration'], () =>
+        import('../routes/PoCenter/Decoration')
+      ),
     },
     '/po-center/decoration-detail/:medal_id': {
-      component: dynamicWrapper(app, ['poCenter/decoration'], () => import('../routes/PoCenter/Detail')),
+      component: dynamicWrapper(app, ['poCenter/decoration'], () =>
+        import('../routes/PoCenter/Detail')
+      ),
+    },
+    '/po-center/post-list': {
+      component: dynamicWrapper(app, ['poCenter/postList'], () =>
+        import('../routes/PoCenter/PostList')
+      )
     },
     '/mini-app/topic-reply-list': {
-      component: dynamicWrapper(app, ['miniApp/topic'], () => import('../routes/miniApp/TopicList')),
+      component: dynamicWrapper(app, ['miniApp/topic', 'poCenter/decoration'], () =>
+        import('../routes/miniApp/TopicList')
+      ),
     },
-    // '/form/basic-form': {
-    //   component: dynamicWrapper(app, ['form'], () => import('../routes/Forms/BasicForm')),
-    // },
-    // '/form/step-form': {
-    //   component: dynamicWrapper(app, ['form'], () => import('../routes/Forms/StepForm')),
-    // },
-    // '/form/step-form/info': {
-    //   name: '分步表单（填写转账信息）',
-    //   component: dynamicWrapper(app, ['form'], () => import('../routes/Forms/StepForm/Step1')),
-    // },
+
+    '/manager-center/manager-auth': {
+      component: dynamicWrapper(app, ['manage/manageAuth'], () =>
+        import('../routes/ManageCenter/ManageAuth')
+      ),
+    },
+    '/manager-center/auth-list': {
+      component: dynamicWrapper(app, ['manage/authList'], () =>
+        import('../routes/ManageCenter/AuthList')
+      ),
+    },
+    '/manager-center/role-manager': {
+      component: dynamicWrapper(app, ['manage/roleManager', 'manage/assignDetail'], () =>
+        import('../routes/ManageCenter/RoleManager')
+      ),
+    },
+    '/manager-center/assign-detail': {
+      component: dynamicWrapper(app, ['manage/assignDetail'], () =>
+        import('../routes/ManageCenter/AssignDetail')
+      ),
+    },
     // '/form/step-form/confirm': {
     //   name: '分步表单（确认转账信息）',
     //   component: dynamicWrapper(app, ['form'], () => import('../routes/Forms/StepForm/Step2')),

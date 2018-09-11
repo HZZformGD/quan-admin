@@ -27,12 +27,16 @@ export default {
   effects: {
     *fetch({ payload }, { call, put }) {
       const response = yield call(queryMenus, payload);
-      const menu = formatter(response.data.meData)
+      let meData = []
+      if (response.code == 200) {
+        meData = response.data.meData
+      }
+      const menu = formatter(meData)
       // const menu = yield call(queryMenus, payload);
 
       yield put({
         type: 'queryList',
-        payload: Array.isArray(menu) ? menu : [],
+        payload: Array.isArray(menu) ? menu  : [],
       });
     },
   },
@@ -41,7 +45,7 @@ export default {
     queryList(state, action) {
       return {
         ...state,
-        list: action.payload,
+        list: action.payload || [],
       };
     },
   },

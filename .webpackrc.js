@@ -29,7 +29,7 @@ export default {
   proxy: {
     '/': {
       target: 'http://ed-admin.dev.xizi.com',
-      changeOrigin: true
-    }
+      changeOrigin: true,
+    },
   },
 };

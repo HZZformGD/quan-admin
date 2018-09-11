@@ -5,7 +5,6 @@ import zhCN from 'antd/lib/locale-provider/zh_CN';
 import { getRouterData } from './common/router';
 import Authorized from './utils/Authorized';
 import { getQueryPath } from './utils/utils';
-
 const { ConnectedRouter } = routerRedux;
 const { AuthorizedRoute } = Authorized;
 

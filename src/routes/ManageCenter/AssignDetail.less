@@ -1,0 +1,40 @@
+@import '~antd/lib/style/themes/default.less';
+@import '../../utils/utils.less';
+
+.standardList{
+  .treeModules{
+    position: relative;
+    & > h3 {
+      margin-bottom: 10px;
+    }
+    &::before{
+      content: ' ';
+      width: 1px;
+      border-left: 1px solid #d9d9d9;
+      height: 100%;
+      position: absolute;
+      left: -5px;
+      top: 10px;
+    }
+  }
+  .treeContro{
+    margin:0 0 10px 20px;
+    position: relative;
+    & > p {
+      margin: 0 0 10px 0;
+    }
+    &::before{
+      content: ' ';
+      width: 1px;
+      border-left: 1px solid #d9d9d9;
+      height: 80%;
+      position: absolute;
+      left: -5px;
+      top: 5px;
+    }
+    .treeAction{
+      margin-left: 10px;
+    }
+  }
+}
+

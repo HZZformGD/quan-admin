@@ -10,7 +10,7 @@ import {
 } from '../../services/api';
 
 export default {
-  namespace: 'decoration',
+  namespace: 'postList',
 
   state: {
     list: [],

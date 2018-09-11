@@ -1,6 +1,6 @@
 import { routerRedux } from 'dva/router';
 import { stringify } from 'qs';
-import { fakeAccountLogin } from '../services/api';
+import { fakeAccountLogin, accountLogout } from '../services/api';
 import { setAuthority, setToken, clearToken } from '../utils/authority';
 import { reloadAuthorized } from '../utils/Authorized';
 import { getPageQuery } from '../utils/utils';
@@ -22,28 +22,28 @@ export default {
           status: 'ok',
           type: 'account',
           currentAuthority: 'user',
-        }
+        };
         const userData = {
           name: response.data.user.user.username,
           avatar: response.data.user.user.avatar,
           userid: response.data.user.user.id,
           notifyCount: 12,
-        }
+        };
         yield put({
           type: 'changeLoginStatus',
           payload: data,
-        })
+        });
         yield put({
           type: 'setNewToken',
-          payload: response.data.user.token
-        })
+          payload: response.data.user.token,
+        });
         yield put({
           type: 'user/saveCurrentUser',
-          payload: (userData)
-        })
-        localStorage.setItem('userInfo', JSON.stringify(userData))
+          payload: userData,
+        });
+        localStorage.setItem('userInfo', JSON.stringify(userData));
         reloadAuthorized();
-        let redirect = '/welcome'
+        let redirect = '/welcome';
 
         yield put(routerRedux.replace(redirect || '/'));
       } else {
@@ -53,7 +53,7 @@ export default {
         });
       }
     },
-    *logout(_, { put }) {
+    *logout({ payload }, { call, put }) {
       yield put({
         type: 'changeLoginStatus',
         payload: {
@@ -61,11 +61,10 @@ export default {
           currentAuthority: 'guest',
         },
       });
+      yield call(accountLogout);
+
       reloadAuthorized();
-      yield put({
-        type: 'clearOldToken',
-        payload: true
-      })
+
       yield put(
         routerRedux.push({
           pathname: '/user/login',
@@ -87,12 +86,10 @@ export default {
       };
     },
     setNewToken(state, { payload }) {
-      setToken(payload)
-      return true
+      return setToken(payload);
     },
     clearOldToken(state, { payload }) {
-      clearToken()
-      return true
-    }
+      return clearToken();
+    },
   },
 };

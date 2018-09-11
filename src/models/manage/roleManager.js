@@ -1,7 +1,7 @@
-import { addTopic, getTopicList, pushTopicAll, pushTopicApart } from '../../services/api';
+import { rolesList, editRoleByName,removeRoleByName } from '../../services/api';
 
 export default {
-  namespace: 'topic',
+  namespace: 'roleManager',
 
   state: {
     list: [],
@@ -9,32 +9,26 @@ export default {
   },
 
   effects: {
-    *addTopic({ payload }, { call, put }) {
-      const response = yield call(addTopic, payload);
-      // redirect on client when network broken
-      if (response.code == 200) {
-        return response;
-      }
-    },
     *getList({ payload }, { call, put }) {
-      const response = yield call(getTopicList, payload);
-      console.info(response);
+      const response = yield call(rolesList, payload);
+
       if (response.code == 200) {
         const data = response.data;
+        console.info(data)
         yield put({
           type: 'saveList',
           payload: data,
         });
       }
     },
-    *pushItToAll({ payload }, { call, put }) {
-      const response = yield call(pushTopicAll, payload);
+    *editRole({ payload }, { call, put }) {
+      const response = yield call(editRoleByName, payload);
       if (response.code == 200) {
         return response;
       }
     },
-    *pushItApart({ payload }, { call, put }) {
-      const response = yield call(pushTopicApart, payload);
+    *removeRole({ payload }, { call, put }) {
+      const response = yield call(removeRoleByName, payload);
       if (response.code == 200) {
         return response;
       }
@@ -50,7 +44,7 @@ export default {
     saveList(state, action) {
       return {
         ...state,
-        list: action.payload.list || [],
+        list: action.payload.roles || [],
         total: action.payload.total || 0,
       };
     },

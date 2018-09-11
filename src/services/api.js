@@ -64,14 +64,21 @@ export async function fakeAccountLogin(params) {
   return request('/common/auth/sign-in', {
     method: 'POST',
     body: params,
-    noToken: true
+    noToken: true,
   });
 }
 
+export async function accountLogout() {
+  return request('/common/auth/sign-out', {
+    method: 'get',
+    noToken: false,
+  });
+}
 export async function fakeRegister(params) {
   return request('/api/register', {
     method: 'POST',
     body: params,
+    noToken: false,
   });
 }
 
@@ -80,82 +87,192 @@ export async function queryNotices() {
 }
 
 export async function getDecorationList(params) {
-  return request('/poadmin/user/medal-list', {
+  return request('/poadmin/medal/medal-list', {
     method: 'POST',
-    body: params
+    body: params,
+    noToken: false,
   });
 }
 
 export async function queryDetail(params) {
-  return request('/poadmin/user/user-medal-list', {
+  return request('/poadmin/medal/user-medal-list', {
     method: 'POST',
-    body: params
-  })
+    body: params,
+    noToken: false,
+  });
 }
 
 export async function getToken(params) {
-  return request('/common/upload/upload-token')
+  return request('/common/upload/upload-token', {
+    method: 'POST',
+    body: params,
+    noToken: false,
+  });
 }
 
 export async function saveDecoration(params) {
-  return request('/poadmin/user/edit-medal', {
+  return request('/poadmin/medal/edit-medal', {
     method: 'POST',
-    body: params
-  })
+    body: params,
+    noToken: false,
+  });
 }
 
 export async function changeStatus(params) {
-  return request('/poadmin/user/medal-status', {
+  return request('/poadmin/medal/medal-status', {
     method: 'POST',
-    body: params
-  })
+    body: params,
+    noToken: false,
+  });
 }
 
 export async function searchUser(params) {
-  return request('/poadmin/user/user-search', {
+  return request('/poadmin/medal/user-search', {
     method: 'POST',
-    body: params
-  })
+    body: params,
+    noToken: false,
+  });
 }
 export async function authMedal(params) {
-  return request('/poadmin/user/medal-auth', {
+  return request('/poadmin/medal/medal-auth', {
     method: 'POST',
-    body: params
-  })
+    body: params,
+    noToken: false,
+  });
 }
 
 export async function changeUserStatus(params) {
-  return request('/poadmin/user/user-medal-status', {
+  return request('/poadmin/medal/user-medal-status', {
     method: 'POST',
-    body: params
-  })
+    body: params,
+    noToken: false,
+  });
 }
 
 export async function checkUserList(params) {
-  return request('/poadmin/user/user-check', {
+  return request('/poadmin/medal/user-check', {
     method: 'POST',
-    body: params
-  })
+    body: params,
+    noToken: false,
+  });
 }
 
 export async function addTopic(params) {
   return request('/miniadmin/topic-list/edit', {
     method: 'POST',
-    body: params
-  })
+    body: params,
+    noToken: false,
+  });
 }
 
 export async function getTopicList(params) {
   return request('/miniadmin/topic-list/list', {
     method: 'POST',
-    body: params
+    body: params,
+    noToken: false,
+  });
+}
+
+export async function pushTopicAll(params) {
+  console.info(params);
+  return request('/miniadmin/topic-list/global-push', {
+    method: 'POST',
+    body: params,
+    noToken: false,
+  });
+}
+
+export async function pushTopicApart(params) {
+  console.info(params);
+  return request('/miniadmin/topic-list/push', {
+    method: 'POST',
+    body: params,
+    noToken: false,
+  });
+}
+export async function permissionList(params) {
+  return request('/common/manager/permissions', {
+    method: 'POST',
+    body: params,
+    noToken: false
   })
 }
 
-export async function pushTopic(params) {
-  console.info(params)
-  return request('/miniadmin/topic-list/push', {
+export async function authEditorByUid(params) {
+  return request('/common/manager/admin-assign', {
     method: 'POST',
-    body: params
+    body: params,
+    noToken: false
+  })
+}
+
+export async function editAuth(params) {
+  return request('/common/manager/edit-permission', {
+    method: 'POST',
+    body: params,
+    noToken: false
+  })
+}
+
+export async function removeAuthByName(params) {
+  return request('/common/manager/remove-permission', {
+    method: 'POST',
+    body: params,
+    noToken: false
+  })
+}
+
+export async function delEditorByUid(params) {
+  return request('/common/manager/remove-admin', {
+    method: 'POST',
+    body: params,
+    noToken: false
+  })
+}
+
+export async function administratorsList(params) {
+  return request('/common/manager/administrators', {
+    method: 'POST',
+    body: params,
+    noToken: false
+  })
+}
+
+export async function rolesList(params) {
+  return request('/common/manager/roles', {
+    method: 'POST',
+    body: params,
+    noToken: false
+  })
+}
+
+export async function editRoleByName(params) {
+  return request('/common/manager/edit-role', {
+    method: 'POST',
+    body: params,
+    noToken: false
+  })
+}
+
+export async function removeRoleByName(params) {
+  return request('/common/manager/remove-role', {
+    method: 'POST',
+    body: params,
+    noToken: false
+  })
+}
+
+export async function roleAssign(params) {
+  return request(`/common/manager/role-assign?name=${params.name}`, {
+    method: 'get',
+    noToken: false
+  })
+}
+
+export async function toDistributed(params) {
+  return request(`/common/manager/role-assign`, {
+    method: 'POST',
+    body: params,
+    noToken: false
   })
 }

@@ -1,0 +1,122 @@
+@import '~antd/lib/style/themes/default.less';
+@import '../../utils/utils.less';
+.standardList {
+  :global {
+    .ant-card-head {
+      border-bottom: none;
+    }
+    .ant-card-head-title {
+      line-height: 32px;
+      padding: 24px 0;
+    }
+    .ant-card-extra {
+      padding: 24px 0;
+    }
+    .ant-list-pagination {
+      text-align: right;
+      margin-top: 24px;
+    }
+    .ant-avatar-lg {
+      width: 48px;
+      height: 48px;
+      line-height: 48px;
+    }
+  }
+  .flexHeader {
+    display: flex;
+    // justify-content: space-between;
+  }
+  .listHeader {
+    display: flex;
+    font-size: 0;
+    width: 100%;
+    justify-content: space-between;
+    text-align: center;
+    .listContentItem {
+      color: @text-color-secondary;
+      display: inline-block;
+      vertical-align: middle;
+      font-size: @font-size-base;
+      // margin-left: 40px;
+      > span {
+        line-height: 20px;
+      }
+      &:first-child {
+        flex: 1;
+      }
+      &:nth-child(2) {
+        flex: 1;
+      }
+      &:nth-child(3) {
+        flex: 1;
+      }
+      &:nth-child(4) {
+        flex: 1;
+      }
+      &:nth-child(5) {
+        flex: 1;
+      }
+      &:nth-child(6) {
+        flex: 3;
+      }
+      > p {
+        margin-top: 4px;
+        margin-bottom: 0;
+        line-height: 22px;
+      }
+    }
+  }
+  .listContent {
+    display: flex;
+    font-size: 0;
+    width: 100%;
+    justify-content: space-between;
+    text-align: center;
+    align-items: center;
+    .listContentItem {
+      color: @text-color-secondary;
+      display: inline-block;
+      vertical-align: middle;
+      font-size: @font-size-base;
+      > span {
+        line-height: 20px;
+      }
+      &:first-child {
+        flex: 1;
+      }
+      &:nth-child(2) {
+        flex: 1;
+      }
+      &:nth-child(3) {
+        flex: 1;
+      }
+      &:nth-child(4) {
+        flex: 1;
+      }
+      &:nth-child(5) {
+        flex: 1;
+      }
+      &:nth-child(6) {
+        flex: 3;
+      }
+      > p {
+        margin-top: 4px;
+        margin-bottom: 0;
+        line-height: 22px;
+      }
+    }
+  }
+  .listBtn {
+    margin: 0 4px;
+  }
+  .tag {
+    font-size: 18px;
+  }
+  .ant-list-item-action {
+    text-align: center;
+  }
+  .operation {
+    flex: 1;
+    text-align: center;
+  }
+}

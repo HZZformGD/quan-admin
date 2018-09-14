@@ -37,7 +37,7 @@ export default {
     },
     *getList({ payload }, { call, put }) {
       const response = yield call(getDecorationList, payload);
-      console.info(response);
+      // console.info(response);
       if (response.code == 200) {
         const data = response.data;
         yield put({

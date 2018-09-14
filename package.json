@@ -30,6 +30,7 @@
     "dva": "^2.2.3",
     "dva-loading": "^2.0.3",
     "enquire-js": "^0.2.1",
+    "less": "^3.8.1",
     "lodash": "^4.17.10",
     "lodash-decorators": "^6.0.0",
     "moment": "^2.19.3",
@@ -86,11 +87,7 @@
     "puppeteer": "^1.4.0"
   },
   "lint-staged": {
-    "**/*.{js,jsx,less}": [
-      "prettier --write",
-      "git add"
-    ],
-    "**/*.{js,jsx}": "npm run lint-staged:js",
+    
     "**/*.less": "stylelint --syntax less"
   },
   "engines": {

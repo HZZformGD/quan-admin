@@ -87,7 +87,7 @@ export default class CardList extends PureComponent {
       if (err) {
         return;
       }
-      console.log(fieldsValue);
+      // console.log(fieldsValue);
       const postObj = {
         label_name: fieldsValue.labelName,
         label_desc: fieldsValue.describe,

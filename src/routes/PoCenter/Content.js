@@ -548,7 +548,8 @@ export default class CardList extends PureComponent {
         this.setState({
           page,
         });
-        this.getList(page);
+        document.body.scrollTop=0;
+        this.getList(page);   
       },
     };
     const formItemLayout = {
@@ -828,15 +829,15 @@ export default class CardList extends PureComponent {
             >
               {tag_list.list.length > 0
                 ? tag_list.list.map((element, index) => (
-                    <Radio
-                      className={styles.tagRadio}
-                      key={index}
-                      name={element.tag_name}
-                      value={element.tag_id}
-                    >
-                      {' '}
-                      {element.tag_name}
-                    </Radio>
+                  <Radio
+                    className={styles.tagRadio}
+                    key={index}
+                    name={element.tag_name}
+                    value={element.tag_id}
+                  >
+                    {' '}
+                    {element.tag_name}
+                  </Radio>
                   ))
                 : ''}
             </RadioGroup>

@@ -106,8 +106,9 @@ export const getRouterData = app => {
     '/po-center/post-list': {
       component: dynamicWrapper(app, ['poCenter/postList'], () =>
         import('../routes/PoCenter/PostList')
-      )
+      ),
     },
+
     '/mini-app/topic-reply-list': {
       component: dynamicWrapper(app, ['miniApp/topic', 'poCenter/decoration'], () =>
         import('../routes/miniApp/TopicList')
@@ -205,6 +206,19 @@ export const getRouterData = app => {
     },
     '/user/register-result': {
       component: dynamicWrapper(app, [], () => import('../routes/User/RegisterResult')),
+    },
+    '/po-center/category-manage': {
+      component: dynamicWrapper(app, ['poCenter/category'], () =>
+        import('../routes/PoCenter/Category')
+      ),
+    },
+    '/po-center/label-manage': {
+      component: dynamicWrapper(app, ['poCenter/label'], () => import('../routes/PoCenter/Label')),
+    },
+    '/po-center/po-manage': {
+      component: dynamicWrapper(app, ['poCenter/content'], () =>
+        import('../routes/PoCenter/Content')
+      ),
     },
     // '/user/:id': {
     //   component: dynamicWrapper(app, [], () => import('../routes/User/SomeComponent')),

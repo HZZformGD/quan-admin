@@ -28,7 +28,7 @@ export default {
   hash: true,
   proxy: {
     '/': {
-      target: 'http://ed-admin.dev.xizi.com',
+      target: 'http://10.10.60.198:5001',
       changeOrigin: true,
     },
   },

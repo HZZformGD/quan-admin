@@ -37,8 +37,8 @@ export default class CardList extends PureComponent {
   componentWillMount() {
     this.getList();
   }
+
   getList(page = 1) {
-    console.info('??');
     const { dispatch } = this.props;
     dispatch({
       type: 'decoration/getList',
@@ -54,6 +54,7 @@ export default class CardList extends PureComponent {
       type: 'global/fetchUploadToken',
     });
   }
+
   edit(e) {
     this.refreshUploadToken();
     this.setState({
@@ -75,6 +76,7 @@ export default class CardList extends PureComponent {
       notification: e.notification,
     });
   }
+
   create() {
     this.refreshUploadToken();
     this.setState({
@@ -89,6 +91,7 @@ export default class CardList extends PureComponent {
       remark: '',
     });
   }
+
   comfirm() {
     this.props.form.validateFields((err, fieldsValue) => {
       if (err) {
@@ -101,7 +104,7 @@ export default class CardList extends PureComponent {
         ...fieldsValue,
         'range-picker': [rangeValue[0].format('YYYY-MM-DD'), rangeValue[1].format('YYYY-MM-DD')],
       };
-      let cover = this.state.cover;
+      const cover = this.state.cover;
 
       this.props
         .dispatch({
@@ -137,8 +140,9 @@ export default class CardList extends PureComponent {
         });
     });
   }
+
   changeStatus(e) {
-    let { medal_id, status } = e;
+    const { medal_id, status } = e;
     this.props
       .dispatch({
         type: 'decoration/changeStatus',
@@ -156,6 +160,7 @@ export default class CardList extends PureComponent {
         message.error('更改失败');
       });
   }
+
   cancel(modalShow) {
     this.setState({
       id: 0,
@@ -169,18 +174,22 @@ export default class CardList extends PureComponent {
       remark: '',
     });
   }
+
   handleSubmit(e) {}
+
   handlePreview() {}
+
   handleChange(e) {
-    let { fileList, file } = e;
+    const { fileList, file } = e;
     let cover = '';
     if (fileList.length && file.status == 'done') {
       cover = fileList[0].response.base_url;
       fileList[0].url = fileList[0].response.full_url;
     }
 
-    this.setState({ fileList, cover: cover });
+    this.setState({ fileList, cover });
   }
+
   lengthCheck = (rule, value, callback) => {
     const form = this.props.form;
     if (value && value.length > 100) {
@@ -189,9 +198,10 @@ export default class CardList extends PureComponent {
       callback();
     }
   };
+
   render() {
-    let { list, total } = this.props.decoration;
-    let { uploadToken } = this.props;
+    const { list, total } = this.props.decoration;
+    const { uploadToken } = this.props;
     const { getFieldDecorator } = this.props.form;
     const { fileList, rangeTime, title, cover, remark, id, notification } = this.state;
     const formItemLayout = {
@@ -205,7 +215,7 @@ export default class CardList extends PureComponent {
       },
     };
 
-    let setRange = rangeTime.length
+    const setRange = rangeTime.length
       ? [moment(rangeTime[0], 'YYYY-MM-DD'), moment(rangeTime[1], 'YYYY-MM-DD')]
       : '';
 
@@ -238,7 +248,7 @@ export default class CardList extends PureComponent {
 
     const paginationProps = {
       pageSize: 9,
-      total: total,
+      total,
       onChange: page => {
         this.setState({
           currentPage: page,
@@ -292,7 +302,7 @@ export default class CardList extends PureComponent {
                   <div className={styles.details}>
                     <span className={styles.endTime}>到期时间：{item.deadline}</span>
                     <span className={styles.detailsLink}>
-                      <Link to={`/po-center/decoration-detail/` + item.medal_id}>详情></Link>
+                      <Link to={`/po-center/decoration-detail/${item.medal_id}`}>详情></Link>
                     </span>
                   </div>
                 </Card>
@@ -332,7 +342,7 @@ export default class CardList extends PureComponent {
               <FormItem {...formItemLayout} label="通知文案">
                 {getFieldDecorator('notification', notificationConfig)(
                   <TextArea
-                    autosize={true}
+                    autosize
                     className={styles.textArea}
                     placeholder="输入授权成功后的通知文案"
                   />

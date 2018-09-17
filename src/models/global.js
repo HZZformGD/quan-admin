@@ -1,4 +1,4 @@
-import { queryNotices, getToken } from '../services/api';
+import { queryNotices, getToken, getDomain } from '../services/api';
 
 export default {
   namespace: 'global',
@@ -6,7 +6,8 @@ export default {
   state: {
     collapsed: false,
     notices: [],
-    uploadToken: ''
+    uploadToken: '',
+    domain: '',
   },
 
   effects: {
@@ -33,13 +34,22 @@ export default {
       });
     },
     *fetchUploadToken(_, { call, put }) {
-      const response = yield call(getToken)
-      let uploadToken = response.data.upload_token
+      const response = yield call(getToken);
+      const uploadToken = response.data.upload_token;
       yield put({
         type: 'saveUploadToken',
-        payload: uploadToken
-      })
-    }
+        payload: uploadToken,
+      });
+    },
+    *fetchGetDomain(_, { call, put }) {
+      const response = yield call(getDomain);
+
+      const domain = response.data.domain;
+      yield put({
+        type: 'saveDomain',
+        payload: domain,
+      });
+    },
   },
 
   reducers: {
@@ -49,11 +59,12 @@ export default {
         collapsed: payload,
       };
     },
-    getUploadToken(state, {payload}) {
+    getUploadToken(state, { payload }) {
       return {
-        ...state
-      }
+        ...state,
+      };
     },
+
     saveNotices(state, { payload }) {
       return {
         ...state,
@@ -69,9 +80,15 @@ export default {
     saveUploadToken(state, action) {
       return {
         ...state,
-        uploadToken: action.payload
-      }
-    }
+        uploadToken: action.payload,
+      };
+    },
+    saveDomain(state, action) {
+      return {
+        ...state,
+        domain: action.payload,
+      };
+    },
   },
 
   subscriptions: {

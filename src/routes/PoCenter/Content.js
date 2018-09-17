@@ -562,6 +562,7 @@ export default class CardList extends PureComponent {
         sm: { span: 16, offset: 1 },
       },
     };
+
     const ListContent = ({ data, index }) => (
       <div className={styles.listContent}>
         <Button className={styles.checkBtn} onClick={() => this.secItem(index)}>
@@ -569,6 +570,7 @@ export default class CardList extends PureComponent {
         </Button>
         <div className={styles.listItem}>
           <div className={`${styles.headerItem} ${styles.flexBox}`}>
+            <img className={styles.userHead} src={data.head} />
             <p>{data.uname}</p>
             <Button
               onClick={() => {
@@ -577,6 +579,12 @@ export default class CardList extends PureComponent {
             >
               禁言
             </Button>
+            <p className={styles.tagName}>#{data.tag_name || '无'}</p>
+            {data.category_id.map((element, index) => (
+              categoryList.map((el, idx) => (
+                element==el.category_id?<Tag key={index} color="geekblue">{el.category_name}</Tag>:''
+              ))
+            ))}
           </div>
           <TextArea
             className={styles.contentBox}
@@ -595,7 +603,7 @@ export default class CardList extends PureComponent {
             <div className={styles.imgBox}>
               <div className={styles.imgChild}>
                 <img
-                  src="/closed.png"
+                  src="/admin/closed.png"
                   className={styles.closeBtn}
                   onClick={() =>
                     this.delImg(
@@ -625,7 +633,7 @@ export default class CardList extends PureComponent {
                     {element.url.indexOf('video') < 0 ? (
                       <div className={styles.imgChild}>
                         <img
-                          src="/closed.png"
+                          src="/admin/closed.png"
                           className={styles.closeBtn}
                           onClick={() =>
                             this.delImg(
@@ -651,7 +659,7 @@ export default class CardList extends PureComponent {
                         onClick={() => this.openView(this.props.domain + element.url, 'video')}
                       >
                         <video src={this.props.domain + element.url} />
-                        <img src="/play.png" className={styles.playBtn} />
+                        <img src="/admin/play.png" className={styles.playBtn} />
                       </div>
                     )}
                   </div>

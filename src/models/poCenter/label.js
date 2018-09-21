@@ -1,4 +1,4 @@
-import { getLabelList, addLabel, editLabel, delLabel, statusLabel } from '../../services/api';
+import { getLabelList, addLabel, editLabel, delLabel, statusLabel, statusRecommend,labelType } from '../../services/api';
 
 export default {
   namespace: 'label',
@@ -50,6 +50,14 @@ export default {
       const response = yield call(statusLabel, payload);
       return response;
     },
+    *statusRecommend({payload}, {call}) {
+      const response = yield call(statusRecommend, payload);
+      return response;
+    },
+    *labelType({payload}, {call}) {
+      const response = yield call(labelType, payload);
+      return response;
+    }
   },
 
   reducers: {

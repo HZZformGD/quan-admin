@@ -54,7 +54,7 @@ export default class CardList extends PureComponent {
     this.getList();
   }
 
-  getList(page = 1, SearchText = '', label_type = 0) {
+  getList(page = 1, SearchText = '') {
     console.info(this.state)
     const { dispatch } = this.props;
     dispatch({
@@ -64,7 +64,7 @@ export default class CardList extends PureComponent {
         label_name: SearchText,
         type_location: this.state.type_location,
         type_recommend: this.state.type_recommend,
-        label_type: label_type
+        label_type: this.state.label_type
       },
     });
     this.refreshUploadToken();
@@ -320,8 +320,7 @@ export default class CardList extends PureComponent {
     }
     this.setState({
       type_recommend: this.state.type_recommend,
-    });
-    type_recommend;
+    },() => this.getList());
   };
 
   screenLocation = e => {
@@ -332,8 +331,8 @@ export default class CardList extends PureComponent {
     }
     this.setState({
       type_location: this.state.type_location,
-    });
-    this.getList();
+    }, ()=> this.getList());
+
   };
 
   searchFun = val => {
@@ -372,8 +371,8 @@ export default class CardList extends PureComponent {
     console.info(e)
     this.setState({
       label_type: e,
-    });
-    this.getList(1,'',e)
+    },() =>  this.getList(1, ''));
+
   }
 
 

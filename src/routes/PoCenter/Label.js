@@ -14,6 +14,7 @@ import {
   List,
   Modal,
   Input,
+  Select,
 } from 'antd';
 import Ellipsis from 'components/Ellipsis';
 import GdMap from 'components/GdMap';
@@ -44,8 +45,9 @@ export default class CardList extends PureComponent {
     location_detail: '',
     describe: '',
     type_location: 0,
-    type_brand: 0,
+    type_recommend: 0,
     location_name: '',
+    label_type: 0
   };
 
   componentDidMount() {
@@ -53,6 +55,7 @@ export default class CardList extends PureComponent {
   }
 
   getList(page = 1, SearchText = '') {
+    console.info(this.state)
     const { dispatch } = this.props;
     dispatch({
       type: 'label/getList',
@@ -60,7 +63,8 @@ export default class CardList extends PureComponent {
         page,
         label_name: SearchText,
         type_location: this.state.type_location,
-        type_brand: this.state.type_brand,
+        type_recommend: this.state.type_recommend,
+        label_type: this.state.label_type
       },
     });
     this.refreshUploadToken();
@@ -228,6 +232,44 @@ export default class CardList extends PureComponent {
         }
       });
   }
+  //推荐
+  remcommend = (id, status) => {
+    status = status == '0' ? '1' : '0';
+    console.info(id, status)
+    this.props
+      .dispatch({
+        type: 'label/statusRecommend',
+        payload: { label_id: id, recommend:  status},
+      })
+      .then(res => {
+        if (res.code == 200) {
+          message.success(res.message);
+          this.getList();
+        } else {
+          message.error(res.message);
+        }
+      });
+  }
+
+  //切换普通和品牌
+  setLabel = (id, status) => {
+    status = status == '1' ? '2' : '1';
+    console.info(id, status)
+    this.props
+      .dispatch({
+        type: 'label/labelType',
+        payload: { label_id: id, type:  status},
+      })
+      .then(res => {
+        if (res.code == 200) {
+          message.success(res.message);
+          this.getList();
+        } else {
+          message.error(res.message);
+        }
+      });
+  }
+
 
   // 认证标签
   auth = id => {
@@ -272,14 +314,13 @@ export default class CardList extends PureComponent {
 
   screenBrand = e => {
     if (e.target.checked) {
-      this.state.type_brand = 1;
+      this.state.type_recommend = 1;
     } else {
-      this.state.type_brand = 0;
+      this.state.type_recommend = 0;
     }
     this.setState({
-      type_brand: this.state.type_brand,
-    });
-    this.getList();
+      type_recommend: this.state.type_recommend,
+    },() => this.getList());
   };
 
   screenLocation = e => {
@@ -290,8 +331,8 @@ export default class CardList extends PureComponent {
     }
     this.setState({
       type_location: this.state.type_location,
-    });
-    this.getList();
+    }, ()=> this.getList());
+
   };
 
   searchFun = val => {
@@ -326,6 +367,14 @@ export default class CardList extends PureComponent {
     }
     return isLt2M;
   };
+  typeChange = (e) => {
+    console.info(e)
+    this.setState({
+      label_type: e,
+    },() =>  this.getList(1, ''));
+
+  }
+
 
   render() {
     const { total, list, domain } = this.props.label;
@@ -404,6 +453,19 @@ export default class CardList extends PureComponent {
         <Button className={styles.listBtn} onClick={() => this.del(item.data.label_id)}>
           删除
         </Button>
+        <Button
+          className={styles.listBtn}
+          onClick={() => this.remcommend(item.data.label_id, item.data.is_recommend)}
+        >
+          {item.data.is_recommend == '0' ? '推荐' : '取消推荐'}
+        </Button>
+
+        <Button
+          className={styles.listBtn}
+          onClick={() => this.setLabel(item.data.label_id, item.data.label_type)}
+        >
+          {item.data.label_type == '1' ? '普通' : '品牌'}
+        </Button>
       </div>
     );
 
@@ -456,6 +518,18 @@ export default class CardList extends PureComponent {
       </div>
     );
 
+    const typeArr = [
+      {name: '全部标签', value: 0},
+      {name: '普通标签', value: 1},
+      {name: '品牌标签', value: 2},
+
+    ]
+
+    const selectBefore = (
+      <Select className={styles.beforeSearch} defaultValue="标签类型" onChange={this.typeChange} style={{ width: 120 }}>
+          {typeArr.map((item) => <Option value={item.value} key={item.name}>{item.name}</Option>)}
+      </Select>
+    );
     return (
       <PageHeaderLayout>
         <div className={styles.standardList}>
@@ -476,15 +550,16 @@ export default class CardList extends PureComponent {
             </Button>
             <div className={styles.menubox}>
               <Search
+                addonBefore={selectBefore}
                 className={styles.SearchBox}
                 placeholder="标签名字"
                 onSearch={this.searchFun}
                 enterButton
               />
-              <Checkbox onChange={this.screenBrand}>品牌标签</Checkbox>
-              <Checkbox onChange={this.screenLocation}>位置信息</Checkbox>
+              <Checkbox className={styles.check} onChange={this.screenBrand}>推荐标签</Checkbox>
+              <Checkbox className={styles.check} onChange={this.screenLocation}>位置信息</Checkbox>
               {/* <CheckboxGroup options={['', '']} value={this.state.screenList} style={{ margin: '15px 0' }}  /> */}
-              <p className={styles.totalnum}>标签总数：{total}</p>
+              <p className={styles.check} className={styles.totalnum}>标签总数：{total}</p>
             </div>
             <ListHeader />
             <List

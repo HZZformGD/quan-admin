@@ -13,6 +13,7 @@ import {
   poContetnEdit,
   delImg,
   setCover,
+  setLabel,
 } from '../../services/api';
 
 export default {
@@ -94,6 +95,10 @@ export default {
     },
     *setCover({ payload }, { call }) {
       const response = yield call(setCover, payload);
+      return response;
+    },
+    *setLabel({ payload }, { call }) {
+      const response = yield call(setLabel, payload);
       return response;
     },
     *resetList({ payload }, { call, put }) {

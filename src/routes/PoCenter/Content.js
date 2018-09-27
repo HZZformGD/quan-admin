@@ -33,9 +33,10 @@ const Confirm = Modal.confirm;
 
 const { TextArea } = Input;
 
-@connect(({ content, category, global = {} }) => ({
+@connect(({ content, category, label, global = {} }) => ({
   content,
   category,
+  label,
   domain: global.domain,
 }))
 @Form.create()
@@ -47,24 +48,30 @@ export default class CardList extends PureComponent {
     showCategoryList: false,
     showtopList: false,
     show_ShutUp: false,
+    showlabelList: false,
     defaultCategoryList: [],
+    defaultlabelList: [],
     checkID: [],
     sort: '',
     category_id: 'all',
+    prop:'all',
     tag: '',
     content_text: '',
     uname: '',
     uid: '',
     id: '',
     searchTagName: '',
+    searchLabelName: '',
     tag_id: '',
+    label_id: '',
     editContentText: '',
   };
 
   componentDidMount() {
-    this.getList();
     this.getCategory();
+    this.getLabel();
     this.getDomain();
+    this.getList();
   }
 
   getDomain() {
@@ -74,6 +81,19 @@ export default class CardList extends PureComponent {
     });
   }
 
+  getLabel(page = 1, searchLabelName = '') {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'label/getList',
+      payload: {
+        page,
+        size: 30,
+        label_name: searchLabelName,
+        type: 'content',
+      },
+    });
+    this.refreshUploadToken();
+  }
   getCategory() {
     const { dispatch } = this.props;
     dispatch({
@@ -89,15 +109,17 @@ export default class CardList extends PureComponent {
   getList(page = 1) {
     const { dispatch } = this.props;
     this.props.content.loading = true;
+    let { sort, category_id, uname, tag, content_text: content,prop } = this.state;
     dispatch({
       type: 'content/getList',
       payload: {
         page,
-        sort: this.state.sort,
-        category_id: this.state.category_id,
-        tag: this.state.tag,
-        content: this.state.content_text,
-        uname: this.state.uname,
+        sort,
+        category_id,
+        prop,
+        tag,
+        content,
+        uname
       },
     });
     this.refreshUploadToken();
@@ -116,12 +138,16 @@ export default class CardList extends PureComponent {
     this.refreshUploadToken();
   }
 
-  refreshUploadToken() {
+  refreshUploadToken = () => {
     this.props.dispatch({
       type: 'global/fetchUploadToken',
     });
   }
-
+  selectPropFun = e => {
+    this.setState({
+      prop: e,
+    });
+  };
   selectTypeFun = e => {
     this.setState({
       category_id: e,
@@ -135,30 +161,32 @@ export default class CardList extends PureComponent {
   };
 
   secItem = index => {
-    const list = this.props.content.list;
+    const { list } = this.props.content
+    let { checkID } = this.state
     list[index].ischeck = !list[index].ischeck;
     if (list[index].ischeck) {
-      this.state.checkID.push(list[index].id);
+      checkID.push(list[index].id);
     } else {
-      for (const i in this.state.checkID) {
-        if (this.state.checkID[i].id == list[index].id) {
-          this.state.checkID[i].splice(0, i);
+      for (const i in checkID) {
+        if (checkID[i].id == list[index].id) {
+          checkID[i].splice(0, i);
         }
       }
     }
     this.setState({
-      checkID: this.state.checkID,
+      checkID
     });
-    this.poReview(this.state.checkID);
+    // this.poReview(checkID);
     this.props.dispatch({
       type: 'content/resetList',
       payload: {
-        list: this.props.content.list,
+        list
       },
     });
   };
 
   poReview = list => {
+    // console.log(list)
     this.props
       .dispatch({
         type: 'content/poReview',
@@ -223,22 +251,25 @@ export default class CardList extends PureComponent {
     });
   };
 
-  batchReview = e => {
-    if (this.state.checkID.length == 0) {
+  batchReview = () => {
+    let { checkID } = this.state
+    if (checkID.length == 0) {
       message.error('未选中审核对象');
       return;
     }
-    this.poReview(this.state.checkID);
+    this.poReview(checkID);
     this.allselect();
   };
 
-  handleCancel = e => {
+  handleCancel = () => {
     this.setState({
       showCategoryList: false,
       showtopList: false,
       show_View: false,
       show_ShutUp: false,
+      showlabelList: false,
       defaultCategoryList: [],
+      defaultlabelList: []
     });
   };
 
@@ -263,15 +294,65 @@ export default class CardList extends PureComponent {
         }
       });
   };
-
+  submitLabel = () => {
+    this.props
+      .dispatch({
+        type: 'content/setLabel',
+        payload: {
+          post_id: this.state.id,
+          label_ids: this.state.defaultlabelList,
+        },
+      })
+      .then(res => {
+        if (res.code == 200) {
+          this.setState({
+            showlabelList: false,
+          });
+          message.success(res.message);
+          this.getList(this.state.page);
+        } else {
+          message.error(res.message);
+        }
+      });
+  };
+  delLabel = (label_id, list, post_id) => {
+    list.map((val, index) => {
+      if (label_id == val) {
+        list.splice(index, 1)
+      }
+    })
+    this.props
+      .dispatch({
+        type: 'content/setLabel',
+        payload: {
+          post_id: post_id,
+          label_ids: list,
+        },
+      })
+      .then(res => {
+        if (res.code == 200) {
+          this.setState({
+            showlabelList: false,
+          });
+          message.success(res.message);
+          this.getList(this.state.page);
+        } else {
+          message.error(res.message);
+        }
+      });
+  }
   searchTagList = e => {
-    console.log(e);
     this.setState({
       searchTagName: e,
     });
     this.getTagList(1, e);
   };
-
+  searchLabelList = e => {
+    this.setState({
+      searchLabelName: e,
+    });
+    this.getLabel(1, e);
+  };
   submitCategory = () => {
     this.props
       .dispatch({
@@ -293,13 +374,16 @@ export default class CardList extends PureComponent {
         }
       });
   };
-
   CategoryChange = e => {
     this.setState({
       defaultCategoryList: e,
     });
   };
-
+  LabelChange = e => {
+    this.setState({
+      defaultlabelList: e,
+    });
+  };
   getTag = e => {
     this.setState({
       tag: e.target.value,
@@ -324,12 +408,18 @@ export default class CardList extends PureComponent {
       tag_id: e.target.value,
     });
   };
-
+  // 选择
+  selectLabel = e => {
+    this.setState({
+      label_id: e.target.value,
+    });
+  };
   openCategory = data => {
+    let { id, category_id: defaultCategoryList } = data;
     this.setState({
       showCategoryList: true,
-      defaultCategoryList: data.category_id,
-      id: data.id,
+      defaultCategoryList,
+      id
     });
   };
 
@@ -344,7 +434,7 @@ export default class CardList extends PureComponent {
   del(id) {
     const _this = this;
     Confirm({
-      title: `删除会把该信息下全部内容置为空确定删除吗？`,
+      title: "删除会把该信息下全部内容置为空确定删除吗？",
       okText: '确认',
       cancelText: '取消',
       onOk() {
@@ -362,7 +452,7 @@ export default class CardList extends PureComponent {
             }
           });
       },
-      onCancel() {},
+      onCancel() { },
     });
   }
 
@@ -443,13 +533,14 @@ export default class CardList extends PureComponent {
   };
 
   setShut = () => {
+    let { uid, shut_content: reason, shut_day: days, page } = this.state;
     this.props
       .dispatch({
         type: 'content/poShutUp',
         payload: {
-          uid: this.state.uid,
-          reason: this.state.shut_content,
-          days: this.state.shut_day,
+          uid,
+          reason,
+          days
         },
       })
       .then(res => {
@@ -458,7 +549,7 @@ export default class CardList extends PureComponent {
             show_ShutUp: false,
           });
           message.success(res.message);
-          this.getList(this.state.page);
+          this.getList(page);
         } else {
           message.error(res.message);
         }
@@ -469,28 +560,16 @@ export default class CardList extends PureComponent {
     this.props.content.list[index].content = e.target.value;
   };
 
-  delImg = (id, delUrl, cover_img, urls) => {
-    for (const i in urls) {
-      if (delUrl.url == urls[i].url) {
-        urls = urls.splice(0, i);
-      }
-    }
-    if (delUrl.url == cover_img.url) {
-      if (urls.length == 0) {
-        cover_img = {};
-        urls = [];
-      } else {
-        cover_img = urls[0];
-      }
+  delImg = (e, lengt) => {
+    if (e.is_cover == 1 && lengt != 1) {
+      message.error('封面不能删除');
+      return;
     }
     this.props
       .dispatch({
         type: 'content/delImg',
         payload: {
-          post_id: id,
-          current_img: delUrl.url,
-          cover_img: JSON.stringify(cover_img),
-          url: JSON.stringify(urls),
+          aid: e.aid
         },
       })
       .then(res => {
@@ -503,13 +582,12 @@ export default class CardList extends PureComponent {
       });
   };
 
-  setCover = (id, cover_img) => {
+  setCover = (id) => {
     this.props
       .dispatch({
         type: 'content/setCover',
         payload: {
-          post_id: id,
-          cover_img: JSON.stringify(cover_img),
+          aid: id,
         },
       })
       .then(res => {
@@ -524,17 +602,22 @@ export default class CardList extends PureComponent {
 
   render() {
     const { total, list, loading, tag_list, xzapp_po_top_id } = this.props.content;
-    const categoryList = this.props.category.list;
-    const categoryCheckList = this.props.category.checkList;
+    const { list: categoryList } = this.props.category;
+    const { checkList: categoryCheckList } = this.props.category;
+    const { checkList: labelList, total: labelTotal } = this.props.label;
     const {
       ifselectAll,
       showtopList,
       showCategoryList,
       defaultCategoryList,
+      defaultlabelList,
+      showlabelList,
       tag,
       content_text,
       uname,
       category_id,
+      prop,
+      page
     } = this.state;
     const { getFieldDecorator } = this.props.form;
     const Option = Select.Option;
@@ -548,8 +631,8 @@ export default class CardList extends PureComponent {
         this.setState({
           page,
         });
-        document.body.scrollTop=0;
-        this.getList(page);   
+        document.body.scrollTop = 0;
+        this.getList(page);
       },
     };
     const formItemLayout = {
@@ -564,7 +647,7 @@ export default class CardList extends PureComponent {
     };
 
     const ListContent = ({ data, index }) => (
-      <div className={styles.listContent}>
+      data.id != xzapp_po_top_id || page == 1 ? <div className={styles.listContent}>
         <Button className={styles.checkBtn} onClick={() => this.secItem(index)}>
           <Checkbox className={styles.check} checked={data.ischeck} />
         </Button>
@@ -579,12 +662,19 @@ export default class CardList extends PureComponent {
             >
               禁言
             </Button>
-            <p className={styles.tagName}>#{data.tag_name || '无'}</p>
-            {data.category_id.map((element, index) => (
+            <p className={styles.tagName} onClick={() => {
+              this.setState({
+                showtopList: true,
+                id: data.id,
+                tag_name: data.tag_name,
+                tag_id: data.tag_id,
+              }, () => this.getTagList());
+            }}>#{data.tag_name || '选择话题'}</p>
+            {data.category_id.length != 0 ? data.category_id.map((element, index) => (
               categoryList.map((el, idx) => (
-                element==el.category_id?<Tag key={index} color="geekblue">{el.category_name}</Tag>:''
+                element == el.category_id ? <Tag key={index} color="geekblue" onClick={() => this.openCategory(data)}>{el.category_name}</Tag> : ''
               ))
-            ))}
+            )) : <Tag color="geekblue" onClick={() => this.openCategory(data)}>选择分类</Tag>}
           </div>
           <TextArea
             className={styles.contentBox}
@@ -599,36 +689,18 @@ export default class CardList extends PureComponent {
             <p>点赞数：{data.praise_count}</p>
             <p>评论数：{data.reply_num}</p>
           </div>
+          <div className={styles.labelBox}>
+            {data.label_id.map((element, index) => (
+              labelList.map((el, idx) => (
+                element == el.value ? <Tag key={index} color="geekblue" closable afterClose={() => this.delLabel(element, data.label_id, data.id)}>{el.label}</Tag> : ''
+              ))
+            ))}
+            <Tag color="geekblue" onClick={() => { this.setState({ showlabelList: true, id: data.id }) }}>选择分类</Tag>
+          </div>
           <div className={styles.imgList}>
-            <div className={styles.imgBox}>
-              <div className={styles.imgChild}>
-                <img
-                  src="/admin/closed.png"
-                  className={styles.closeBtn}
-                  onClick={() =>
-                    this.delImg(
-                      data.id,
-                      JSON.parse(data.cover_img),
-                      JSON.parse(data.cover_img),
-                      JSON.parse(data.url)
-                    )
-                  }
-                />
-                <img
-                  src={this.props.domain + JSON.parse(data.cover_img).url}
-                  onClick={() =>
-                    this.openView(this.props.domain + JSON.parse(data.cover_img).url, 'img')
-                  }
-                />
-                <div className={styles.bottomBox}>
-                  <Icon style={{ fontSize: '18px' }} type="picture" theme="outlined" />
-                  <p>封面图</p>
-                </div>
-              </div>
-            </div>
-            {JSON.parse(data.url).map(
+            {data.cover_img != '[]' && data.cover_img ? data.cover_img.map(
               (element, index) =>
-                JSON.parse(data.cover_img).url != element.url ? (
+                element.is_cover == 1 ? (
                   <div className={styles.imgBox} key={index}>
                     {element.url.indexOf('video') < 0 ? (
                       <div className={styles.imgChild}>
@@ -637,10 +709,8 @@ export default class CardList extends PureComponent {
                           className={styles.closeBtn}
                           onClick={() =>
                             this.delImg(
-                              data.id,
                               element,
-                              JSON.parse(data.cover_img),
-                              JSON.parse(data.url)
+                              data.cover_img.length
                             )
                           }
                         />
@@ -650,26 +720,64 @@ export default class CardList extends PureComponent {
                         />
                         <div className={styles.bottomBox}>
                           <Icon style={{ fontSize: '18px' }} type="picture" theme="outlined" />
-                          <p onClick={() => this.setCover(data.id, element)}>设为封面图</p>
+                          <p>封面图</p>
                         </div>
                       </div>
                     ) : (
-                      <div
-                        className={styles.videoBox}
-                        onClick={() => this.openView(this.props.domain + element.url, 'video')}
-                      >
-                        <video src={this.props.domain + element.url} />
-                        <img src="/admin/play.png" className={styles.playBtn} />
-                      </div>
-                    )}
+                        <div
+                          className={styles.videoBox}
+                          onClick={() => this.openView(this.props.domain + element.url, 'video')}
+                        >
+                          <video src={this.props.domain + element.url} />
+                          <img src="/admin/play.png" className={styles.playBtn} />
+                        </div>
+                      )}
                   </div>
                 ) : (
-                  ''
-                )
-            )}
+                    ''
+                  )
+            ) : ''}
+            {data.cover_img != '[]' && data.cover_img ? data.cover_img.map(
+              (element, index) =>
+                element.is_cover != 1 ? (
+                  <div className={styles.imgBox} key={index}>
+                    {element.type == 1 ? (
+                      <div className={styles.imgChild}>
+                        <img
+                          src="/admin/closed.png"
+                          className={styles.closeBtn}
+                          onClick={() =>
+                            this.delImg(
+                              element,
+                            )
+                          }
+                        />
+                        <img
+                          src={this.props.domain + element.url}
+                          onClick={() => this.openView(this.props.domain + element.url, 'img')}
+                        />
+                        <div className={styles.bottomBox}>
+                          <Icon style={{ fontSize: '18px' }} type="picture" theme="outlined" />
+                          <p onClick={() => this.setCover(element.aid, )}>设为封面图</p>
+                        </div>
+                      </div>
+                    ) : (
+                        <div
+                          className={styles.videoBox}
+                          onClick={() => this.openView(this.props.domain + element.url, 'video')}
+                        >
+                          <video src={this.props.domain + element.url} />
+                          <img src="/admin/play.png" className={styles.playBtn} />
+                        </div>
+                      )}
+                  </div>
+                ) : (
+                    ''
+                  )
+            ) : ''}
           </div>
           <div className={styles.btnBox}>
-            <Button onClick={() => this.poReview(data)}>
+            <Button onClick={() => this.poReview(data)} disabled={data.ifcheck == '0' ? false : true}>
               {data.ifcheck == '1' ? '已审核' : data.ifcheck == '0' ? '审核' : ''}
             </Button>
             <Button
@@ -684,29 +792,28 @@ export default class CardList extends PureComponent {
             >
               {xzapp_po_top_id == data.id ? '取消置顶' : '置顶'}
             </Button>
-            <Button onClick={() => this.openCategory(data)}>分类</Button>
-            <Button
-              onClick={() => {
-                this.setState({
-                  showtopList: true,
-                  id: data.id,
-                  tag_name: data.tag_name,
-                  tag_id: data.tag_id,
-                });
-                this.getTagList();
-              }}
-            >
-              话题
-            </Button>
             <Button onClick={() => this.randPraise(data)}>随机点赞</Button>
             <Button type="danger" onClick={() => this.del(data.id)}>
               删除
             </Button>
           </div>
         </div>
-      </div>
+      </div> : ''
     );
     const OptionList = () => (
+      <Select
+        defaultValue="all"
+        value={prop}
+        style={{ width: 120 }}
+        onChange={this.selectPropFun}
+        className={styles.searchItem}
+      >
+        <Option value="all">全部</Option>
+        <Option value="hot">热门</Option>
+        <Option value="video">视频</Option>
+      </Select>
+    );
+    const Options = () => (
       <Select
         defaultValue="all"
         value={category_id}
@@ -714,7 +821,7 @@ export default class CardList extends PureComponent {
         onChange={this.selectTypeFun}
         className={styles.searchItem}
       >
-        <Option value="all">全部</Option>
+        <Option value="all">分类</Option>
         {categoryList.map((element, index) => (
           <Option key={index} value={element.category_id}>
             {' '}
@@ -722,7 +829,7 @@ export default class CardList extends PureComponent {
           </Option>
         ))}
       </Select>
-    );
+    )
     return (
       <PageHeaderLayout>
         <div className={styles.standardList}>
@@ -731,10 +838,11 @@ export default class CardList extends PureComponent {
             bordered={false}
             style={{ marginTop: 24 }}
             bodyStyle={{ padding: '0 32px 40px 32px' }}
-            // extra={extraContent}
+          // extra={extraContent}
           >
             <Form className={styles.searchBox}>
               <OptionList />
+              <Options />
               <FormItem className={styles.searchItem}>
                 <Input addonBefore="话题名称" onChange={this.getTag} placeholder="请输入话题名称" />
               </FormItem>
@@ -846,7 +954,7 @@ export default class CardList extends PureComponent {
                     {' '}
                     {element.tag_name}
                   </Radio>
-                  ))
+                ))
                 : ''}
             </RadioGroup>
           </div>
@@ -856,6 +964,68 @@ export default class CardList extends PureComponent {
               this.getTagList(page);
             }}
             total={tag_list.total}
+          />
+        </Modal>
+        <Modal
+          title="标签"
+          visible={showlabelList}
+          destroyOnClose
+          footer={[
+            <Button key="back" onClick={() => this.handleCancel(false)}>
+              取消
+            </Button>,
+            <Button key="submit" type="primary" onClick={() => this.submitLabel()}>
+              确定
+            </Button>,
+          ]}
+          onCancel={() => this.handleCancel(false)}
+        >
+          <div>
+            <Search
+              className={styles.SearchBox}
+              placeholder="标签名字"
+              onSearch={this.searchLabelList}
+              enterButton
+              style={{ marginBottom: '20px' }}
+            />
+          </div>
+          {/* <div>
+            <p>当前关联的话题：{this.state.tag_name}</p>
+          </div> */}
+          <div>
+            <Form>
+              <FormItem>
+                {getFieldDecorator('defaultlabelList', { initialValue: defaultlabelList })(
+                  <CheckboxGroup options={labelList} onChange={this.LabelChange} />
+                )}
+              </FormItem>
+            </Form>
+            {/* <RadioGroup
+              className={styles.tagRadioBox}
+              onChange={this.selectLabel}
+              defaultValue={this.state.label_id}
+            >
+              {labelList.length > 0
+                ? labelList.map((element, index) => (
+                  <Radio
+                    className={styles.tagRadio}
+                    key={index}
+                    name={element.label_name}
+                    value={element.label_id}
+                  >
+                    {' '}
+                    {element.label_name}
+                  </Radio>
+                ))
+                : ''}
+            </RadioGroup> */}
+          </div>
+          <Pagination
+            pageSize={30}
+            onChange={page => {
+              this.getLabel(page);
+            }}
+            total={labelTotal}
           />
         </Modal>
         <Modal
@@ -872,8 +1042,8 @@ export default class CardList extends PureComponent {
           {this.state.viewType == 'img' ? (
             <img className={styles.viewBox} src={this.state.viewSrc} />
           ) : (
-            <video className={styles.viewBox} src={this.state.viewSrc} controls="controls" />
-          )}
+              <video className={styles.viewBox} src={this.state.viewSrc} controls="controls" />
+            )}
         </Modal>
         <Modal
           title="禁言"

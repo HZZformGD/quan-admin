@@ -29,8 +29,12 @@ export default {
           data.list[i].order = order;
         }
       }
+      let type = 'queryList';
+      if (payload.type == 'content') {
+        type = 'ContentLabel';
+      }
       yield put({
-        type: 'queryList',
+        type: type,
         payload: data,
       });
     },
@@ -68,6 +72,21 @@ export default {
         total: Number(action.payload.total),
         domain: action.payload.domain,
       };
+    },
+    ContentLabel(state, action) {
+      const checkList = [];
+      action.payload.list.map(val => {
+        checkList.push({
+          value: val.label_id,
+          label: val.label_name,
+        });
+      });
+      const obj = {
+        list: action.payload.list,
+        checkList,
+        total: Number(action.payload.total),
+      };
+      return obj;
     },
   },
 };

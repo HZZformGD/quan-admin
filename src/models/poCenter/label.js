@@ -1,4 +1,4 @@
-import { getLabelList, addLabel, editLabel, delLabel, statusLabel } from '../../services/api';
+import { getLabelList, addLabel, editLabel, delLabel, statusLabel, statusRecommend,labelType } from '../../services/api';
 
 export default {
   namespace: 'label',
@@ -29,8 +29,12 @@ export default {
           data.list[i].order = order;
         }
       }
+      let type = 'queryList';
+      if (payload.type == 'content') {
+        type = 'ContentLabel';
+      }
       yield put({
-        type: 'queryList',
+        type: type,
         payload: data,
       });
     },
@@ -50,6 +54,14 @@ export default {
       const response = yield call(statusLabel, payload);
       return response;
     },
+    *statusRecommend({payload}, {call}) {
+      const response = yield call(statusRecommend, payload);
+      return response;
+    },
+    *labelType({payload}, {call}) {
+      const response = yield call(labelType, payload);
+      return response;
+    }
   },
 
   reducers: {
@@ -60,6 +72,21 @@ export default {
         total: Number(action.payload.total),
         domain: action.payload.domain,
       };
+    },
+    ContentLabel(state, action) {
+      const checkList = [];
+      action.payload.list.map(val => {
+        checkList.push({
+          value: val.label_id,
+          label: val.label_name,
+        });
+      });
+      const obj = {
+        list: action.payload.list,
+        checkList,
+        total: Number(action.payload.total),
+      };
+      return obj;
     },
   },
 };

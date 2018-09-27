@@ -14,6 +14,7 @@ import {
   List,
   Modal,
   Input,
+  Select,
 } from 'antd';
 import Ellipsis from 'components/Ellipsis';
 import GdMap from 'components/GdMap';
@@ -40,12 +41,17 @@ export default class CardList extends PureComponent {
     order: '',
     labelName: '',
     fileList: [],
+    fileList1: [],
+    label_icon:'',
+    label_cover:'',
     position: {},
     location_detail: '',
+    pois:[],
     describe: '',
     type_location: 0,
-    type_brand: 0,
+    type_recommend: 0,
     location_name: '',
+    label_type: 0
   };
 
   componentDidMount() {
@@ -54,13 +60,15 @@ export default class CardList extends PureComponent {
 
   getList(page = 1, SearchText = '') {
     const { dispatch } = this.props;
+    let { type_location, type_brand } = this.state
     dispatch({
       type: 'label/getList',
       payload: {
         page,
+        size: 10,
         label_name: SearchText,
-        type_location: this.state.type_location,
-        type_brand: this.state.type_brand,
+        type_location,
+        type_brand
       },
     });
     this.refreshUploadToken();
@@ -86,17 +94,28 @@ export default class CardList extends PureComponent {
     this.props.form.validateFields((err, fieldsValue) => {
       if (err) {
         return;
-      }
+      } 
       // console.log(fieldsValue);
+      let { label_cover, label_icon } = this.state;
+      console.log()
+      if(label_icon=='' || label_cover==''){
+        message.error('logo图片或背景图片不能为空')
+        return ;
+      }
+      let { name: label_name, describe: label_desc, location_name, location_detail, position: { latitude, longitude } } = fieldsValue
       const postObj = {
-        label_name: fieldsValue.labelName,
-        label_desc: fieldsValue.describe,
-        label_cover: _this.state.label_cover,
-        location_name: fieldsValue.location_name,
-        location_detail: fieldsValue.location_detail,
-        latitude: fieldsValue.position.latitude,
-        longitude: fieldsValue.position.longitude,
+        label_name,
+        label_desc,
+        label_cover,
+        label_icon,
+        location_name,
+        label_desc,
+        location_detail,
+        latitude,
+        longitude,
+        source: 3,
       };
+
       let url = 'label/addLabel';
       if (fieldsValue.id) {
         postObj.label_id = fieldsValue.id;
@@ -113,6 +132,7 @@ export default class CardList extends PureComponent {
               show_addLabel: false,
             });
             message.success(res.message);
+            this.handleCancel();
             this.getList();
           } else {
             message.error(res.message);
@@ -120,33 +140,6 @@ export default class CardList extends PureComponent {
         });
     });
   };
-  // //添加标签
-  // submitLabel = (e) => {
-  //     this.props.form.validateFields((err, fieldsValue) => {
-  //         if (err) {
-  //             return;
-  //         }
-  //         this.props.dispatch({
-  //             type: 'topic/addTopic',
-  //             payload: {
-  //                 id: fieldsValue.id,
-  //                 title: fieldsValue.topic,
-  //                 remark: fieldsValue.remark,
-  //                 path: fieldsValue.path,
-  //             }
-  //         }).then((res) => {
-  //             if (res.code == 200) {
-  //                 this.setState({
-  //                     modalVisiale: false
-  //                 })
-  //                 message.success(res.message)
-  //                 this.getList()
-  //             } else {
-  //                 message.error(res.message)
-  //             }
-  //         })
-  //     })
-  // }
 
   handleChange(e) {
     const { fileList, file } = e;
@@ -158,6 +151,16 @@ export default class CardList extends PureComponent {
 
     this.setState({ fileList, label_cover });
   }
+  handleChange1(e) {
+    const { fileList: fileList1, file } = e;
+    let label_icon = '';
+    if (fileList1.length && file.status == 'done') {
+      label_icon = fileList1[0].response.base_url;
+      fileList1[0].url = fileList1[0].response.full_url;
+    }
+
+    this.setState({ fileList1, label_icon });
+  }
 
   // 关闭弹窗
   handleCancel = e => {
@@ -166,11 +169,13 @@ export default class CardList extends PureComponent {
       labelName: '',
       describe: '',
       label_cover: '',
+      label_icon: '',
       location_name: '',
       id: '',
       location_detail: '',
       position: {},
       fileList: [],
+      fileList1: []
     });
   };
 
@@ -182,24 +187,34 @@ export default class CardList extends PureComponent {
 
   // 编辑标签
   edit(e) {
-    const data = e.data;
+
+    let { data: { label_name: labelName, label_desc: describe, label_cover, label_icon, location_name, label_id: id, location_detail, longitude, latitude } } = e;
     const obj = {
       uid: '-1',
       status: 'done',
-      url: this.props.label.domain + data.label_cover,
+      url: this.props.label.domain + label_cover,
     };
+    const icon_obj = {
+      uid: '-1',
+      status: 'done',
+      url: this.props.label.domain + label_icon,
+    }
     const fileList = [obj];
+    const fileList1 = [icon_obj]
     this.setState({
       show_addLabel: true,
       addTitle: '修改标签',
-      labelName: data.label_name,
-      describe: data.label_desc,
-      label_cover: data.label_cover,
+      labelName,
+      describe,
+      label_cover,
+      label_icon,
       fileList,
-      location_name: data.location_name,
-      id: data.label_id,
-      location_detail: data.location_detail,
-      position: { longitude: data.longitude, latitude: data.latitude },
+      fileList1,
+      location_name,
+      id,
+      location_detail,
+      position: { longitude, latitude },
+      poi_list: []
     });
   }
 
@@ -228,6 +243,44 @@ export default class CardList extends PureComponent {
         }
       });
   }
+  //推荐
+  remcommend = (id, status) => {
+    status = status == '0' ? '1' : '0';
+    console.info(id, status)
+    this.props
+      .dispatch({
+        type: 'label/statusRecommend',
+        payload: { label_id: id, recommend: status },
+      })
+      .then(res => {
+        if (res.code == 200) {
+          message.success(res.message);
+          this.getList();
+        } else {
+          message.error(res.message);
+        }
+      });
+  }
+
+  //切换普通和品牌
+  setLabel = (id, status) => {
+    status = status == '1' ? '2' : '1';
+    console.info(id, status)
+    this.props
+      .dispatch({
+        type: 'label/labelType',
+        payload: { label_id: id, type: status },
+      })
+      .then(res => {
+        if (res.code == 200) {
+          message.success(res.message);
+          this.getList();
+        } else {
+          message.error(res.message);
+        }
+      });
+  }
+
 
   // 认证标签
   auth = id => {
@@ -240,7 +293,7 @@ export default class CardList extends PureComponent {
           setTimeout(Math.random() > 0.5 ? resolve : reject, 1000);
         }).catch(() => console.log('Oops errors!'));
       },
-      onCancel() {},
+      onCancel() { },
     });
   };
 
@@ -266,72 +319,101 @@ export default class CardList extends PureComponent {
             }
           });
       },
-      onCancel() {},
+      onCancel() { },
     });
   }
 
   screenBrand = e => {
+    let { type_brand } = this.state;
     if (e.target.checked) {
-      this.state.type_brand = 1;
+      type_brand = 1;
     } else {
-      this.state.type_brand = 0;
+      type_brand = 0;
     }
     this.setState({
-      type_brand: this.state.type_brand,
-    });
-    this.getList();
+      type_brand
+    }, () => this.getList());
+
   };
 
   screenLocation = e => {
+    let { type_location } = this.state;
     if (e.target.checked) {
-      this.state.type_location = 1;
+      type_location = 1;
     } else {
-      this.state.type_location = 0;
+      type_location = 0;
     }
     this.setState({
-      type_location: this.state.type_location,
-    });
-    this.getList();
+      type_location
+    }, () => this.getList())
+      ;
   };
 
   searchFun = val => {
     // console.log(val)
     this.getList(1, val);
   };
-
+  selectPosition = (val)=>{
+    let index = val.target.value;
+    let obj = this.state.pois[index];
+    const position = {
+      longitude: obj.location.lng,
+      latitude: obj.location.lat,
+    };
+    this.setState({
+      location_name:obj.name,
+      location_detail:obj.address,
+      position
+    })
+    this.refs.Amap.setPosition(position)
+  }
   addAddress = () => {
     this.setState({
       show_map: true,
     });
   };
 
-  setAddress = (address, position) => {
+  setAddress = (res, position) => {
     this.setState({
-      location_detail: address,
+      location_detail: res.formattedAddress,
       position,
     });
   };
-
+  getPois=(pois)=>{
+    this.setState({
+      pois,
+    })
+  }
   delAddress = () => {
     this.setState({
       location_detail: '',
       position: {},
+      location_name:'',
     });
   };
 
   beforeUpload = file => {
-    const isLt2M = file.size / 1024 / 1024 < 4;
-    if (!isLt2M) {
+    const isLt4M = file.size / 1024 / 1024 < 4;
+    if (!isLt4M) {
       message.error('图片上传不能超过4M！');
     }
-    return isLt2M;
+    return isLt4M;
   };
+  typeChange = (e) => {
+    console.info(e)
+    this.setState({
+      label_type: e,
+    }, () => this.getList(1, ''));
+
+  }
+
 
   render() {
     const { total, list, domain } = this.props.label;
     const { uploadToken } = this.props;
     const {
       fileList,
+      fileList1,
       order,
       id,
       labelName,
@@ -379,6 +461,7 @@ export default class CardList extends PureComponent {
           <span className={styles.listContentItem}>序号</span>
           <span className={styles.listContentItem}>标签名称</span>
           <span className={styles.listContentItem}>LOGO</span>
+          <span className={styles.listContentItem}>背景图</span>
           <span className={styles.listContentItem}>标签描述</span>
           <span className={styles.listContentItem}>位置</span>
           {/* <span className={styles.listContentItem}>是否认证</span> */}
@@ -404,6 +487,19 @@ export default class CardList extends PureComponent {
         <Button className={styles.listBtn} onClick={() => this.del(item.data.label_id)}>
           删除
         </Button>
+        <Button
+          className={styles.listBtn}
+          onClick={() => this.remcommend(item.data.label_id, item.data.is_recommend)}
+        >
+          {item.data.is_recommend == '0' ? '推荐' : '取消推荐'}
+        </Button>
+
+        <Button
+          className={styles.listBtn}
+          onClick={() => this.setLabel(item.data.label_id, item.data.label_type)}
+        >
+          {item.data.label_type == '1' ? '普通' : '品牌'}
+        </Button>
       </div>
     );
 
@@ -416,11 +512,18 @@ export default class CardList extends PureComponent {
           <p lines={2}>{data.label_name}</p>
         </div>
         <div className={styles.listContentItem}>
+          {data.label_icon ? (
+            <img src={domain + data.label_icon} className={styles.logoUrl} />
+          ) : (
+              '无'
+            )}
+        </div>
+        <div className={styles.listContentItem}>
           {data.label_cover ? (
             <img src={domain + data.label_cover} className={styles.logoUrl} />
           ) : (
-            '无'
-          )}
+              '无'
+            )}
         </div>
         <div className={styles.listContentItem}>
           <Tooltip title={data.label_desc}>
@@ -456,6 +559,18 @@ export default class CardList extends PureComponent {
       </div>
     );
 
+    const typeArr = [
+      { name: '全部标签', value: 0 },
+      { name: '普通标签', value: 1 },
+      { name: '品牌标签', value: 2 },
+
+    ]
+
+    const selectBefore = (
+      <Select className={styles.beforeSearch} defaultValue="标签类型" onChange={this.typeChange} style={{ width: 120 }}>
+        {typeArr.map((item) => <Option value={item.value} key={item.name}>{item.name}</Option>)}
+      </Select>
+    );
     return (
       <PageHeaderLayout>
         <div className={styles.standardList}>
@@ -476,15 +591,16 @@ export default class CardList extends PureComponent {
             </Button>
             <div className={styles.menubox}>
               <Search
+                addonBefore={selectBefore}
                 className={styles.SearchBox}
                 placeholder="标签名字"
                 onSearch={this.searchFun}
                 enterButton
               />
-              <Checkbox onChange={this.screenBrand}>品牌标签</Checkbox>
-              <Checkbox onChange={this.screenLocation}>位置信息</Checkbox>
+              <Checkbox className={styles.check} onChange={this.screenBrand}>推荐标签</Checkbox>
+              <Checkbox className={styles.check} onChange={this.screenLocation}>位置信息</Checkbox>
               {/* <CheckboxGroup options={['', '']} value={this.state.screenList} style={{ margin: '15px 0' }}  /> */}
-              <p className={styles.totalnum}>标签总数：{total}</p>
+              <p className={styles.check} className={styles.totalnum}>标签总数：{total}</p>
             </div>
             <ListHeader />
             <List
@@ -503,41 +619,48 @@ export default class CardList extends PureComponent {
         <Modal
           title={this.state.addTitle}
           visible={this.state.show_addLabel}
+          destroyOnClose
           zIndex="1"
           footer={[
-            <Button key="back" onClick={() => this.handleCancel(false)}>
+            <Button key="back" onClick={() => this.handleCancel()}>
               取消
             </Button>,
             <Button key="submit" type="primary" onClick={() => this.submitCategory()}>
               确定
             </Button>,
           ]}
-          onCancel={() => this.handleCancel(false)}
+          onCancel={() => this.handleCancel()}
         >
           <Form>
             {this.state.addTitle == '添加标签' ? (
               ''
             ) : (
-              <FormItem className={styles.hidden}>
-                {getFieldDecorator('id', FormCheck.idConfig, { initialValue: id })(<Input />)}
-              </FormItem>
-            )}
+                <FormItem className={styles.hidden}>
+                  {getFieldDecorator('id', FormCheck.idConfig, { initialValue: id })(<Input />)}
+                </FormItem>
+              )}
             <FormItem className={styles.margin_Bottom} {...formItemLayout} label="标签名称">
-              {getFieldDecorator('labelName', FormCheck.labelNameConfig, {
-                initialValue: labelName,
-              })(<Input placeholder="请输入标签名称" />)}
+              {getFieldDecorator('name', FormCheck.labelNameConfig)(<Input placeholder="请输入标签名称" />)}
             </FormItem>
             <FormItem className={styles.margin_Bottom} {...formItemLayout} label="标签描述">
               {getFieldDecorator('describe', { initialValue: describe })(
                 <Input placeholder="请输入标签描述，可不填" />
               )}
             </FormItem>
-            <FormItem className={styles.margin_Bottom} {...formItemLayout} label="地址简介">
-              {getFieldDecorator('location_name', { initialValue: location_name })(
-                <Input placeholder="请输入地址简介，可不填" />
-              )}
-            </FormItem>
             <FormItem className={styles.margin_Bottom} {...formItemLayout} label="logo图片">
+              <Upload
+                action="http://upload.qiniup.com"
+                listType="picture-card"
+                fileList={fileList1}
+                onPreview={this.handlePreview}
+                onChange={this.handleChange1.bind(this)}
+                data={{ token: uploadToken }}
+                beforeUpload={this.beforeUpload1}
+              >
+                {fileList1.length >= 1 ? null : uploadButton}
+              </Upload>
+            </FormItem>
+            <FormItem className={styles.margin_Bottom} {...formItemLayout} label="背景图片">
               <Upload
                 action="http://upload.qiniup.com"
                 listType="picture-card"
@@ -549,6 +672,11 @@ export default class CardList extends PureComponent {
               >
                 {fileList.length >= 1 ? null : uploadButton}
               </Upload>
+            </FormItem>
+            <FormItem className={styles.margin_Bottom} {...formItemLayout} label="地址简介">
+              {getFieldDecorator('location_name', { initialValue: location_name })(
+                <Input disabled />
+              )}
             </FormItem>
             <FormItem className={styles.margin_Bottom} label="标签位置">
               {getFieldDecorator('location_detail', { initialValue: location_detail })(
@@ -562,31 +690,6 @@ export default class CardList extends PureComponent {
             </FormItem>
           </Form>
         </Modal>
-        {/* 关联分类弹窗 */}
-        {/* <Modal
-                    title='关联分类'
-                    visible={this.state.show_addLabel}
-                    footer={[
-                        <Button key="back" onClick={() => this.handleCancel(false)}>取消</Button>,
-                        <Button key="submit" type="primary" onClick={() => this.submitLabel()}>确定添加</Button>,]}
-                    onCancel={() => this.handleCancel(false)}
-                >
-                    <Form>
-                        <FormItem
-                            className={styles.hidden}
-                        >
-                            {getFieldDecorator('id', FormCheck.idConfig)(
-                                <Input />
-                            )}
-                        </FormItem>
-                        <FormItem
-                            label="分类名称"
-                        >
-                            <CheckboxGroup options={category_list} value={this.state.checkedList} onChange={this.checkBoxChange} />
-                        </FormItem>
-                    </Form>
-
-                </Modal> */}
         <Modal
           title="选择位置"
           visible={this.state.show_map}
@@ -602,12 +705,38 @@ export default class CardList extends PureComponent {
           ]}
           onCancel={() => this.mapCancel(false)}
         >
-          <p />
-          <div style={{ width: '100%', height: 360 }}>
+          <Search
+            placeholder="搜索地址"
+            onSearch={value => this.refs.Amap.searchPoi(value)}
+            enterButton
+          />
+          <div style={{margin:'20px 0'}}>
+          <RadioGroup
+              className={styles.tagRadioBox}
+              onChange={this.selectPosition}
+            >
+              {this.state.pois.length > 0
+                ? this.state.pois.map((element, index) => (
+                  <Radio
+                    className={styles.tagRadio}
+                    key={index}
+                    name={element.name}
+                    value={index}
+                  >
+                    {' '}
+                    {element.name}
+                  </Radio>
+                ))
+                : ''}
+            </RadioGroup>
+          </div>
+          <div style={{ width: '100%', height: 360,margin_top:'20px' }}>
             <GdMap
+              ref='Amap'
               position={this.state.position}
               amapkey={Amapkey}
               setFun={this.setAddress.bind(this)}
+              getPois={this.getPois.bind(this)}
             />
           </div>
         </Modal>

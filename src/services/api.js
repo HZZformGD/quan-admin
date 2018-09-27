@@ -310,9 +310,9 @@ export async function statusCategory(params) {
 }
 export async function getLabelList(params) {
   return request(
-    `/poadmin/label/label-list?page=${params.page}&label_name=${params.label_name}&type_location=${
+    `/poadmin/label/label-list?page=${params.page}&size=${params.size}&label_name=${params.label_name}&type_location=${
       params.type_location
-    }&type_brand=${params.type_brand}`,
+    }&type_recommend=${params.type_recommend}&label_type=${params.label_type}`,
     {}
   );
 }
@@ -328,6 +328,20 @@ export async function statusLabel(params) {
     body: params,
   });
 }
+export async function statusRecommend(params) {
+  return request('/poadmin/label/label-recommend', {
+    method: 'POST',
+    body: params,
+  });
+}
+export async function labelType(params) {
+  return request('/poadmin/label/label-type', {
+    method: 'POST',
+    body: params,
+  });
+}
+
+
 export async function editLabel(params) {
   return request('/poadmin/label/label-edit', {
     method: 'POST',
@@ -345,7 +359,7 @@ export async function getPoList(params) {
     params.category_id = '';
   }
   return request(
-    `/poadmin/po/po-list?page=${params.page}&sort=${params.sort}&category_id=${
+    `/poadmin/po/po-list?page=${params.page}&sort=${params.sort}&prop=${params.prop}&category_id=${
       params.category_id
     }&tag=${params.tag}&content=${params.content}&uname=${params.uname}`,
     {}
@@ -420,6 +434,12 @@ export async function delImg(params) {
 }
 export async function setCover(params) {
   return request('/poadmin/po/set-cover', {
+    method: 'POST',
+    body: params,
+  });
+}
+export async function setLabel(params) {
+  return request('/poadmin/po/set-label', {
     method: 'POST',
     body: params,
   });

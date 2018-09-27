@@ -156,14 +156,14 @@ export default class CardList extends PureComponent {
 
   // 编辑分类
   edit(e) {
-    const data = e.data;
+    let {data:{category_id:id,category_name:categoryName,category_sort:order,show_style:form}} = e;
     this.setState({
       show_a_e_Category: true,
       addTitle: '修改分类',
-      id: data.category_id,
-      categoryName: data.category_name,
-      order: data.category_sort,
-      form: data.show_style,
+      id,
+      categoryName,
+      order,
+      form,
     });
   }
 

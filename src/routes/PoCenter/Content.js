@@ -599,7 +599,6 @@ export default class CardList extends PureComponent {
         }
       });
   };
-
   render() {
     const { total, list, loading, tag_list, xzapp_po_top_id } = this.props.content;
     const { list: categoryList } = this.props.category;
@@ -687,7 +686,7 @@ export default class CardList extends PureComponent {
             <Button onClick={() => this.editContent(index)}>{data.isedit ? '编辑' : '完成'}</Button>
             <p>收藏数：{data.collect_count}</p>
             <p>点赞数：{data.praise_count}</p>
-            <p>评论数：{data.reply_num}</p>
+            <p style={{cursor:'pointer'}}><Link to={`/po-center/comment-list/${data.id}`}>评论数：{data.reply_num}</Link></p>
           </div>
           <div className={styles.labelBox}>
             {data.label_id.map((element, index) => (

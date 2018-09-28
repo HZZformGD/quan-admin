@@ -450,3 +450,15 @@ export async function getPoTag(params) {
     {}
   );
 }
+export async function getCommentList(params) {
+  return request(
+    `/poadmin/po/get-comment?page=${params.page}&size=${params.size}&post_id=${params.post_id}`,
+    {}
+  );
+}
+export async function forbidComment(params) {
+  return request('/poadmin/po/forbid-comment', {
+    method: 'POST',
+    body: params,
+  });
+}

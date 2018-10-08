@@ -43,6 +43,7 @@ const { TextArea } = Input;
 export default class CardList extends PureComponent {
   state = {
     page: 1,
+    current:1,
     list: this.props.content.list,
     ifselectAll: false,
     showCategoryList: false,
@@ -184,14 +185,19 @@ export default class CardList extends PureComponent {
       },
     });
   };
-
-  poReview = list => {
+  SingleReview= (data)=>{
+    let list = [];
+    list.push(data.id)
+    this.poReview(list,data.ifcheck==1?0:1)
+  }
+  poReview = (list,ifcheck = 1) => {
     // console.log(list)
     this.props
       .dispatch({
         type: 'content/poReview',
         payload: {
           post_ids: list,
+          ifcheck:ifcheck
         },
       })
       .then(res => {
@@ -599,6 +605,10 @@ export default class CardList extends PureComponent {
         }
       });
   };
+  searchFun=()=>{
+    this.getList();
+    this.setState({current:1})
+  }
   render() {
     const { total, list, loading, tag_list, xzapp_po_top_id } = this.props.content;
     const { list: categoryList } = this.props.category;
@@ -616,7 +626,8 @@ export default class CardList extends PureComponent {
       uname,
       category_id,
       prop,
-      page
+      page,
+      current
     } = this.state;
     const { getFieldDecorator } = this.props.form;
     const Option = Select.Option;
@@ -626,9 +637,11 @@ export default class CardList extends PureComponent {
     const paginationProps = {
       pageSize: 10,
       total,
+      current:current,
       onChange: page => {
         this.setState({
           page,
+          current:page
         });
         document.body.scrollTop = 0;
         this.getList(page);
@@ -694,7 +707,7 @@ export default class CardList extends PureComponent {
                 element == el.value ? <Tag key={index} color="geekblue" closable afterClose={() => this.delLabel(element, data.label_id, data.id)}>{el.label}</Tag> : ''
               ))
             ))}
-            <Tag color="geekblue" onClick={() => { this.setState({ showlabelList: true, id: data.id }) }}>选择分类</Tag>
+            {/* <Tag color="geekblue" onClick={() => { this.setState({ showlabelList: true, id: data.id }) }}>选择分类</Tag> */}
           </div>
           <div className={styles.imgList}>
             {data.cover_img != '[]' && data.cover_img ? data.cover_img.map(
@@ -776,8 +789,8 @@ export default class CardList extends PureComponent {
             ) : ''}
           </div>
           <div className={styles.btnBox}>
-            <Button onClick={() => this.poReview(data)} disabled={data.ifcheck == '0' ? false : true}>
-              {data.ifcheck == '1' ? '已审核' : data.ifcheck == '0' ? '审核' : ''}
+            <Button onClick={() => this.SingleReview(data)} >
+              {data.ifcheck == '1' ? '取消审核' : data.ifcheck == '0' ? '未审核' : ''}
             </Button>
             <Button
               type={data.type_id == '1' ? 'danger' : 'primary'}
@@ -851,7 +864,7 @@ export default class CardList extends PureComponent {
               <FormItem className={styles.searchItem}>
                 <Input addonBefore="用户名" onChange={this.getUname} placeholder="请输入用户名" />
               </FormItem>
-              <Button type="primary" onClick={() => this.getList()} className={styles.searchItem}>
+              <Button type="primary" onClick={() => this.searchFun()} className={styles.searchItem}>
                 搜索
               </Button>
               <p className={styles.searchItem}>共{total}篇内容</p>
@@ -860,7 +873,7 @@ export default class CardList extends PureComponent {
               <Button type="primary" className={styles.searchItem} onClick={() => this.allselect()}>
                 {ifselectAll ? '取消全选' : '全选'}
               </Button>
-              <Button type="primary" className={styles.searchItem} onClick={() => this.batchReview}>
+              <Button type="primary" className={styles.searchItem} onClick={() => this.batchReview()}>
                 批量审核
               </Button>
               <Select

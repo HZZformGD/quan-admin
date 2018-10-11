@@ -99,11 +99,6 @@ export default class CardList extends PureComponent {
       } 
       // console.log(fieldsValue);
       let { label_cover, label_icon } = this.state;
-      console.log()
-      if(label_icon=='' || label_cover==''){
-        message.error('logo图片或背景图片不能为空')
-        return ;
-      }
       let { name: label_name, describe: label_desc, location_name, location_detail, position: { latitude, longitude } } = fieldsValue
       const postObj = {
         label_name,

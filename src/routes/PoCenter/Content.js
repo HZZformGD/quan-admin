@@ -707,7 +707,7 @@ export default class CardList extends PureComponent {
                 element == el.value ? <Tag key={index} color="geekblue" closable afterClose={() => this.delLabel(element, data.label_id, data.id)}>{el.label}</Tag> : ''
               ))
             ))}
-            {/* <Tag color="geekblue" onClick={() => { this.setState({ showlabelList: true, id: data.id }) }}>选择分类</Tag> */}
+            <Tag color="geekblue" onClick={() => { this.setState({ showlabelList: true, id: data.id }) }}>选择标签</Tag>
           </div>
           <div className={styles.imgList}>
             {data.cover_img != '[]' && data.cover_img ? data.cover_img.map(

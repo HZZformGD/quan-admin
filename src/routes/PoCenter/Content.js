@@ -322,9 +322,11 @@ export default class CardList extends PureComponent {
       });
   };
   delLabel = (label_id, list, post_id) => {
+    var ids =[]
     list.map((val, index) => {
-      if (label_id == val) {
-        list.splice(index, 1)
+      if (label_id != val) {
+        ids.push(val.label_id)
+        // list.splice(index, 1)
       }
     })
     this.props
@@ -332,7 +334,7 @@ export default class CardList extends PureComponent {
         type: 'content/setLabel',
         payload: {
           post_id: post_id,
-          label_ids: list,
+          label_ids: ids,
         },
       })
       .then(res => {
@@ -703,9 +705,7 @@ export default class CardList extends PureComponent {
           </div>
           <div className={styles.labelBox}>
             {data.label_id.map((element, index) => (
-              labelList.map((el, idx) => (
-                element == el.value ? <Tag key={index} color="geekblue" closable afterClose={() => this.delLabel(element, data.label_id, data.id)}>{el.label}</Tag> : ''
-              ))
+                <Tag key={index} color="geekblue" closable afterClose={() => this.delLabel(element, data.label_id, data.id)}>{element.label_name}</Tag>
             ))}
             <Tag color="geekblue" onClick={() => { this.setState({ showlabelList: true, id: data.id }) }}>选择标签</Tag>
           </div>

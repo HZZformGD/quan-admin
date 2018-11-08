@@ -51,7 +51,7 @@ export default class CardList extends PureComponent {
 
   refreshUploadToken() {
     this.props.dispatch({
-      type: 'global/fetchUploadToken',
+      type: 'global/fetchOriginToken',
     });
   }
 

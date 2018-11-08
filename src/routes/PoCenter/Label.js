@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-
+import { Link } from 'dva/router';
 import {
   message,
   Card,
@@ -15,6 +15,8 @@ import {
   Modal,
   Input,
   Select,
+  Menu,
+  Dropdown
 } from 'antd';
 import Ellipsis from 'components/Ellipsis';
 import GdMap from 'components/GdMap';
@@ -42,16 +44,19 @@ export default class CardList extends PureComponent {
     labelName: '',
     fileList: [],
     fileList1: [],
-    label_icon:'',
-    label_cover:'',
+    label_icon: '',
+    label_cover: '',
     position: {},
     location_detail: '',
-    pois:[],
+    pois: [],
     describe: '',
     type_location: 0,
     type_recommend: 0,
+    type_Top: 0,
+    type_Goods: 0,
     location_name: '',
-    label_type: 0
+    label_type: 0,
+    label_sort: "",
   };
 
   componentDidMount() {
@@ -59,18 +64,21 @@ export default class CardList extends PureComponent {
   }
 
   getList(page = 1, SearchText = '') {
-    console.info(this.state)
+    // console.info(this.state)
     const { dispatch } = this.props;
-    let { type_location, type_brand } = this.state
+    let { type_location, type_brand, label_type, type_top, type_Goods, type_recommend, label_sort } = this.state
     dispatch({
       type: 'label/getList',
       payload: {
         page,
         size: 10,
         label_name: SearchText,
-        type_location: this.state.type_location,
-        type_recommend: this.state.type_recommend,
-        label_type: this.state.label_type
+        type_location: type_location,
+        type_goods: type_Goods,
+        type_top: type_top,
+        type_recommend: type_recommend,
+        label_type: label_type,
+        label_sort: label_sort
       },
     });
     this.refreshUploadToken();
@@ -96,7 +104,7 @@ export default class CardList extends PureComponent {
     this.props.form.validateFields((err, fieldsValue) => {
       if (err) {
         return;
-      } 
+      }
       // console.log(fieldsValue);
       let { label_cover, label_icon } = this.state;
       let { name: label_name, describe: label_desc, location_name, location_detail, position: { latitude, longitude } } = fieldsValue
@@ -243,11 +251,11 @@ export default class CardList extends PureComponent {
   //推荐
   remcommend = (id, status) => {
     status = status == '0' ? '1' : '0';
-    console.info(id, status)
+    // console.info(id, status)
     this.props
       .dispatch({
         type: 'label/statusRecommend',
-        payload: { label_id: id, recommend:  status},
+        payload: { label_id: id, recommend: status },
       })
       .then(res => {
         if (res.code == 200) {
@@ -262,11 +270,11 @@ export default class CardList extends PureComponent {
   //切换普通和品牌
   setLabel = (id, status) => {
     status = status == '1' ? '2' : '1';
-    console.info(id, status)
+    // console.info(id, status)
     this.props
       .dispatch({
         type: 'label/labelType',
-        payload: { label_id: id, type:  status},
+        payload: { label_id: id, type: status },
       })
       .then(res => {
         if (res.code == 200) {
@@ -277,7 +285,24 @@ export default class CardList extends PureComponent {
         }
       });
   }
-
+  //切换排行
+  setTop = (id, status) => {
+    status = status == '0' ? '1' : '0';
+    // console.info(id, status)
+    this.props
+      .dispatch({
+        type: 'label/labelRank',
+        payload: { label_id: id, status: status },
+      })
+      .then(res => {
+        if (res.code == 200) {
+          message.success(res.message);
+          this.getList();
+        } else {
+          message.error(res.message);
+        }
+      });
+  }
 
   // 认证标签
   auth = id => {
@@ -319,7 +344,28 @@ export default class CardList extends PureComponent {
       onCancel() { },
     });
   }
-
+  screenTop = e => {
+    let { type_top } = this.state;
+    if (e.target.checked) {
+      type_top = 1;
+    } else {
+      type_top = 0;
+    }
+    this.setState({
+      type_top: type_top,
+    }, () => this.getList());
+  }
+  screenGoods = e => {
+    let { type_Goods } = this.state;
+    if (e.target.checked) {
+      type_Goods = 1;
+    } else {
+      type_Goods = 0;
+    }
+    this.setState({
+      type_Goods: type_Goods,
+    }, () => this.getList());
+  }
   screenBrand = e => {
     let { type_brand } = this.state;
     if (e.target.checked) {
@@ -329,7 +375,7 @@ export default class CardList extends PureComponent {
     }
     this.setState({
       type_recommend: this.state.type_recommend,
-    },() => this.getList());
+    }, () => this.getList());
   };
 
   screenLocation = e => {
@@ -349,7 +395,7 @@ export default class CardList extends PureComponent {
     // console.log(val)
     this.getList(1, val);
   };
-  selectPosition = (val)=>{
+  selectPosition = (val) => {
     let index = val.target.value;
     let obj = this.state.pois[index];
     const position = {
@@ -357,8 +403,8 @@ export default class CardList extends PureComponent {
       latitude: obj.location.lat,
     };
     this.setState({
-      location_name:obj.name,
-      location_detail:obj.address,
+      location_name: obj.name,
+      location_detail: obj.address,
       position
     })
     this.refs.Amap.setPosition(position)
@@ -375,7 +421,7 @@ export default class CardList extends PureComponent {
       position,
     });
   };
-  getPois=(pois)=>{
+  getPois = (pois) => {
     this.setState({
       pois,
     })
@@ -384,7 +430,7 @@ export default class CardList extends PureComponent {
     this.setState({
       location_detail: '',
       position: {},
-      location_name:'',
+      location_name: '',
     });
   };
 
@@ -399,10 +445,14 @@ export default class CardList extends PureComponent {
     console.info(e)
     this.setState({
       label_type: e,
-    },() =>  this.getList(1, ''));
+    }, () => this.getList(1, ''));
 
   }
-
+  getList_sort = e => {
+    this.setState({
+      label_sort: e,
+    }, () => this.getList(1, ''));
+  }
 
   render() {
     const { total, list, domain } = this.props.label;
@@ -417,6 +467,7 @@ export default class CardList extends PureComponent {
       position,
       describe,
       location_name,
+      label_sort
     } = this.state;
 
     const { getFieldDecorator } = this.props.form;
@@ -457,6 +508,7 @@ export default class CardList extends PureComponent {
           <span className={styles.listContentItem}>序号</span>
           <span className={styles.listContentItem}>标签名称</span>
           <span className={styles.listContentItem}>LOGO</span>
+          <span className={styles.listContentItem}>使用次数<Icon type="up" style={{ color: label_sort == 'asc' ? '#1890ff' : '', cursor: 'pointer' }} onClick={() => this.getList_sort('asc')} /><Icon style={{ color: label_sort == 'desc' ? '#1890ff' : '', cursor: 'pointer' }} onClick={() => this.getList_sort('desc')} type="down" /></span>
           <span className={styles.listContentItem}>背景图</span>
           <span className={styles.listContentItem}>标签描述</span>
           <span className={styles.listContentItem}>位置</span>
@@ -465,37 +517,57 @@ export default class CardList extends PureComponent {
         </div>
       </div>
     );
-
     const OperationBtn = item => (
       <div className={styles.listContentItem}>
+        <Link className={styles.goodsLink} to={{ pathname: '/po-center/goods-manage', query: { id: item.data.label_id, name: item.data.label_name } }}>商品{item.data.goodsNum == "0" ? '' : `(${item.data.goodsNum})`}</Link>
         <Button className={styles.listBtn} onClick={() => this.edit(item)}>
           编辑
         </Button>
         {/* <Button className={styles.listBtn} onClick={() => this.auth(item.id)}>认证</Button> */}
         {/* <Button className={styles.listBtn} onClick={() => this.addLabel(item)}>关联分类</Button> */}
-        <Button
-          type={item.data.status == '0' ? 'danger' : 'primary'}
-          className={styles.listBtn}
-          onClick={() => this.downline(item.data.label_id, item.data.status)}
-        >
-          {item.data.status == '0' ? '上线' : '下线'}
-        </Button>
-        <Button className={styles.listBtn} onClick={() => this.del(item.data.label_id)}>
-          删除
-        </Button>
-        <Button
-          className={styles.listBtn}
-          onClick={() => this.remcommend(item.data.label_id, item.data.is_recommend)}
-        >
-          {item.data.is_recommend == '0' ? '推荐' : '取消推荐'}
-        </Button>
 
-        <Button
-          className={styles.listBtn}
-          onClick={() => this.setLabel(item.data.label_id, item.data.label_type)}
-        >
-          {item.data.label_type == '1' ? '普通' : '品牌'}
-        </Button>
+        <Dropdown trigger={['click']} overlay={<Menu style={{textAlign:'center'}}>
+          <Menu.Item>
+            <Button
+              className={styles.listBtn}
+              onClick={() => this.remcommend(item.data.label_id, item.data.is_recommend)}
+            >
+              {item.data.is_recommend == '0' ? '推荐' : '取消推荐'}
+            </Button>
+          </Menu.Item>
+          <Menu.Item>
+            <Button
+              type={item.data.status == '0' ? 'danger' : 'primary'}
+              className={styles.listBtn}
+              onClick={() => this.downline(item.data.label_id, item.data.status)}
+            >
+              {item.data.status == '0' ? '上线' : '下线'}
+            </Button>
+          </Menu.Item>
+          <Menu.Item>
+            <Button className={styles.listBtn} onClick={() => this.del(item.data.label_id)}>
+              删除
+    </Button>
+          </Menu.Item>
+          <Menu.Item>
+            <Button
+              className={styles.listBtn}
+              onClick={() => this.setLabel(item.data.label_id, item.data.label_type)}
+            >
+              {item.data.label_type == '1' ? '普通' : '品牌'}
+            </Button>
+          </Menu.Item>
+          <Menu.Item>
+            <Button
+              className={styles.listBtn}
+              onClick={() => this.setTop(item.data.label_id, item.data.isRank)}
+            >
+              {item.data.isRank == '0' ? '排行榜' : '取消排行'}
+            </Button>
+          </Menu.Item>
+        </Menu>} placement="bottomCenter">
+          <Button>更多</Button>
+        </Dropdown>
       </div>
     );
 
@@ -513,6 +585,9 @@ export default class CardList extends PureComponent {
           ) : (
               '无'
             )}
+        </div>
+        <div className={styles.listContentItem}>
+          {data.label_use_count}
         </div>
         <div className={styles.listContentItem}>
           {data.label_cover ? (
@@ -556,15 +631,15 @@ export default class CardList extends PureComponent {
     );
 
     const typeArr = [
-      {name: '全部标签', value: 0},
-      {name: '普通标签', value: 1},
-      {name: '品牌标签', value: 2},
+      { name: '全部标签', value: 0 },
+      { name: '普通标签', value: 1 },
+      { name: '品牌标签', value: 2 },
 
     ]
 
     const selectBefore = (
       <Select className={styles.beforeSearch} defaultValue="标签类型" onChange={this.typeChange} style={{ width: 120 }}>
-          {typeArr.map((item) => <Option value={item.value} key={item.name}>{item.name}</Option>)}
+        {typeArr.map((item) => <Option value={item.value} key={item.name}>{item.name}</Option>)}
       </Select>
     );
     return (
@@ -593,6 +668,8 @@ export default class CardList extends PureComponent {
                 onSearch={this.searchFun}
                 enterButton
               />
+              <Checkbox className={styles.check} onChange={this.screenTop}>排行榜</Checkbox>
+              <Checkbox className={styles.check} onChange={this.screenGoods}>商品标签</Checkbox>
               <Checkbox className={styles.check} onChange={this.screenBrand}>推荐标签</Checkbox>
               <Checkbox className={styles.check} onChange={this.screenLocation}>位置信息</Checkbox>
               {/* <CheckboxGroup options={['', '']} value={this.state.screenList} style={{ margin: '15px 0' }}  /> */}
@@ -706,8 +783,8 @@ export default class CardList extends PureComponent {
             onSearch={value => this.refs.Amap.searchPoi(value)}
             enterButton
           />
-          <div style={{margin:'20px 0'}}>
-          <RadioGroup
+          <div style={{ margin: '20px 0' }}>
+            <RadioGroup
               className={styles.tagRadioBox}
               onChange={this.selectPosition}
             >
@@ -726,7 +803,7 @@ export default class CardList extends PureComponent {
                 : ''}
             </RadioGroup>
           </div>
-          <div style={{ width: '100%', height: 360,margin_top:'20px' }}>
+          <div style={{ width: '100%', height: 360, margin_top: '20px' }}>
             <GdMap
               ref='Amap'
               position={this.state.position}

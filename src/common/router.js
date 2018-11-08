@@ -225,6 +225,21 @@ export const getRouterData = app => {
         import('../routes/PoCenter/Comment')
       ),
     },
+    '/po-center/goods-manage': {
+      component: dynamicWrapper(app, ['poCenter/goods'], () =>
+        import('../routes/PoCenter/Goods')
+      ),
+    },
+    '/po-center/comment-report': {
+      component: dynamicWrapper(app, ['poCenter/report'], () =>
+        import('../routes/PoCenter/Report')
+      ),
+    },
+    '/po-center/flow-advert': {
+      component: dynamicWrapper(app, ['poCenter/advert'], () =>
+        import('../routes/PoCenter/Advert')
+      ),
+    },
     // '/user/:id': {
     //   component: dynamicWrapper(app, [], () => import('../routes/User/SomeComponent')),
     // },

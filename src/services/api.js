@@ -110,6 +110,14 @@ export async function getToken(params) {
   });
 }
 
+export async function getOriginToken(params) {
+  return request('/common/upload/origin-upload-token', {
+    method: 'POST',
+    body: params,
+    noToken: false,
+  });
+}
+
 export async function getDomain(params) {
   return request('/common/upload/get-domain', {
     body: params,
@@ -312,7 +320,7 @@ export async function getLabelList(params) {
   return request(
     `/poadmin/label/label-list?page=${params.page}&size=${params.size}&label_name=${params.label_name}&type_location=${
       params.type_location
-    }&type_recommend=${params.type_recommend}&label_type=${params.label_type}`,
+    }&type_recommend=${params.type_recommend}&label_type=${params.label_type}&type_goods=${params.type_goods}&type_top=${params.type_top}&label_sort=${params.label_sort}`,
     {}
   );
 }
@@ -444,6 +452,12 @@ export async function setLabel(params) {
     body: params,
   });
 }
+export async function labelRank(params) {
+  return request('/poadmin/label/label-rank', {
+    method: 'POST',
+    body: params,
+  });
+}
 export async function getPoTag(params) {
   return request(
     `/poadmin/po/tag-list?page=${params.page}&size=${params.size}&tag_name=${params.tag_name}`,
@@ -458,6 +472,66 @@ export async function getCommentList(params) {
 }
 export async function forbidComment(params) {
   return request('/poadmin/po/forbid-comment', {
+    method: 'POST',
+    body: params,
+  });
+}
+export async function addGoods(params) {
+  return request('/poadmin/goods/goods-add', {
+    method: 'POST',
+    body: params,
+  });
+}
+export async function editGoods(params) {
+  return request('/poadmin/goods/goods-edit', {
+    method: 'POST',
+    body: params,
+  });
+}
+export async function statusGoods(params) {
+  return request('/poadmin/goods/goods-status', {
+    method: 'POST',
+    body: params,
+  });
+}
+export async function getGoodsList(params) {
+  return request(
+    `/poadmin/goods/goods-list?page=${params.page}&size=${params.size}&post_id=${params.label_id}&label_name=${params.label_name}`,
+    {}
+  );
+}
+export async function getReportsList(params) {
+  return request(
+    `/poadmin/report/report-list?page=${params.page}&size=${params.size}`,
+    {}
+  );
+}
+export async function statusReport(params) {
+  return request('/poadmin/report/report-status', {
+    method: 'POST',
+    body: params,
+  });
+}
+export async function getAdvertList(params) {
+  return request(
+    `/poadmin/ad/ad-list?page=${params.page}&size=${params.size}`,
+    {}
+  );
+}
+export async function addAdvert(params) {
+  return request('/poadmin/ad/ad-add', {
+    method: 'POST',
+    body: params,
+  });
+}
+export async function editAdvert(params) {
+  return request('/poadmin/ad/ad-edit', {
+    method: 'POST',
+    body: params,
+  });
+}
+export async function statusAdvert(params) {
+  return request('/poadmin/ad/ad-status', {
     method: 'POST',
     body: params,
   });

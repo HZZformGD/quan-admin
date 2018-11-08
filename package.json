@@ -87,7 +87,6 @@
     "puppeteer": "^1.4.0"
   },
   "lint-staged": {
-    
     "**/*.less": "stylelint --syntax less"
   },
   "engines": {

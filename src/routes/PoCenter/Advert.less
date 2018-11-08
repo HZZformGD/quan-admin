@@ -21,32 +21,10 @@
       height: 48px;
       line-height: 48px;
     }
-    .ant-form-item {
-      margin-bottom: 0;
-    }
-  }
-  .menubox {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 10px 0 15px;
-    .SearchBox {
-      width: 30%;
-    }
-    .totalnum {
-      display: inline-block;
-      font-size: 18px;
-      margin: 0;
-    }
-    .check{
-      width: 300px;
-    }
-    .beforeSearch{
-      width: 100px;
-    }
   }
   .flexHeader {
-    display: flex; // justify-content: space-between;
+    display: flex;
+    // justify-content: space-between;
   }
   .listHeader {
     display: flex;
@@ -58,12 +36,13 @@
       color: @text-color-secondary;
       display: inline-block;
       vertical-align: middle;
-      font-size: @font-size-base; // margin-left: 40px;
+      font-size: @font-size-base;
+      // margin-left: 40px;
       > span {
         line-height: 20px;
       }
       &:first-child {
-        flex: 1;
+        flex: 2;
       }
       &:nth-child(2) {
         flex: 1;
@@ -78,13 +57,7 @@
         flex: 1;
       }
       &:nth-child(6) {
-        flex: 1;
-      }
-      &:nth-child(7) {
-        flex: 1;
-      }
-      &:last-child {
-        flex: 2.5;
+        flex: 2;
       }
       > p {
         margin-top: 4px;
@@ -100,17 +73,6 @@
     justify-content: space-between;
     text-align: center;
     align-items: center;
-    .goodsLink{
-      background: #fff;
-      border: 1px solid #ccc;
-      padding: 0 15px;
-      font-size: 14px;
-      border-radius: 4px;
-      height: 32px;
-      display: inline-block;
-      line-height: 32px;
-      color:rgba(0, 0, 0, 0.65),
-    }
     .listContentItem {
       color: @text-color-secondary;
       display: inline-block;
@@ -120,7 +82,7 @@
         line-height: 20px;
       }
       &:first-child {
-        flex: 1;
+        flex: 2;
       }
       &:nth-child(2) {
         flex: 1;
@@ -135,13 +97,7 @@
         flex: 1;
       }
       &:nth-child(6) {
-        flex: 1;
-      }
-      &:nth-child(7) {
-        flex: 1;
-      }
-      &:last-child {
-        flex: 2.5;
+        flex: 2;
       }
       > p {
         margin-top: 4px;
@@ -150,12 +106,15 @@
       }
     }
     .logoUrl {
-      width: 64px;
-      height: 64px;
-    }
+        width: 64px;
+        height: 64px;
+      }
   }
   .listBtn {
     margin: 0 4px;
+  }
+  .tag {
+    font-size: 18px;
   }
   .ant-list-item-action {
     text-align: center;
@@ -165,7 +124,3 @@
     text-align: center;
   }
 }
-.margin_Bottom {
-  margin-bottom: 10px;
-}
-

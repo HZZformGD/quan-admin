@@ -1,4 +1,4 @@
-import { queryNotices, getToken, getDomain } from '../services/api';
+import { queryNotices, getToken,getOriginToken, getDomain } from '../services/api';
 
 export default {
   namespace: 'global',
@@ -35,6 +35,14 @@ export default {
     },
     *fetchUploadToken(_, { call, put }) {
       const response = yield call(getToken);
+      const uploadToken = response.data.upload_token;
+      yield put({
+        type: 'saveUploadToken',
+        payload: uploadToken,
+      });
+    },
+    *fetchOriginToken(_, { call, put }) {
+      const response = yield call(getOriginToken);
       const uploadToken = response.data.upload_token;
       yield put({
         type: 'saveUploadToken',

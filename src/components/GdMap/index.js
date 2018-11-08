@@ -27,9 +27,13 @@ export default class GdMap extends PureComponent {
   searchPoi =(t)=>{
     let gps = [this.state.position.longitude, this.state.position.latitude]
     const {getPois} = this.props;
-    this.placeSearch.searchNearBy(t,gps, 10000,function (status, result) {
+    // this.placeSearch.searchNearBy(t,gps, 10000,function (status, result) {
+    //   getPois(result.poiList.pois)
+    //   console.log(result.poiList.pois)
+    // });
+    this.placeSearch.search(t, function (status, result) {
       getPois(result.poiList.pois)
-      // console.log(result.poiList.pois)
+      console.log(result.poiList.pois)
     });
   }
   render() {
@@ -45,8 +49,11 @@ export default class GdMap extends PureComponent {
             radius: 200
           });
           this.placeSearch = new AMap.PlaceSearch({ //构造地点查询类
-            pageSize: 10,
+            pageSize: 20,
             pageIndex: 1,
+            extensions:'all',
+            children:1,
+            type:'汽车服务|汽车销售|汽车维修|摩托车服务|餐饮服务|购物服务|生活服务|体育休闲服务|医疗保健服务|住宿服务|风景名胜|商务住宅|政府机构及社会团体|科教文化服务|交通设施服务|金融保险服务|公司企业|道路附属设施|地名地址信息|公共设施',
             city: "惠州", //城市
           });
         });

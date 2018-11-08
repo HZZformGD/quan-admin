@@ -1,4 +1,4 @@
-import { getLabelList, addLabel, editLabel, delLabel, statusLabel, statusRecommend,labelType } from '../../services/api';
+import { getLabelList, addLabel, editLabel, delLabel, statusLabel, statusRecommend,labelType,labelRank } from '../../services/api';
 
 export default {
   namespace: 'label',
@@ -8,6 +8,7 @@ export default {
     total: 0,
     domain: '',
     arr: [],
+    checkList:[],
     decorations: {
       list: [],
       medal: {},
@@ -61,6 +62,10 @@ export default {
     *labelType({payload}, {call}) {
       const response = yield call(labelType, payload);
       return response;
+    },
+    *labelRank({payload}, {call}) {
+      const response = yield call(labelRank, payload);
+      return response;
     }
   },
 
@@ -85,6 +90,7 @@ export default {
         list: action.payload.list,
         checkList,
         total: Number(action.payload.total),
+        domain:action.payload.domain,
       };
       return obj;
     },

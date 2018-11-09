@@ -496,7 +496,7 @@ export async function statusGoods(params) {
 }
 export async function getGoodsList(params) {
   return request(
-    `/poadmin/goods/goods-list?page=${params.page}&size=${params.size}&post_id=${params.label_id}&label_name=${params.label_name}`,
+    `/poadmin/goods/goods-list?page=${params.page}&size=${params.size}&label_id=${params.label_id}&label_name=${params.label_name}`,
     {}
   );
 }

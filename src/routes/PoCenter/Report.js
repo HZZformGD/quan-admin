@@ -114,7 +114,7 @@ export default class CardList extends PureComponent {
                 <Button
                     type={item.data.ifcheck == '0' ? 'danger' : 'primary'}
                     className={styles.listBtn}
-                    onClick={() => this.downline(item.data.comment_id, item.data.ifcheck)}
+                    onClick={() => this.downline(item.data.report_id, item.data.ifcheck)}
                 >
                     {item.data.ifcheck == '0' ? '取消审核' : '审核'}
                 </Button>

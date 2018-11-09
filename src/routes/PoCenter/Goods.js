@@ -149,7 +149,7 @@ export default class CardList extends PureComponent {
                 cover,
                 corner:fieldsValue.corner,
                 desc:fieldsValue.desc,
-                end_time: parseInt(fieldsValue.expiry_time.valueOf() / 1000),
+                end_time: fieldsValue.expiry_time?parseInt(fieldsValue.expiry_time.valueOf() / 1000):0,
                 label_id: label_id.substr(0, label_id.length - 1),
                 db_category: categoryList.substr(0, categoryList.length - 1),
                 db_tag: tagsList.substr(0, tagsList.length - 1),

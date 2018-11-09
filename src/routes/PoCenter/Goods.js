@@ -70,18 +70,19 @@ export default class CardList extends PureComponent {
             obj.id = id;
             obj.labelName = name;
         }
+        console.log(obj)
         this.setState(obj, () => this.getList(1, 10, '', ''))
         this.getLabel();
         // console.log(this.props.decoration)
     }
-    getList(page = 1, size = 10, label_name = '') {
+    getList(page = 1, size = 10,) {
         const { dispatch } = this.props;
         dispatch({
             type: 'goods/getList',
             payload: {
                 page,
                 size,
-                label_name,
+                label_name:this.state.labelName,
                 label_id: this.state.id
             },
         });
@@ -149,7 +150,7 @@ export default class CardList extends PureComponent {
                 cover,
                 corner:fieldsValue.corner,
                 desc:fieldsValue.desc,
-                end_time: parseInt(fieldsValue.expiry_time.valueOf() / 1000),
+                end_time: fieldsValue.expiry_time?parseInt(fieldsValue.expiry_time.valueOf() / 1000):0,
                 label_id: label_id.substr(0, label_id.length - 1),
                 db_category: categoryList.substr(0, categoryList.length - 1),
                 db_tag: tagsList.substr(0, tagsList.length - 1),

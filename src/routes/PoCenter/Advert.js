@@ -48,6 +48,7 @@ export default class CardList extends PureComponent {
         ad_type: '0',
         program: '',
         data: '',
+        position: 2,
     };
 
     componentDidMount() {
@@ -88,12 +89,13 @@ export default class CardList extends PureComponent {
                 return;
             }
             console.log(fieldsValue);
-            let { content, data, end_time } = fieldsValue;
-            let { cover, ad_type, program } = this.state;
+            let { content, data, end_time} = fieldsValue;
+            let { cover, ad_type, program,position } = this.state;
             const postObj = {
                 content,
                 data,
                 cover,
+                position,
                 type: ad_type,
                 end_time: parseInt(end_time.valueOf() / 1000),
             };
@@ -137,6 +139,7 @@ export default class CardList extends PureComponent {
             content: '',
             cover: '',
             data: '',
+            position:2,
             end_time: moment(moment().format("YYYY-MM-DD HH:mm:ss")),
             fileList: [],
             ad_type: ''
@@ -145,7 +148,7 @@ export default class CardList extends PureComponent {
 
     // 编辑分类
     edit(e) {
-        let { data: { id, cover, end_time, content, data, type } } = e;
+        let { data: { id, cover, end_time, content, data, type, position } } = e;
         const obj = {
             uid: '-1',
             status: 'done',
@@ -165,6 +168,7 @@ export default class CardList extends PureComponent {
             addTitle: '修改广告',
             id,
             content,
+            position,
             cover,
             data,
             end_time,
@@ -237,6 +241,11 @@ export default class CardList extends PureComponent {
             ad_type: e
         })
     }
+    select_position=e=>{
+        this.setState({
+            position: e
+        })
+    }
     select_program = e => {
         this.setState({
             program: e
@@ -244,7 +253,7 @@ export default class CardList extends PureComponent {
     }
     render() {
         const { total, list, wxAppList } = this.props.advert;
-        const { content, id, fileList, end_time, data, up_time, ad_type, program } = this.state;
+        const { content, id, fileList, end_time, data, up_time, ad_type, program,position } = this.state;
         const { uploadToken } = this.props;
         const { getFieldDecorator } = this.props.form;
         const RadioGroup = Radio.Group;
@@ -404,7 +413,7 @@ export default class CardList extends PureComponent {
                                 <Option value="3">圈子</Option>
                                 <Option value="4">摇一摇</Option>
                                 <Option value="5">更多活动</Option>
-                                <Option value="6">预留,不支持</Option>
+                                <Option value="6">Po详情</Option>
                                 <Option value="7">Po话题</Option>
                                 <Option value="8">个人中心</Option>
                                 <Option value="9">帖子</Option>
@@ -418,7 +427,7 @@ export default class CardList extends PureComponent {
                         </FormItem>
                         {ad_type == '10' ? <FormItem label="小程序" style={{ marginBottom: 0 }}>
                             <Select defaultValue={program} style={{ width: 250 }} onChange={this.select_program}>
-                                {wxAppList.map((val,index) =>
+                                {wxAppList.map((val, index) =>
                                     <Option key={index} value={val.original_id}>{val.name}</Option>
                                 )}
                             </Select>
@@ -432,6 +441,14 @@ export default class CardList extends PureComponent {
                                     onOk={this.selectTime}
                                 />
                             )}
+                        </FormItem>
+                        <FormItem label="广告位置" style={{ marginBottom: 0 }}>
+                            <Select defaultValue={position} style={{ width: 250 }} onChange={this.select_position}>
+                                <Option value="2">2</Option>
+                                <Option value="3">3</Option>
+                                <Option value="4">4</Option>
+                            </Select>
+
                         </FormItem>
                         <FormItem label="广告封面图" style={{ marginBottom: 0 }}>
                             <Upload

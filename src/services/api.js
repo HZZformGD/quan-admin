@@ -446,6 +446,13 @@ export async function setCover(params) {
     body: params,
   });
 }
+
+export async function delPoLabel(params) {
+  return request('/poadmin/po/delete-label', {
+    method: 'POST',
+    body: params,
+  });
+}
 export async function setLabel(params) {
   return request('/poadmin/po/set-label', {
     method: 'POST',

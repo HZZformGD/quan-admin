@@ -543,3 +543,24 @@ export async function statusAdvert(params) {
     body: params,
   });
 }
+export async function appNoticeList(params) {
+  return request(`/app/notice/list?page=${params.page}&size=${params.size}&title=${params.title}&notice_type=${params.notice_type}`,{});
+}
+export async function statusNotice(params) {
+  return request('/app/notice/update-status', {
+    method: 'POST',
+    body: params,
+  });
+}
+export async function addNotice(params) {
+  return request('/app/notice/add', {
+    method: 'POST',
+    body: params,
+  });
+}
+export async function editNotice(params) {
+  return request('/app/notice/edit', {
+    method: 'POST',
+    body: params,
+  });
+}

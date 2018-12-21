@@ -418,6 +418,8 @@ export default class CardList extends PureComponent {
                                 <Option value="8">个人中心</Option>
                                 <Option value="9">帖子</Option>
                                 <Option value="10">小程序</Option>
+                                <Option value="11">Po标签</Option>
+                                <Option value="12">Po分类</Option>
                             </Select>
                         </FormItem>
                         <FormItem label="数据" style={{ marginBottom: 0 }}>

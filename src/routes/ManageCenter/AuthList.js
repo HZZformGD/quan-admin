@@ -47,7 +47,7 @@ export default class AuthList extends PureComponent {
     this.getList()
   }
 
-  getList(page = 1, status = -1, keyword = '') {
+  getList(page = 1,) {
     const { dispatch } = this.props;
     dispatch({
       type: 'authList/getList',

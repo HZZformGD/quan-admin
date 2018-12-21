@@ -14,6 +14,7 @@ import {
   delImg,
   setCover,
   setLabel,
+  delPoLabel,
 } from '../../services/api';
 
 export default {
@@ -99,6 +100,10 @@ export default {
     },
     *setLabel({ payload }, { call }) {
       const response = yield call(setLabel, payload);
+      return response;
+    },
+    *delPoLabel({ payload }, { call }) {
+      const response = yield call(delPoLabel, payload);
       return response;
     },
     *resetList({ payload }, { call, put }) {

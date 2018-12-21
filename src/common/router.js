@@ -240,6 +240,11 @@ export const getRouterData = app => {
         import('../routes/PoCenter/Advert')
       ),
     },
+    '/app/notice-manage': {
+      component: dynamicWrapper(app, ['app/notice'], () =>
+        import('../routes/App/Notice')
+      ),
+    }
     // '/user/:id': {
     //   component: dynamicWrapper(app, [], () => import('../routes/User/SomeComponent')),
     // },

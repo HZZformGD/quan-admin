@@ -446,6 +446,13 @@ export async function setCover(params) {
     body: params,
   });
 }
+
+export async function delPoLabel(params) {
+  return request('/poadmin/po/delete-label', {
+    method: 'POST',
+    body: params,
+  });
+}
 export async function setLabel(params) {
   return request('/poadmin/po/set-label', {
     method: 'POST',
@@ -532,6 +539,27 @@ export async function editAdvert(params) {
 }
 export async function statusAdvert(params) {
   return request('/poadmin/ad/ad-status', {
+    method: 'POST',
+    body: params,
+  });
+}
+export async function appNoticeList(params) {
+  return request(`/app/notice/list?page=${params.page}&size=${params.size}&title=${params.title}&notice_type=${params.notice_type}`,{});
+}
+export async function statusNotice(params) {
+  return request('/app/notice/update-status', {
+    method: 'POST',
+    body: params,
+  });
+}
+export async function addNotice(params) {
+  return request('/app/notice/add', {
+    method: 'POST',
+    body: params,
+  });
+}
+export async function editNotice(params) {
+  return request('/app/notice/edit', {
     method: 'POST',
     body: params,
   });

@@ -417,6 +417,7 @@ export default class CardList extends PureComponent {
   };
   openCategory = data => {
     let { id, category_id: defaultCategoryList } = data;
+    console.log(defaultCategoryList)
     this.setState({
       showCategoryList: true,
       defaultCategoryList,

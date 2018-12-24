@@ -32,6 +32,7 @@ const { TextArea } = Input;
 @connect(({ category, global = {}, loading }) => ({
   category,
   loading: loading.models.test,
+  uploadToken: global.uploadToken,
 }))
 @Form.create()
 export default class CardList extends PureComponent {
@@ -42,11 +43,14 @@ export default class CardList extends PureComponent {
     show_delCategory: false,
     id: '',
     categoryName: '',
+    category_desc: '',
     order: '',
     form: 'info',
     labelName: '',
     currentPage: 1,
     if_again: true,
+    category_cover: '',
+    fileList: [],
   };
 
   componentDidMount() {
@@ -63,7 +67,7 @@ export default class CardList extends PureComponent {
         size,
       },
     });
-    // this.refreshUploadToken()
+    this.refreshUploadToken()
   }
 
   refreshUploadToken() {
@@ -89,8 +93,10 @@ export default class CardList extends PureComponent {
       console.log(fieldsValue);
       const postObj = {
         name: fieldsValue.name,
+        category_desc: fieldsValue.category_desc,
         sort: fieldsValue.order,
         show_style: fieldsValue.show_style,
+        category_cover:this.state.category_cover
       };
       let url = 'category/addCategory';
       if (fieldsValue.id) {
@@ -149,6 +155,7 @@ export default class CardList extends PureComponent {
       show_delCategory: false,
       id: '',
       categoryName: '',
+      category_desc: '',
       order: '',
       form: '0',
     });
@@ -156,14 +163,21 @@ export default class CardList extends PureComponent {
 
   // 编辑分类
   edit(e) {
-    let {data:{category_id:id,category_name:categoryName,category_sort:order,show_style:form}} = e;
+    let { data: { category_id: id, category_name: categoryName, category_desc,category_cover, category_sort: order, show_style: form } } = e;
+    const obj = {
+      uid: '-1',
+      status: 'done',
+      url: category_cover,
+  };
     this.setState({
       show_a_e_Category: true,
       addTitle: '修改分类',
       id,
       categoryName,
+      category_desc,
       order,
       form,
+      fileList:[obj],
     });
   }
 
@@ -214,7 +228,7 @@ export default class CardList extends PureComponent {
             }
           });
       },
-      onCancel() {},
+      onCancel() { },
     });
   }
 
@@ -230,10 +244,21 @@ export default class CardList extends PureComponent {
     console.log(e);
   }
 
+  handleChange(e) {
+    const { fileList, file } = e;
+    let category_cover = '';
+    if (fileList.length && file.status == 'done') {
+      category_cover = fileList[0].response.full_url;
+      fileList[0].url = fileList[0].response.full_url;
+    }
+
+    this.setState({ fileList, category_cover });
+  }
+
   render() {
     const { total, list } = this.props.category;
-    const { categoryName, order, id, form, labelName, tag_list } = this.state;
-
+    const { categoryName, order, id, form, labelName, tag_list, category_desc,fileList } = this.state;
+    const { uploadToken } = this.props;
     const { getFieldDecorator } = this.props.form;
     const RadioGroup = Radio.Group;
 
@@ -244,6 +269,10 @@ export default class CardList extends PureComponent {
       categoryNameConfig: {
         rules: [{ type: 'string', required: true, message: '输入的分类名称不能为空哦' }],
         initialValue: categoryName || '',
+      },
+      categorycategory_descConfig: {
+        rules: [{ type: 'string', required: true, message: '输入的分类描述不能为空哦' }],
+        initialValue: category_desc || '',
       },
       orderConfig: {
         rules: [{ type: 'string', required: true, message: '输入的排序不能为空哦' }],
@@ -265,6 +294,13 @@ export default class CardList extends PureComponent {
         this.getList(page);
       },
     };
+
+    const uploadButton = (
+      <div>
+          <Icon type="plus" />
+          <div className="ant-upload-text">上传</div>
+      </div>
+  );
 
     const ListHeader = () => (
       <div className={styles.flexHeader}>
@@ -327,7 +363,7 @@ export default class CardList extends PureComponent {
             title="分类列表"
             style={{ marginTop: 24 }}
             bodyStyle={{ padding: '0 32px 40px 32px' }}
-            // extra={extraContent}
+          // extra={extraContent}
           >
             <Button
               type="dashed"
@@ -369,13 +405,18 @@ export default class CardList extends PureComponent {
             {this.state.addTitle == '添加分类' ? (
               ''
             ) : (
-              <FormItem className={styles.hidden}>
-                {getFieldDecorator('id', FormCheck.idConfig, { initialValue: id })(<Input />)}
-              </FormItem>
-            )}
-            <FormItem label="分类名称">
+                <FormItem className={styles.hidden}>
+                  {getFieldDecorator('id', FormCheck.idConfig, { initialValue: id })(<Input />)}
+                </FormItem>
+              )}
+            <FormItem label="分类名称"  style={{ marginBottom: 0 }}>
               {getFieldDecorator('name', FormCheck.categoryNameConfig)(
                 <Input placeholder="请输入分类名称" />
+              )}
+            </FormItem>
+            <FormItem label="分类描述" style={{ marginBottom: 0 }}>
+              {getFieldDecorator('category_desc', FormCheck.categorycategory_descConfig)(
+                <Input placeholder="请输入分类描述" />
               )}
             </FormItem>
             <FormItem label="排序">
@@ -383,13 +424,26 @@ export default class CardList extends PureComponent {
                 <Input placeholder="请输入排序" />
               )}
             </FormItem>
-            <FormItem label="展现形式">
+            <FormItem label="展现形式" style={{ marginBottom: 0 }}>
               {getFieldDecorator('show_style', { initialValue: form })(
                 <RadioGroup onChange={this.selectForm}>
                   <Radio value="0">信息流</Radio>
                   <Radio value="1">瀑布流</Radio>
                 </RadioGroup>
               )}
+            </FormItem>
+            <FormItem label="封面图" style={{ marginBottom: 0 }}>
+              <Upload
+                action="http://upload.qiniup.com"
+                listType="picture-card"
+                fileList={fileList}
+                onPreview={this.handlePreview}
+                onChange={this.handleChange.bind(this)}
+                data={{ token: uploadToken }}
+                beforeUpload={this.beforeUpload}
+              >
+                {fileList.length >= 1 ? null : uploadButton}
+              </Upload>
             </FormItem>
           </Form>
         </Modal>

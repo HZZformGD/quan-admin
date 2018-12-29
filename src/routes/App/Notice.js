@@ -56,7 +56,8 @@ export default class CardList extends PureComponent {
         end_at: moment(moment().format("YYYY-MM-DD")),
         begin_at: moment(moment().format("YYYY-MM-DD")),
         list_type: '',
-        from_outside:'',
+        from_outside:'0',
+        button_desc:'',
     };
 
     componentDidMount() {
@@ -111,7 +112,8 @@ export default class CardList extends PureComponent {
                 event_type,
                 begin_at: parseInt(fieldsValue.begin_at.valueOf() / 1000),
                 end_at: parseInt(fieldsValue.end_at.valueOf() / 1000),
-                from_outside
+                from_outside,
+                button_desc:fieldsValue.button_desc,
             };
             if (jump_type == '10') {
                 postObj.jump_data = JSON.stringify({
@@ -170,13 +172,14 @@ export default class CardList extends PureComponent {
             notice_type: '',
             fileList: [],
             cover: '',
-            from_outside:'',
+            from_outside:'0',
+            button_desc:'',
         });
     };
 
     // 编辑弹窗
     edit(e) {
-        let { data: { id, title: title, begin_at, end_at, cover, jump_type, event_type, notice_type, jump_data ,from_outside} } = e;
+        let { data: { id,button_desc, title: title, begin_at, end_at, cover, jump_type, event_type, notice_type, jump_data ,from_outside} } = e;
         const obj = {
             uid: '-1',
             status: 'done',
@@ -205,6 +208,7 @@ export default class CardList extends PureComponent {
             cover,
             program,
             from_outside,
+            button_desc,
         });
     }
 
@@ -307,7 +311,7 @@ export default class CardList extends PureComponent {
     render() {
         const { uploadToken } = this.props;
         const { total, list, wxAppList } = this.props.notice;
-        const { id, fileList, title, notice_type, event_type, jump_type, begin_at, end_at, currentPage, program, jump_data,from_outside } = this.state;
+        const { id, fileList, title,button_desc, notice_type, event_type, jump_type, begin_at, end_at, currentPage, program, jump_data,from_outside } = this.state;
         const { getFieldDecorator } = this.props.form;
         const RadioGroup = Radio.Group;
         const Search = Input.Search;
@@ -506,6 +510,11 @@ export default class CardList extends PureComponent {
                                 {fileList.length >= 1 ? null : uploadButton}
                             </Upload>
                         </FormItem>
+                        <FormItem label="按钮自定义文案" style={{ marginBottom: 0 }}>
+                        {getFieldDecorator('button_desc',{ initialValue: button_desc })(
+                            <Input placeholder="请输入按钮自定义文案" />
+                        )}
+                        </FormItem>
                         <FormItem label="弹窗类型" style={{ marginBottom: 0 }}>
                             <Select defaultValue={notice_type} style={{ width: 250 }} onChange={this.select_notice_type}>
                                 <Option key="1" value="1">更新提醒</Option>
@@ -565,7 +574,7 @@ export default class CardList extends PureComponent {
                             <Select defaultValue={event_type} style={{ width: 250 }} onChange={this.select_event_type}>
                                 <Option value="1">时间段内第一次启动提示</Option>
                                 <Option value="2">时间段内每日第一次启动提示</Option>
-                                <Option value="3">根据参数提示</Option>
+                                {/* <Option value="3">根据参数提示</Option> */}
 
                             </Select>
                         </FormItem>

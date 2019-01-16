@@ -10,6 +10,7 @@ import {
     DatePicker,
     Tooltip,
     Button,
+    Checkbox,
     Radio,
     Icon,
     Tag,
@@ -30,8 +31,9 @@ const Confirm = Modal.confirm;
 
 const { TextArea } = Input;
 
-@connect(({ advert, global = {}, loading }) => ({
+@connect(({ advert, category, global = {}, loading }) => ({
     advert,
+    category,
     loading: loading.models.test,
     uploadToken: global.uploadToken,
 }))
@@ -43,17 +45,33 @@ export default class CardList extends PureComponent {
         content: '',
         currentPage: 1,
         fileList: [],
+        category_id: [],
         end_time: moment(moment().format("YYYY-MM-DD HH:mm:ss")),
         up_time: '',
         ad_type: '0',
         program: '',
         data: '',
         position: 2,
+        showCategoryList: false,
+        defaultCategoryList: [],
     };
 
     componentDidMount() {
         this.getList();
+        this.getCategory();
         // console.log(this.props.decoration)
+    }
+
+    getCategory() {
+        const { dispatch } = this.props;
+        dispatch({
+            type: 'category/getList',
+            payload: {
+                page: 1,
+                size: 10000,
+                type: 'content',
+            },
+        });
     }
 
     getList(page = 1, size = 10) {
@@ -83,20 +101,21 @@ export default class CardList extends PureComponent {
     }
 
     // 添加或修改广告提交
-    submitCategory = e => {
+    submitAdvert = e => {
         this.props.form.validateFields((err, fieldsValue) => {
             if (err) {
                 return;
             }
             console.log(fieldsValue);
-            let { content, data, end_time} = fieldsValue;
-            let { cover, ad_type, program,position } = this.state;
+            let { content, data, end_time } = fieldsValue;
+            let { cover, ad_type, program, position,category_id } = this.state;
             const postObj = {
                 content,
                 data,
                 cover,
                 position,
                 type: ad_type,
+                category_ids:category_id,
                 end_time: parseInt(end_time.valueOf() / 1000),
             };
             if (ad_type == '10') {
@@ -121,6 +140,7 @@ export default class CardList extends PureComponent {
                             show_a_e_Category: false,
                         });
                         message.success(res.message);
+                        this.handleCancel();
                         this.getList();
                     } else {
                         message.error(res.message);
@@ -139,16 +159,24 @@ export default class CardList extends PureComponent {
             content: '',
             cover: '',
             data: '',
-            position:2,
+            position: 2,
             end_time: moment(moment().format("YYYY-MM-DD HH:mm:ss")),
             fileList: [],
-            ad_type: ''
+            ad_type: '',
+            category_id:[],
         });
     };
 
+    categoryCancel = e => {
+        this.setState({
+            showCategoryList: false,
+            defaultCategoryList:[],
+        })
+    }
+
     // 编辑分类
     edit(e) {
-        let { data: { id, cover, end_time, content, data, type, position } } = e;
+        let { data: { id, cover, end_time, content, data, type, position, category_id } } = e;
         const obj = {
             uid: '-1',
             status: 'done',
@@ -173,6 +201,7 @@ export default class CardList extends PureComponent {
             data,
             end_time,
             fileList,
+            category_id,
             ad_type: String(type)
         });
     }
@@ -241,7 +270,7 @@ export default class CardList extends PureComponent {
             ad_type: e
         })
     }
-    select_position=e=>{
+    select_position = e => {
         this.setState({
             position: e
         })
@@ -251,12 +280,35 @@ export default class CardList extends PureComponent {
             program: e
         })
     }
+    openCategory = data => {
+        let { id, category_id: defaultCategoryList } = this.state;
+        this.setState({
+            showCategoryList: true,
+            defaultCategoryList,
+            id
+        });
+    };
+    CategoryChange = e => {
+        this.setState({
+            defaultCategoryList: e,
+        });
+    };
+    submitCategory = e => {
+        this.setState({
+            category_id:this.state.defaultCategoryList,
+            showCategoryList:false,
+        })
+    }
+
     render() {
         const { total, list, wxAppList } = this.props.advert;
-        const { content, id, fileList, end_time, data, up_time, ad_type, program,position } = this.state;
+        const { content, id, fileList, end_time, data, up_time, ad_type, program, position, category_id, showCategoryList, defaultCategoryList } = this.state;
+        const { list: categoryList } = this.props.category;
+        const { checkList: categoryCheckList } = this.props.category;
         const { uploadToken } = this.props;
         const { getFieldDecorator } = this.props.form;
         const RadioGroup = Radio.Group;
+        const CheckboxGroup = Checkbox.Group;
         const FormCheck = {
             idConfig: {
                 initialValue: id || 0,
@@ -386,7 +438,7 @@ export default class CardList extends PureComponent {
                         <Button key="back" onClick={() => this.handleCancel(false)}>
                             取消
             </Button>,
-                        <Button key="submit" type="primary" onClick={() => this.submitCategory()}>
+                        <Button key="submit" type="primary" onClick={() => this.submitAdvert()}>
                             确定
             </Button>,
                     ]}
@@ -450,7 +502,13 @@ export default class CardList extends PureComponent {
                                 <Option value="3">3</Option>
                                 <Option value="4">4</Option>
                             </Select>
-
+                        </FormItem>
+                        <FormItem label="分类" style={{ marginBottom: 0 }}>
+                            {category_id.length != 0 ? category_id.map((element, index) => (
+                                categoryList.map((el, idx) => (
+                                    element == el.category_id ? <Tag key={index} color="geekblue" onClick={() => this.openCategory()}>{el.category_name}</Tag> : ''
+                                ))
+                            )) : <Tag color="geekblue" onClick={() => this.openCategory(data)}>选择分类</Tag>}
                         </FormItem>
                         <FormItem label="广告封面图" style={{ marginBottom: 0 }}>
                             <Upload
@@ -464,6 +522,22 @@ export default class CardList extends PureComponent {
                             >
                                 {fileList.length >= 1 ? null : uploadButton}
                             </Upload>
+                        </FormItem>
+                    </Form>
+                </Modal>
+                <Modal
+                    title="分类"
+                    visible={showCategoryList}
+                    destroyOnClose
+                    footer={[<Button key="back" onClick={() => this.categoryCancel(false)}>取消</Button>,
+                    <Button key="submit" type="primary" onClick={() => this.submitCategory()}>确定</Button>,
+                    ]}
+                    onCancel={() => this.categoryCancel(false)}>
+                    <Form>
+                        <FormItem>
+                            {getFieldDecorator('defaultCategoryList', { initialValue: defaultCategoryList })(
+                                <CheckboxGroup options={categoryCheckList} onChange={this.CategoryChange} />
+                            )}
                         </FormItem>
                     </Form>
                 </Modal>

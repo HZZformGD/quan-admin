@@ -33,8 +33,8 @@ export default {
         payload: count,
       });
     },
-    *fetchUploadToken(_, { call, put }) {
-      const response = yield call(getToken);
+    *fetchUploadToken({payload}, { call, put }) {
+      const response = yield call(getToken,payload);
       const uploadToken = response.data.upload_token;
       yield put({
         type: 'saveUploadToken',

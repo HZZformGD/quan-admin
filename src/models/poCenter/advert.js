@@ -41,7 +41,7 @@ import {
   
     reducers: {
       queryList(state, action) {
-         console.log(Object.values(action.payload.wxAppList))
+        //  console.log(Object.values(action.payload.wxAppList))
         const obj = {
           ...state,
           list: action.payload.list,

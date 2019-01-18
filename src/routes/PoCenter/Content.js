@@ -38,24 +38,26 @@ const { TextArea } = Input;
   category,
   label,
   domain: global.domain,
+  uploadToken: global.uploadToken,
 }))
 @Form.create()
 export default class CardList extends PureComponent {
   state = {
     page: 1,
-    current:1,
+    current: 1,
     list: this.props.content.list,
     ifselectAll: false,
     showCategoryList: false,
     showtopList: false,
     show_ShutUp: false,
     showlabelList: false,
+    show_edit_image_content: false,
     defaultCategoryList: [],
     defaultlabelList: [],
     checkID: [],
     sort: '',
     category_id: 'all',
-    prop:'all',
+    prop: 'all',
     tag: '',
     content_text: '',
     uname: '',
@@ -65,7 +67,8 @@ export default class CardList extends PureComponent {
     searchLabelName: '',
     tag_id: '',
     label_id: '',
-    editContentText: '',
+    fileList: [],
+    ExtendContent: '',
   };
 
   componentDidMount() {
@@ -110,7 +113,7 @@ export default class CardList extends PureComponent {
   getList(page = 1) {
     const { dispatch } = this.props;
     this.props.content.loading = true;
-    let { sort, category_id, uname, tag, content_text: content,prop } = this.state;
+    let { sort, category_id, uname, tag, content_text: content, prop } = this.state;
     dispatch({
       type: 'content/getList',
       payload: {
@@ -185,19 +188,19 @@ export default class CardList extends PureComponent {
       },
     });
   };
-  SingleReview= (data)=>{
+  SingleReview = (data) => {
     let list = [];
     list.push(data.id)
-    this.poReview(list,data.ifcheck==1?0:1)
+    this.poReview(list, data.ifcheck == 1 ? 0 : 1)
   }
-  poReview = (list,ifcheck = 1) => {
+  poReview = (list, ifcheck = 1) => {
     // console.log(list)
     this.props
       .dispatch({
         type: 'content/poReview',
         payload: {
           post_ids: list,
-          ifcheck:ifcheck
+          ifcheck: ifcheck
         },
       })
       .then(res => {
@@ -275,7 +278,10 @@ export default class CardList extends PureComponent {
       show_ShutUp: false,
       showlabelList: false,
       defaultCategoryList: [],
-      defaultlabelList: []
+      defaultlabelList: [],
+      show_edit_image_content: false,
+      fileList:[],
+      ExtendContent:'',
     });
   };
 
@@ -561,7 +567,11 @@ export default class CardList extends PureComponent {
   getContent = (index, e) => {
     this.props.content.list[index].content = e.target.value;
   };
-
+  getExtendContent = (e) => {
+    this.setState({
+      ExtendContent:e.target.value
+    })
+  }
   delImg = (e, lengt) => {
     if (e.is_cover == 1 && lengt != 1) {
       message.error('封面不能删除');
@@ -601,15 +611,125 @@ export default class CardList extends PureComponent {
         }
       });
   };
-  searchFun=()=>{
+  searchFun = () => {
     this.getList();
-    this.setState({current:1})
+    this.setState({ current: 1 })
+  };
+  editImageConent = (id) => {
+    this.props
+      .dispatch({
+        type: 'content/extendDetail',
+        payload: {
+          id: id
+        },
+      })
+      .then(res => {
+        if (res.code == 200) {
+          if(res.data.cover.length==0 && res.data.content==""){
+            this.setState({
+              ifExtend:false,
+              show_edit_image_content: true,
+              post_id:id,
+            })
+            return false;
+          }
+          for(let i in res.data.cover){
+            res.data.cover[i].base_url = res.data.cover[i].url;
+            res.data.cover[i].url = this.props.label.domain +res.data.cover[i].url;
+            const obj = {
+                uid: '-1',
+                status: 'done',
+                ...res.data.cover[i]
+            };
+            this.state.fileList.push(obj)
+          }
+          this.setState({
+            show_edit_image_content: true,
+            ExtendContent:res.data.content,
+            post_id:id,
+            fileList:this.state.fileList,
+            ifExtend:true
+          })
+        } else {
+          message.error(res.message);
+        }
+      });
+  };
+  handleChange(e) {
+    const { fileList, file } = e;
+    let cover = '';
+    console.log(fileList)
+    if (fileList.length && file.status == 'done') {
+      if(!fileList[0].response){
+        cover = fileList[0].base_url;
+        fileList[0].url = this.props.label.domain+fileList[0].base_url;
+      }else{
+        cover = fileList[0].response.base_url;
+        fileList[0].url = fileList[0].response.full_url;
+      }
+    }
+    
+      this.setState({ fileList, cover });
+  }
+  setExtend(){
+    let fileList = this.state.fileList;
+    if(fileList.length==2){
+      message.error('请上传一张或者三张封面图');
+      return false;
+    }
+    let url = 'content/extendAdd';
+    if(this.state.ifExtend){
+      url = 'content/extendEdit'
+    }
+    let list = [];
+    for(let i in fileList){
+      let obj;
+      console.log(fileList[i])
+      if(!fileList[i].response){
+        obj = {
+          url:fileList[i].base_url,
+          width:fileList[i].width,
+          height:fileList[i].height
+        }
+      }else{
+        obj = {
+          url:fileList[i].response.base_url,
+          width:fileList[i].response.width,
+          height:fileList[i].response.height
+        }
+      }
+      list.push(obj)
+    }
+    this.props
+    .dispatch({
+      type: url,
+      payload: {
+        post_id: this.state.post_id,
+        content:this.state.ExtendContent,
+        cover_arr:list
+      },
+    })
+    .then(res => {
+      if (res.code == 200) {
+        message.success(res.message);
+        this.setState({
+          show_edit_image_content: false,
+          fileList:[],
+          ExtendContent:'',
+        },()=>{
+          this.getList();
+        })
+      } else {
+        message.error(res.message);
+      }
+    });
   }
   render() {
     const { total, list, loading, tag_list, xzapp_po_top_id } = this.props.content;
     const { list: categoryList } = this.props.category;
     const { checkList: categoryCheckList } = this.props.category;
     const { checkList: labelList, total: labelTotal } = this.props.label;
+    const { uploadToken } = this.props;
     const {
       ifselectAll,
       showtopList,
@@ -623,7 +743,9 @@ export default class CardList extends PureComponent {
       category_id,
       prop,
       page,
-      current
+      current,
+      fileList,
+      ExtendContent,
     } = this.state;
     const { getFieldDecorator } = this.props.form;
     const Option = Select.Option;
@@ -633,11 +755,11 @@ export default class CardList extends PureComponent {
     const paginationProps = {
       pageSize: 10,
       total,
-      current:current,
+      current: current,
       onChange: page => {
         this.setState({
           page,
-          current:page
+          current: page
         });
         document.body.scrollTop = 0;
         this.getList(page);
@@ -695,11 +817,11 @@ export default class CardList extends PureComponent {
             <Button onClick={() => this.editContent(index)}>{data.isedit ? '编辑' : '完成'}</Button>
             <p>收藏数：{data.collect_count}</p>
             <p>点赞数：{data.praise_count}</p>
-            <p style={{cursor:'pointer'}}><Link to={`/po-center/comment-list/${data.id}`}>评论数：{data.reply_num}</Link></p>
+            <p style={{ cursor: 'pointer' }}><Link to={`/po-center/comment-list/${data.id}`}>评论数：{data.reply_num}</Link></p>
           </div>
           <div className={styles.labelBox}>
             {data.label_id.map((element, index) => (
-                <Tag key={index} color="geekblue" closable afterClose={() => this.delLabel(element.label_id, data.label_id, data.id)}>{element.label_name}</Tag>
+              <Tag key={index} color="geekblue" closable afterClose={() => this.delLabel(element.label_id, data.label_id, data.id)}>{element.label_name}</Tag>
             ))}
             <Tag color="geekblue" onClick={() => { this.setState({ showlabelList: true, id: data.id }) }}>选择标签</Tag>
           </div>
@@ -802,6 +924,7 @@ export default class CardList extends PureComponent {
             <Button type="danger" onClick={() => this.del(data.id)}>
               删除
             </Button>
+            <Button onClick={() => this.editImageConent(data.id)}>扩展封面内容</Button>
           </div>
         </div>
       </div> : ''
@@ -836,6 +959,12 @@ export default class CardList extends PureComponent {
         ))}
       </Select>
     )
+    const uploadButton = (
+      <div>
+        <Icon type="plus" />
+        <div className="ant-upload-text">上传</div>
+      </div>
+    );
     return (
       <PageHeaderLayout>
         <div className={styles.standardList}>
@@ -1076,6 +1205,41 @@ export default class CardList extends PureComponent {
               onChange={this.getShutDay}
               placeholder="请输入禁言天数"
               size={50}
+            />
+          </div>
+        </Modal>
+        <Modal
+          title="扩展封面内容"
+          visible={this.state.show_edit_image_content}
+          destroyOnClose
+          footer={[
+            <Button key="back" onClick={() => this.handleCancel(false)}>
+              取消
+            </Button>,
+            <Button key="submit" type="primary" onClick={() => this.setExtend()}>
+              确定
+            </Button>,
+          ]}
+          onCancel={() => this.handleCancel(false)}
+        >
+          <div>
+            <Upload
+              action="http://upload.qiniup.com"
+              listType="picture-card"
+              fileList={fileList}
+              onPreview={this.handlePreview}
+              onChange={this.handleChange.bind(this)}
+              data={{ token: uploadToken }}
+              beforeUpload={this.beforeUpload}
+            >
+              {fileList.length >= 3 ? null : uploadButton}
+            </Upload>
+            <TextArea
+              className={styles.contentBox}
+              onChange={this.getExtendContent}
+              defaultValue={ExtendContent}
+              autosize
+              maxLength={50}
             />
           </div>
         </Modal>

@@ -15,6 +15,9 @@ import {
   setCover,
   setLabel,
   delPoLabel,
+  extendDetail,
+  extendAdd,
+  extendEdit
 } from '../../services/api';
 
 export default {
@@ -112,6 +115,18 @@ export default {
         type: 'refreshList',
         payload: list,
       });
+    },
+    *extendAdd({ payload }, { call }) {
+      const response = yield call(extendAdd, payload);
+      return response;
+    },
+    *extendDetail({ payload }, { call }) {
+      const response = yield call(extendDetail, payload);
+      return response;
+    },
+    *extendEdit({ payload }, { call }) {
+      const response = yield call(extendEdit, payload);
+      return response;
     },
   },
 

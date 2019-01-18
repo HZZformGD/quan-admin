@@ -459,6 +459,21 @@ export async function setLabel(params) {
     body: params,
   });
 }
+export async function extendDetail(params) {
+  return request('/poadmin/po/extend-detail?post_id='+params.id,{});
+}
+export async function extendAdd(params) {
+  return request('/poadmin/po/extend-add', {
+    method: 'POST',
+    body: params,
+  });
+}
+export async function extendEdit(params) {
+  return request('/poadmin/po/extend-edit', {
+    method: 'POST',
+    body: params,
+  });
+}
 export async function labelRank(params) {
   return request('/poadmin/label/label-rank', {
     method: 'POST',

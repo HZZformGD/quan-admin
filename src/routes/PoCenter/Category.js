@@ -46,6 +46,7 @@ export default class CardList extends PureComponent {
     category_desc: '',
     order: '',
     form: 'info',
+    initSelect: '0',
     labelName: '',
     currentPage: 1,
     if_again: true,
@@ -87,6 +88,7 @@ export default class CardList extends PureComponent {
   // 添加或修改分类提交
   submitCategory = e => {
     this.props.form.validateFields((err, fieldsValue) => {
+
       if (err) {
         return;
       }
@@ -96,7 +98,8 @@ export default class CardList extends PureComponent {
         category_desc: fieldsValue.category_desc,
         sort: fieldsValue.order,
         show_style: fieldsValue.show_style,
-        category_cover:this.state.category_cover
+        category_cover:this.state.category_cover,
+        select: fieldsValue.select
       };
       let url = 'category/addCategory';
       if (fieldsValue.id) {
@@ -158,12 +161,13 @@ export default class CardList extends PureComponent {
       category_desc: '',
       order: '',
       form: '0',
+      initSelect: '0'
     });
   };
 
   // 编辑分类
   edit(e) {
-    let { data: { category_id: id, category_name: categoryName, category_desc,category_cover, category_sort: order, show_style: form } } = e;
+    let { data: { category_id: id, category_name: categoryName, category_desc,category_cover, category_sort: order, show_style: form, select: initSelect } } = e;
     const obj = {
       uid: '-1',
       status: 'done',
@@ -177,6 +181,7 @@ export default class CardList extends PureComponent {
       category_desc,
       order,
       form,
+      initSelect,
       fileList:[obj],
     });
   }
@@ -239,6 +244,12 @@ export default class CardList extends PureComponent {
     });
   };
 
+  selectType = e=> {
+    this.setState({
+      initSelect: e.target.value,
+    });
+  }
+
   // 删除关联标签
   closeTag(e) {
     console.log(e);
@@ -257,7 +268,7 @@ export default class CardList extends PureComponent {
 
   render() {
     const { total, list } = this.props.category;
-    const { categoryName, order, id, form, labelName, tag_list, category_desc,fileList } = this.state;
+    const { categoryName, order, id, form, labelName, tag_list, category_desc,fileList,initSelect } = this.state;
     const { uploadToken } = this.props;
     const { getFieldDecorator } = this.props.form;
     const RadioGroup = Radio.Group;
@@ -308,6 +319,7 @@ export default class CardList extends PureComponent {
           <span className={styles.listContentItem}>排序</span>
           <span className={styles.listContentItem}>分类名称</span>
           <span className={styles.listContentItem}>展现形式</span>
+          <span className={styles.listContentItem}>默认显示</span>
           {/* <span className={styles.listContentItem}>关联标签</span> */}
           <span className={styles.listContentItem}>内容数</span>
           <span className={styles.listContentItem}>操作</span>
@@ -344,6 +356,9 @@ export default class CardList extends PureComponent {
         </div>
         <div className={styles.listContentItem}>
           <p lines={2}>{data.show_style == '0' ? '信息流' : '瀑布流'}</p>
+        </div>
+        <div className={styles.listContentItem}>
+          <p lines={2}>{data.select == '0' ? '否' : '是'}</p>
         </div>
         {/* <div className={styles.listContentItem}>
                     <p lines={2}>{data.label ? data.label : '无'}</p>
@@ -429,6 +444,14 @@ export default class CardList extends PureComponent {
                 <RadioGroup onChange={this.selectForm}>
                   <Radio value="0">信息流</Radio>
                   <Radio value="1">瀑布流</Radio>
+                </RadioGroup>
+              )}
+            </FormItem>
+            <FormItem label="默认显示" style={{ marginBottom: 0 }}>
+              {getFieldDecorator('select', { initialValue: initSelect })(
+                <RadioGroup onChange={this.selectType}>
+                  <Radio value="0">否</Radio>
+                  <Radio value="1">是</Radio>
                 </RadioGroup>
               )}
             </FormItem>

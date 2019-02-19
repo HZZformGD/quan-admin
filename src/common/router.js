@@ -244,6 +244,11 @@ export const getRouterData = app => {
       component: dynamicWrapper(app, ['app/notice'], () =>
         import('../routes/App/Notice')
       ),
+    },
+    '/app/scroll-ad-manage': {
+      component: dynamicWrapper(app, ['app/scrollad'], () =>
+        import('../routes/App/ScrollAd')
+      ),
     }
     // '/user/:id': {
     //   component: dynamicWrapper(app, [], () => import('../routes/User/SomeComponent')),

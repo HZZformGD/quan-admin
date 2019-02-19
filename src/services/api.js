@@ -579,3 +579,12 @@ export async function editNotice(params) {
     body: params,
   });
 }
+export async function appScrolladList(params) {
+  return request(`/app/scrollad/list`,{});
+}
+export async function editScrollad(params) {
+  return request('/app/scrollad/edit', {
+    method: 'POST',
+    body: params,
+  });
+}

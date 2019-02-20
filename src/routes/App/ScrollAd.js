@@ -48,6 +48,7 @@ export default class CardList extends PureComponent {
         data: '',
         jump_data: '',
         title: '',
+        position: '',
         currentPage: 1,
         if_again: true,
         fileList: [],
@@ -97,6 +98,7 @@ export default class CardList extends PureComponent {
             let { cover, jump_type, program } = this.state;
             const postObj = {
                 title: fieldsValue.title,
+                position: fieldsValue.position,
                 cover,
                 jump_type,
             };
@@ -109,7 +111,7 @@ export default class CardList extends PureComponent {
             } else {
                 postObj.jump_data = fieldsValue.jump_data
             }
-            if(this.state.id){
+            if (this.state.id) {
                 postObj.id = this.state.id
             }
             this.props
@@ -145,6 +147,7 @@ export default class CardList extends PureComponent {
             show_a_e_Category: false,
             id: '',
             title: '',
+            position: '',
             jump_type: '',
             jump_data: '',
             fileList: [],
@@ -154,7 +157,7 @@ export default class CardList extends PureComponent {
 
     // 编辑弹窗
     edit(e) {
-        let { data: { id, button_desc, title: title, cover, jump_type, jump_data, from_outside } } = e;
+        let { data: { id, button_desc, title, position, cover, jump_type, jump_data, from_outside } } = e;
         const obj = {
             uid: '-1',
             status: 'done',
@@ -173,6 +176,7 @@ export default class CardList extends PureComponent {
             addTitle: '修改弹窗',
             id,
             title,
+            position,
             fileList,
             jump_type,
             jump_data,
@@ -255,7 +259,7 @@ export default class CardList extends PureComponent {
     render() {
         const { uploadToken } = this.props;
         const { total, list, wxAppList } = this.props.scrollad;
-        const { id, fileList, title, jump_type, currentPage, program, jump_data } = this.state;
+        const { id, fileList, title, jump_type, currentPage, program, jump_data, position } = this.state;
         const { getFieldDecorator } = this.props.form;
         const RadioGroup = Radio.Group;
         const Search = Input.Search;
@@ -266,6 +270,10 @@ export default class CardList extends PureComponent {
             nameConfig: {
                 rules: [{ type: 'string', required: true, message: '输入的广告描述不能为空哦' }],
                 initialValue: title || '',
+            },
+            positionConfig: {
+                rules: [{ type: 'string', required: true, message: '输入的广告位置不能为空哦' }],
+                initialValue: position || '',
             },
         };
 
@@ -286,6 +294,7 @@ export default class CardList extends PureComponent {
                 <div className={styles.listHeader}>
                     <span className={styles.listContentItem}>广告描述</span>
                     <span className={styles.listContentItem}>背景图</span>
+                    <span className={styles.listContentItem}>广告位置</span>
                     <span className={styles.listContentItem}>跳转类型</span>
                     <span className={styles.listContentItem}>跳转数据</span>
                     <span className={styles.listContentItem}>操作</span>
@@ -321,6 +330,9 @@ export default class CardList extends PureComponent {
                     <img src={data.cover} />
                 </div>
                 <div className={styles.listContentItem}>
+                    <p>{data.position}</p>
+                </div>
+                <div className={styles.listContentItem}>
                     <p lines={2}>{data.jump_type}</p>
                 </div>
                 <div className={styles.listContentItem}>
@@ -348,15 +360,15 @@ export default class CardList extends PureComponent {
                         bodyStyle={{ padding: '0 32px 40px 32px' }}
                     // extra={extraContent}
                     >
-                        {list.length==0?(<Button
+                        {list.length == 0 ? (<Button
                             type="dashed"
                             onClick={() => this.show_Category()}
                             style={{ width: '100%', marginBottom: 8 }}
                             icon="plus"
                         >
                             添加广告
-            </Button>):''}
-                        
+            </Button>) : ''}
+
                         <ListHeader />
                         <List
                             rowKey="id"
@@ -410,7 +422,11 @@ export default class CardList extends PureComponent {
                                 {fileList.length >= 1 ? null : uploadButton}
                             </Upload>
                         </FormItem>
-
+                        <FormItem label="广告位置" style={{ marginBottom: 0 }}>
+                            {getFieldDecorator('position', FormCheck.positionConfig, { initialValue: position })(
+                                <Input placeholder="请输入广告位置" />
+                            )}
+                        </FormItem>
                         <FormItem label="跳转类型" style={{ marginBottom: 0 }}>
                             <Select defaultValue={jump_type} style={{ width: 250 }} onChange={this.select_jump_type}>
                                 <Option value="0">通用链接(公众号,精选文章)</Option>
@@ -428,7 +444,7 @@ export default class CardList extends PureComponent {
                                 <Option value="12">Po分类</Option>
                             </Select>
                         </FormItem>
-                            <FormItem label="跳转类型数据" style={{ marginBottom: 0 }}>
+                        <FormItem label="跳转类型数据" style={{ marginBottom: 0 }}>
                             {getFieldDecorator('jump_data', { initialValue: jump_data })(
                                 <Input placeholder="请根据类型填写对应的数据" />
                             )}

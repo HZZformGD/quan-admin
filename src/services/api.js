@@ -588,3 +588,9 @@ export async function editScrollad(params) {
     body: params,
   });
 }
+export async function statusScrollad(params) {
+  return request('/app/scrollad/update-status', {
+    method: 'POST',
+    body: params,
+  });
+}

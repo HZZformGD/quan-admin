@@ -45,6 +45,7 @@ export default class CardList extends PureComponent {
         notice_type: "",
         event_type: "",
         jump_type: "",
+        expired_at: '',
         data: '',
         jump_data: '',
         title: '',
@@ -95,12 +96,14 @@ export default class CardList extends PureComponent {
                 return;
             }
             console.log(fieldsValue);
-            let { cover, jump_type, program } = this.state;
+            let { cover, jump_type, program, expired_at } = this.state;
+            console.log(fieldsValue.expired_at)
             const postObj = {
                 title: fieldsValue.title,
                 position: fieldsValue.position,
                 cover,
                 jump_type,
+                expired_at:fieldsValue.expired_at?parseInt(fieldsValue.expired_at.valueOf() / 1000):''
             };
             if (jump_type == '10') {
                 postObj.jump_data = JSON.stringify({
@@ -157,7 +160,7 @@ export default class CardList extends PureComponent {
 
     // 编辑弹窗
     edit(e) {
-        let { data: { id, button_desc, title, position, cover, jump_type, jump_data, from_outside } } = e;
+        let { data: { id, button_desc, title, position, cover, jump_type, jump_data, from_outside, expired_at } } = e;
         const obj = {
             uid: '-1',
             status: 'done',
@@ -182,26 +185,27 @@ export default class CardList extends PureComponent {
             jump_data,
             cover,
             program,
+            expired_at:expired_at?moment(moment(expired_at * 1000).format("YYYY-MM-DD")):''
         });
     }
 
-    // // 下线弹窗
-    // downline(id, status) {
-    //     status = status == '1' ? '2' : '1';
-    //     this.props
-    //         .dispatch({
-    //             type: 'notice/statusNotice',
-    //             payload: { id, status },
-    //         })
-    //         .then(res => {
-    //             if (res.code == 200) {
-    //                 message.success(res.message);
-    //                 this.getList();
-    //             } else {
-    //                 message.error(res.message);
-    //             }
-    //         });
-    // }
+    // 下线弹窗
+    downline(id, status) {
+        status = status == '1' ? '2' : '1';
+        this.props
+            .dispatch({
+                type: 'scrollad/statusScrollad',
+                payload: { id, status },
+            })
+            .then(res => {
+                if (res.code == 200) {
+                    message.success(res.message);
+                    this.getList();
+                } else {
+                    message.error(res.message);
+                }
+            });
+    }
 
     // // 删除弹窗
     // del(id) {
@@ -259,7 +263,7 @@ export default class CardList extends PureComponent {
     render() {
         const { uploadToken } = this.props;
         const { total, list, wxAppList } = this.props.scrollad;
-        const { id, fileList, title, jump_type, currentPage, program, jump_data, position } = this.state;
+        const { id, fileList, title, jump_type, currentPage, program, jump_data, position, expired_at } = this.state;
         const { getFieldDecorator } = this.props.form;
         const RadioGroup = Radio.Group;
         const Search = Input.Search;
@@ -308,14 +312,14 @@ export default class CardList extends PureComponent {
                     编辑
                 </Button>
                 {/* <Button className={styles.listBtn} onClick={() => this.addLabel(item)}>添加标签</Button> */}
-                {/* <Button
+                <Button
                     type={item.data.status == '2' ? 'danger' : 'primary'}
                     className={styles.listBtn}
                     onClick={() => this.downline(item.data.id, item.data.status)}
                 >
                     {item.data.status == '2' ? '上线' : '下线'}
                 </Button>
-                <Button className={styles.listBtn} onClick={() => this.del(item.data.id)}>
+                {/* <Button className={styles.listBtn} onClick={() => this.del(item.data.id)}>
                     删除
         </Button> */}
             </div>
@@ -421,6 +425,16 @@ export default class CardList extends PureComponent {
                             >
                                 {fileList.length >= 1 ? null : uploadButton}
                             </Upload>
+                        </FormItem>
+                        <FormItem label="到期时间" style={{ marginBottom: 0 }}>
+
+                            {getFieldDecorator('expired_at', { initialValue: expired_at })(
+                                <DatePicker
+                                    format="YYYY-MM-DD"
+                                    placeholder="开始时间"
+                                    onOk={this.selectTime}
+                                />
+                            )}
                         </FormItem>
                         <FormItem label="广告位置" style={{ marginBottom: 0 }}>
                             {getFieldDecorator('position', FormCheck.positionConfig, { initialValue: position })(

@@ -1,4 +1,4 @@
-import { appScrolladList,editScrollad } from '../../services/api';
+import { appScrolladList,editScrollad,statusScrollad } from '../../services/api';
 
 export default {
   namespace: 'scrollad',
@@ -25,6 +25,10 @@ export default {
 
     *editScrollad({ payload }, { call }) {
       const response = yield call(editScrollad, payload);
+      return response;
+    },
+    *statusScrollad({ payload }, { call }) {
+      const response = yield call(statusScrollad, payload);
       return response;
     },
   },

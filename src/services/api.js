@@ -580,7 +580,7 @@ export async function editNotice(params) {
   });
 }
 export async function appScrolladList(params) {
-  return request(`/app/scrollad/list`,{});
+  return request(`/app/scrollad/list?page=${params.page}&size=${params.size}`,{});
 }
 export async function editScrollad(params) {
   return request('/app/scrollad/edit', {
@@ -594,3 +594,19 @@ export async function statusScrollad(params) {
     body: params,
   });
 }
+export async function startUpList(params) {
+  return request(`/app/startup/list?page=${params.page}&size=${params.size}`,{});
+}
+export async function editStartUp(params) {
+  return request('/app/startup/edit', {
+    method: 'POST',
+    body: params,
+  });
+}
+export async function statusStartUp(params) {
+  return request('/app/startup/update-status', {
+    method: 'POST',
+    body: params,
+  });
+}
+

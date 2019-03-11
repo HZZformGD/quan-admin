@@ -519,6 +519,7 @@ export default class CardList extends PureComponent {
     );
     const OperationBtn = item => (
       <div className={styles.listContentItem}>
+        <Link className={styles.goodsLink} to={{ pathname: '/po-center/po-manage', query: { label_id: item.data.label_id } }}>Po内容</Link>
         <Link className={styles.goodsLink} to={{ pathname: '/po-center/goods-manage', query: { id: item.data.label_id, name: item.data.label_name } }}>商品{item.data.goodsNum == "0" ? '' : `(${item.data.goodsNum})`}</Link>
         <Button className={styles.listBtn} onClick={() => this.edit(item)}>
           编辑

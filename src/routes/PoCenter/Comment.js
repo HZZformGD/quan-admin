@@ -51,6 +51,8 @@ export default class CardList extends PureComponent {
         this.setState({
             po_id: match.params.po_id,
         }, );
+        console.log(match.params.page)
+        localStorage.setItem('go_comment_page',match.params.page)
         this.getList(match.params.po_id);
         // console.log(this.props.decoration)
     }

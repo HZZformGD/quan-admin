@@ -103,7 +103,7 @@ export default class CardList extends PureComponent {
                 return;
             }
             console.log(fieldsValue);
-            let { image, type, program,second,image_type } = this.state;
+            let { image, type, program,po_type,second,image_type } = this.state;
             console.log(fieldsValue.expired_at)
             const postObj = {
                 title: fieldsValue.title,
@@ -119,6 +119,11 @@ export default class CardList extends PureComponent {
                     path: fieldsValue.data,
                     userName: program,
                     type: '0',
+                })
+            } else if(type == '6'){
+                postObj.data = JSON.stringify({
+                    po_id: fieldsValue.data,
+                    po_type,
                 })
             } else {
                 postObj.data = fieldsValue.data
@@ -177,10 +182,17 @@ export default class CardList extends PureComponent {
         };
         let program = '';
         if (type == '10') {
-            let data = JSON.parse(data)
-            console.log(data)
-            data = data.path;
+            let data1 = JSON.parse(data)
+            console.log(data1)
+            data = data1.path;
             program = data.userName
+        }
+        let po_type = '';
+        if(type == '6'){
+            let data1 = JSON.parse(data)
+            console.log(data1)
+            data = data1.po_id;
+            po_type = data1.po_type
         }
         const fileList = [obj];
         this.setState({
@@ -197,6 +209,7 @@ export default class CardList extends PureComponent {
             end_at: end_at ? moment(moment(end_at * 1000).format("YYYY-MM-DD")) : '',
             image_type,
             second,
+            po_type,
         });
     }
 
@@ -275,6 +288,11 @@ export default class CardList extends PureComponent {
             program: e
         })
     }
+    select_po_type = e=>{
+        this.setState({
+            po_type: e
+        })
+    }
     changeSecond = e =>{
         this.setState({
             second:e
@@ -283,7 +301,7 @@ export default class CardList extends PureComponent {
     render() {
         const { uploadToken } = this.props;
         const { total, list, wxAppList } = this.props.startup;
-        const { aid, fileList, title, type, currentPage, program, data, start_at,end_at,second } = this.state;
+        const { aid, fileList, title, type, currentPage, program,po_type, data, start_at,end_at,second } = this.state;
         const { getFieldDecorator } = this.props.form;
         const RadioGroup = Radio.Group;
         const Search = Input.Search;
@@ -502,6 +520,12 @@ export default class CardList extends PureComponent {
                                 <Input placeholder="请根据类型填写对应的数据" />
                             )}
                         </FormItem>
+                        {type == '6' ? <FormItem label="Po详情类型" style={{ marginBottom: 0 }}>
+                            <Select defaultValue={po_type} style={{ width: 250 }} onChange={this.select_po_type}>
+                            <Option value="1">图片</Option>
+                            <Option value="2">小程序</Option>
+                            </Select>
+                        </FormItem> : ''}
                         {type == '10' ? <FormItem label="小程序" style={{ marginBottom: 0 }}>
                             <Select defaultValue={program} style={{ width: 250 }} onChange={this.select_program}>
                                 {wxAppList.map((val, index) =>

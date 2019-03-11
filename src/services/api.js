@@ -367,9 +367,9 @@ export async function getPoList(params) {
     params.category_id = '';
   }
   return request(
-    `/poadmin/po/po-list?page=${params.page}&sort=${params.sort}&prop=${params.prop}&category_id=${
+    `/poadmin/po/po-list?page=${params.page}&size=${params.size}&sort=${params.sort}&prop=${params.prop}&category_id=${
       params.category_id
-    }&tag=${params.tag}&content=${params.content}&uname=${params.uname}`,
+    }&tag=${params.tag}&content=${params.content}&uname=${params.uname}&label_id=${params.label_id}`,
     {}
   );
 }

@@ -72,10 +72,20 @@ export default class CardList extends PureComponent {
   };
 
   componentDidMount() {
+    let page = localStorage.getItem('go_comment_page');
+    if(page){
+      this.getList(page);
+      localStorage.removeItem('go_comment_page');
+      this.setState({
+        current:Number(page)
+      })
+    }else{
+      this.getList();
+    }
     this.getCategory();
     this.getLabel();
     this.getDomain();
-    this.getList();
+    
   }
 
   getDomain() {
@@ -111,19 +121,28 @@ export default class CardList extends PureComponent {
   }
 
   getList(page = 1) {
-    const { dispatch } = this.props;
+    const { dispatch,location } = this.props;
     this.props.content.loading = true;
+    let label_id = '';
+    if(location.query){
+      label_id =  location.query.label_id || '';
+    }    
+    this.setState({
+      current:page
+    })
     let { sort, category_id, uname, tag, content_text: content, prop } = this.state;
     dispatch({
       type: 'content/getList',
       payload: {
         page,
+        size:20,
         sort,
         category_id,
         prop,
         tag,
         content,
-        uname
+        uname,
+        label_id
       },
     });
     this.refreshUploadToken();
@@ -753,7 +772,7 @@ export default class CardList extends PureComponent {
     const RadioGroup = Radio.Group;
     const Search = Input.Search;
     const paginationProps = {
-      pageSize: 10,
+      pageSize: 20,
       total,
       current: current,
       onChange: page => {
@@ -817,7 +836,7 @@ export default class CardList extends PureComponent {
             <Button onClick={() => this.editContent(index)}>{data.isedit ? '编辑' : '完成'}</Button>
             <p>收藏数：{data.collect_count}</p>
             <p>点赞数：{data.praise_count}</p>
-            <p style={{ cursor: 'pointer' }}><Link to={`/po-center/comment-list/${data.id}`}>评论数：{data.reply_num}</Link></p>
+            <p style={{ cursor: 'pointer' }}><Link to={`/po-center/comment-list/${data.id}/${current}`}>评论数：{data.reply_num}</Link></p>
           </div>
           <div className={styles.labelBox}>
             {data.label_id.map((element, index) => (
@@ -1157,6 +1176,7 @@ export default class CardList extends PureComponent {
           </div>
           <Pagination
             pageSize={30}
+            current={current}
             onChange={page => {
               this.getLabel(page);
             }}

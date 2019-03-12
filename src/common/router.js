@@ -220,7 +220,7 @@ export const getRouterData = app => {
         import('../routes/PoCenter/Content')
       ),
     },
-    '/po-center/comment-list/:po_id': {
+    '/po-center/comment-list/:po_id/:page': {
       component: dynamicWrapper(app, ['poCenter/comment'], () =>
         import('../routes/PoCenter/Comment')
       ),
@@ -249,7 +249,17 @@ export const getRouterData = app => {
       component: dynamicWrapper(app, ['app/scrollad'], () =>
         import('../routes/App/ScrollAd')
       ),
-    }
+    },
+    '/app/start-up': {
+      component: dynamicWrapper(app, ['app/startup'], () =>
+        import('../routes/App/Startup')
+      ),
+    },
+    '/app/app-config': {
+      component: dynamicWrapper(app, ['app/appconfig'], () =>
+        import('../routes/App/AppConfig')
+      ),
+    },
     // '/user/:id': {
     //   component: dynamicWrapper(app, [], () => import('../routes/User/SomeComponent')),
     // },

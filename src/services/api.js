@@ -367,9 +367,9 @@ export async function getPoList(params) {
     params.category_id = '';
   }
   return request(
-    `/poadmin/po/po-list?page=${params.page}&sort=${params.sort}&prop=${params.prop}&category_id=${
+    `/poadmin/po/po-list?page=${params.page}&size=${params.size}&sort=${params.sort}&prop=${params.prop}&category_id=${
       params.category_id
-    }&tag=${params.tag}&content=${params.content}&uname=${params.uname}`,
+    }&tag=${params.tag}&content=${params.content}&uname=${params.uname}&label_id=${params.label_id}`,
     {}
   );
 }
@@ -580,7 +580,7 @@ export async function editNotice(params) {
   });
 }
 export async function appScrolladList(params) {
-  return request(`/app/scrollad/list`,{});
+  return request(`/app/scrollad/list?page=${params.page}&size=${params.size}`,{});
 }
 export async function editScrollad(params) {
   return request('/app/scrollad/edit', {
@@ -590,6 +590,36 @@ export async function editScrollad(params) {
 }
 export async function statusScrollad(params) {
   return request('/app/scrollad/update-status', {
+    method: 'POST',
+    body: params,
+  });
+}
+export async function startUpList(params) {
+  return request(`/app/startup/list?page=${params.page}&size=${params.size}`,{});
+}
+export async function editStartUp(params) {
+  return request('/app/startup/edit', {
+    method: 'POST',
+    body: params,
+  });
+}
+export async function statusStartUp(params) {
+  return request('/app/startup/update-status', {
+    method: 'POST',
+    body: params,
+  });
+}
+export async function configList(params) {
+  return request(`/app/config/list?page=${params.page}&size=${params.size}`,{});
+}
+export async function editConfig(params) {
+  return request('/app/config/edit', {
+    method: 'POST',
+    body: params,
+  });
+}
+export async function delConfig(params) {
+  return request('/app/config/del', {
     method: 'POST',
     body: params,
   });

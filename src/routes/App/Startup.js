@@ -471,6 +471,7 @@ export default class CardList extends PureComponent {
                             >
                                 {fileList.length >= 1 ? null : uploadButton}
                             </Upload>
+                            <p style={{ color: 'red',fontWeight: 'bold', }}>*图片尺寸1949 2436  主体内容居中，在两侧412px内</p>
                         </FormItem>
                         <FormItem label="开始时间" style={{ marginBottom: 0 }}>
 

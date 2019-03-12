@@ -255,6 +255,11 @@ export const getRouterData = app => {
         import('../routes/App/Startup')
       ),
     },
+    '/app/app-config': {
+      component: dynamicWrapper(app, ['app/appconfig'], () =>
+        import('../routes/App/AppConfig')
+      ),
+    },
     // '/user/:id': {
     //   component: dynamicWrapper(app, [], () => import('../routes/User/SomeComponent')),
     // },

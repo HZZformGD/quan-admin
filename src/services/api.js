@@ -609,4 +609,18 @@ export async function statusStartUp(params) {
     body: params,
   });
 }
-
+export async function configList(params) {
+  return request(`/app/config/list?page=${params.page}&size=${params.size}`,{});
+}
+export async function editConfig(params) {
+  return request('/app/config/edit', {
+    method: 'POST',
+    body: params,
+  });
+}
+export async function delConfig(params) {
+  return request('/app/config/del', {
+    method: 'POST',
+    body: params,
+  });
+}

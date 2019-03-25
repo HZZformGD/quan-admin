@@ -6,7 +6,7 @@ import GlobalFooter from '../components/GlobalFooter';
 import styles from './UserLayout.less';
 // import logo from '../assets/logo.png';
 import { getRoutes, getPageQuery, getQueryPath } from '../utils/utils';
-const logo = '/admin/logo.png'
+const logo = '/logo.png'
 
 const links = [
   {

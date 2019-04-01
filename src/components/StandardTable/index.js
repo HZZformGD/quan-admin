@@ -26,33 +26,33 @@ class StandardTable extends PureComponent {
 
   componentWillReceiveProps(nextProps) {
     // clean state
-    if (nextProps.selectedRows.length === 0) {
-      const needTotalList = initTotalList(nextProps.columns);
-      this.setState({
-        selectedRowKeys: [],
-        needTotalList,
-      });
-    }
+    // if (nextProps.selectedRows.length === 0) {
+    //   const needTotalList = initTotalList(nextProps.columns);
+    //   this.setState({
+    //     selectedRowKeys: [],
+    //     needTotalList,
+    //   });
+    // }
   }
 
   handleRowSelectChange = (selectedRowKeys, selectedRows) => {
-    const { needTotalList: list } = this.state;
-    const { onSelectRow } = this.props;
-    let needTotalList = [...list];
-    needTotalList = needTotalList.map(item => {
-      return {
-        ...item,
-        total: selectedRows.reduce((sum, val) => {
-          return sum + parseFloat(val[item.dataIndex], 10);
-        }, 0),
-      };
-    });
+    // const { needTotalList: list } = this.state;
+    // const { onSelectRow } = this.props;
+    // let needTotalList = [...list];
+    // needTotalList = needTotalList.map(item => {
+    //   return {
+    //     ...item,
+    //     total: selectedRows.reduce((sum, val) => {
+    //       return sum + parseFloat(val[item.dataIndex], 10);
+    //     }, 0),
+    //   };
+    // });
 
-    if (onSelectRow) {
-      onSelectRow(selectedRows);
-    }
+    // if (onSelectRow) {
+    //   onSelectRow(selectedRows);
+    // }
 
-    this.setState({ selectedRowKeys, needTotalList });
+    // this.setState({ selectedRowKeys, needTotalList });
   };
 
   handleTableChange = (pagination, filters, sorter) => {
@@ -74,9 +74,10 @@ class StandardTable extends PureComponent {
     } = this.props;
 
     const paginationProps = {
-      showSizeChanger: true,
-      showQuickJumper: true,
-      ...pagination,
+      showSizeChanger: false,
+      showQuickJumper: false,
+      defaultPageSize: 20,
+      ...pagination
     };
 
     const rowSelection = {
@@ -89,7 +90,7 @@ class StandardTable extends PureComponent {
 
     return (
       <div className={styles.standardTable}>
-        <div className={styles.tableAlert}>
+        {/* <div className={styles.tableAlert}>
           <Alert
             message={
               <Fragment>
@@ -111,15 +112,16 @@ class StandardTable extends PureComponent {
             type="info"
             showIcon
           />
-        </div>
+        </div> */}
         <Table
           loading={loading}
           rowKey={rowKey || 'key'}
-          rowSelection={rowSelection}
+          // rowSelection={rowSelection}
           dataSource={list}
           columns={columns}
           pagination={paginationProps}
           onChange={this.handleTableChange}
+          scroll={{ x: 1000 }}
         />
       </div>
     );

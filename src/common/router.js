@@ -108,7 +108,11 @@ export const getRouterData = app => {
         import('../routes/PoCenter/PostList')
       ),
     },
-
+    '/po-center/daily-post': {
+      component: dynamicWrapper(app, ['poCenter/dailyPost'], () =>
+        import('../routes/PoCenter/DailyPost')
+      ),
+    },
     '/mini-app/topic-reply-list': {
       component: dynamicWrapper(app, ['miniApp/topic', 'poCenter/decoration'], () =>
         import('../routes/miniApp/TopicList')

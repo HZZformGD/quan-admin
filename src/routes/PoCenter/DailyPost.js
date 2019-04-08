@@ -329,9 +329,9 @@ export default class TableList extends PureComponent {
               <Button type="primary" htmlType="submit">
                 查询
             </Button>
-              {/* <Button type="dashed" onClick={this.export}>
+              <Button type="dashed" onClick={this.export}>
                 导出
-              </Button> */}
+              </Button>
             </ButtonGroup>
 
           </span>
@@ -353,6 +353,7 @@ export default class TableList extends PureComponent {
     } = this.props;
     const { selectedRows, modalVisible, currentItem } = this.state;
 
+
     const columns = [
       {
         title: '奖品名',
@@ -369,7 +370,7 @@ export default class TableList extends PureComponent {
       },
       {
         title: '联系电话',
-        dataIndex: 'phone',
+        dataIndex: 'phone'
       },
       {
         title: '核销码',
@@ -409,7 +410,6 @@ export default class TableList extends PureComponent {
 
       {
         title: '操作',
-        fixed: 'right',
         dataIndex: 'id',
         render: (id, item, index) => (
           <Fragment>

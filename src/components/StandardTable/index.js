@@ -77,6 +77,7 @@ class StandardTable extends PureComponent {
       showSizeChanger: false,
       showQuickJumper: false,
       defaultPageSize: 20,
+      hideOnSinglePage: true,
       ...pagination
     };
 
@@ -121,7 +122,7 @@ class StandardTable extends PureComponent {
           columns={columns}
           pagination={paginationProps}
           onChange={this.handleTableChange}
-          scroll={{ x: 1000 }}
+          scroll={{ x: 'max-content' }}
         />
       </div>
     );

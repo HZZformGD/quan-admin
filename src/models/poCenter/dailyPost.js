@@ -17,8 +17,8 @@ export default {
 
 
       const data = {
-        list: response.data,
-        pagination: {},
+        list: response.data.list,
+        pagination: {total: response.data.count},
       }
       yield put({
         type: 'save',

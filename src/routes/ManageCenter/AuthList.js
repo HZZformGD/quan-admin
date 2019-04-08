@@ -47,11 +47,11 @@ export default class AuthList extends PureComponent {
     this.getList()
   }
 
-  getList(page = 1,) {
+  getList(page = 1, action_id_search = '', controller_id_search= '', module_id_search = '') {
     const { dispatch } = this.props;
     dispatch({
       type: 'authList/getList',
-      payload: { page }
+      payload: { page, action_id_search,controller_id_search,module_id_search}
     })
   }
 
@@ -95,7 +95,11 @@ export default class AuthList extends PureComponent {
 
   search () {
     this.props.form.validateFields((err, values) => {
-      console.info(values)
+      if(err){
+        return
+      }
+      const {action_id_search,controller_id_search,module_id_search} = values
+      this.getList(1,action_id_search,controller_id_search,module_id_search)
     })
   }
   doNotDel() {
@@ -216,7 +220,8 @@ export default class AuthList extends PureComponent {
         this.setState({
           currentPage: page,
         });
-        this.getList(page);
+        const {action_id_search,controller_id_search,module_id_search} = this.props.form.getFieldsValue()
+        this.getList(page,action_id_search,controller_id_search,module_id_search);
       },
     }
 

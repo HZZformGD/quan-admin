@@ -27,6 +27,7 @@ import styles from './DailyPost.less';
 
 const FormItem = Form.Item;
 const { Option } = Select;
+const ButtonGroup = Button.Group
 const getValue = obj =>
   Object.keys(obj)
     .map(key => obj[key])
@@ -213,6 +214,12 @@ export default class TableList extends PureComponent {
 
   };
 
+  export = e => {
+    const token = localStorage.getItem('token')
+    let { phone, prize, status, verify_code } = (this.props.form.getFieldsValue())
+    window.open(`http://ed-admin.xizi.com/poadmin/daily-post/export-confirm-list?token=${token}&phone=${phone}&prize=${prize}&status=${status}&verify_code=${verify_code}`)
+  }
+
   handleVerify = e => {
     const { dispatch } = this.props;
 
@@ -236,7 +243,7 @@ export default class TableList extends PureComponent {
 
   handlePageChange = (pagination) => {
     const { dispatch } = this.props;
-    this.searchByCondition({page: pagination.current}, dispatch)
+    this.searchByCondition({ page: pagination.current }, dispatch)
   }
 
   renderSimpleForm() {
@@ -281,14 +288,14 @@ export default class TableList extends PureComponent {
     const { getFieldDecorator } = form;
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
-        <Row gutter={{ sm: 12,md: 8, lg: 24, xl: 48 }}>
+        <Row gutter={{ sm: 12, md: 8, lg: 24, xl: 48 }}>
           <Col md={12} sm={12}>
-            <FormItem label="奖品名" labelCol={{span:3}}>
+            <FormItem label="奖品名" labelCol={{ span: 3 }}>
               {getFieldDecorator('prize', { initialValue: '' })(<Input placeholder="请输入" />)}
             </FormItem>
           </Col>
           <Col md={12} sm={12}>
-            <FormItem label="手机号" labelCol={{span:3}}>
+            <FormItem label="手机号" labelCol={{ span: 3 }}>
               {getFieldDecorator('phone', { initialValue: '' })(<Input style={{ width: '100%' }} />)}
             </FormItem>
           </Col>
@@ -309,7 +316,7 @@ export default class TableList extends PureComponent {
             </FormItem>
           </Col>
           <Col md={12} sm={12}>
-            <FormItem label="核销码" labelCol={{span:3}}>
+            <FormItem label="核销码" labelCol={{ span: 3 }}>
               {getFieldDecorator('verify_code', { initialValue: '' })(<Input style={{ width: '100%' }} />)}
             </FormItem>
           </Col>
@@ -318,10 +325,17 @@ export default class TableList extends PureComponent {
 
         <div style={{ overflow: 'hidden' }}>
           <span style={{ float: 'right', marginBottom: 24 }}>
-            <Button type="primary" htmlType="submit">
-              查询
+            <ButtonGroup>
+              <Button type="primary" htmlType="submit">
+                查询
             </Button>
+              {/* <Button type="dashed" onClick={this.export}>
+                导出
+              </Button> */}
+            </ButtonGroup>
+
           </span>
+
         </div>
       </Form>
     );
@@ -400,7 +414,7 @@ export default class TableList extends PureComponent {
         render: (id, item, index) => (
           <Fragment>
             {item.address_id ? <a onClick={() => this.handleSetExpress(item)}>快递</a> : ''}
-            {item.address_id  ? <Divider type="vertical" /> : ''}
+            {item.address_id ? <Divider type="vertical" /> : ''}
             {item.status == 1 ? <Popconfirm title="确认核销码" onConfirm={() => this.handleVerify(id)}><a>核销</a></Popconfirm> : '已核销'}
           </Fragment>
         ),

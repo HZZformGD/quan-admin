@@ -243,7 +243,8 @@ export default class TableList extends PureComponent {
 
   handlePageChange = (pagination) => {
     const { dispatch } = this.props;
-    this.searchByCondition({ page: pagination.current }, dispatch)
+    let { phone, prize, status, verify_code } = this.props.form.getFieldsValue()
+    this.searchByCondition({ page: pagination.current,phone,prize,status,verify_code }, dispatch)
   }
 
   renderSimpleForm() {

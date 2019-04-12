@@ -558,6 +558,30 @@ export async function statusAdvert(params) {
     body: params,
   });
 }
+
+export async function queryDailyData(params) {
+  return request('/poadmin/daily-post/confirm-list',{
+    method: 'POST',
+    body: params,
+    noToken: false,
+  })
+}
+export async function changeDailyData(params) {
+  return request('/poadmin/daily-post/confirm',{
+    method: 'POST',
+    body: params,
+    noToken: false,
+  })
+}
+
+export async function editDailyExpress(params) {
+  return request('/poadmin/daily-post/set-user-address',{
+    method: 'POST',
+    body: params,
+    noToken: false,
+  })
+}
+
 export async function appNoticeList(params) {
   return request(`/app/notice/list?page=${params.page}&size=${params.size}&title=${params.title}&notice_type=${params.notice_type}`,{});
 }

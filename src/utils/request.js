@@ -28,16 +28,27 @@ function checkStatus(response) {
   const { dispatch } = store;
   if (response.status == 401) {
     dispatch(routerRedux.push('/user/login'));
-    notification.error({
-      message: `请求错误 ${response.status}: ${response.url}`,
-      description: errortext,
-    });
-  }
 
+  }
+  notification.error({
+    message: `请求错误 ${response.status}: ${response.url}`,
+    description: errortext,
+  });
   const error = new Error(errortext);
   error.name = response.status;
   error.response = response;
   throw error;
+}
+
+function checkLogic(response) {
+  if (response.code != 200) {
+    notification.error({
+      message: `请求错误 ${response.message}`
+    });
+  }
+  return response
+
+
 }
 
 /**
@@ -90,6 +101,7 @@ export default function request(url, options) {
       }
       return response.json();
     })
+    .then(checkLogic)
     .catch(e => {
       let isLoginApi = false;
       if (url.indexOf('sign-in') > -1) {

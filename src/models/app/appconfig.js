@@ -31,10 +31,9 @@ export default {
 
   reducers: {
     queryList(state, action) {
-        console.log(action)
       return {
         ...state,
-        list: action.payload,
+        list: action.payload.data,
       };
     },
   },

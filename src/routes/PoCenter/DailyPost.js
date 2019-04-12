@@ -44,6 +44,7 @@ const CreateForm = Form.create()(props => {
         ...fieldsValue,
         address_id: currentItem.address_id
       }
+      currentItem.storage  = fieldsValue
       form.resetFields();
       handleAdd(data);
     });
@@ -91,7 +92,8 @@ export default class TableList extends PureComponent {
     expandForm: false,
     selectedRows: [],
     formValues: {},
-    currentItem: ''
+    currentItem: '',
+    currentIndex: -1
   };
 
   componentDidMount() {
@@ -201,12 +203,18 @@ export default class TableList extends PureComponent {
 
   handleAdd = payload => {
     const { dispatch } = this.props;
+    let data = this.state.currentItem.storage, currentIndex = this.state.currentIndex
+
     dispatch({
       type: 'dailyPost/editExpress',
       payload
     }).then(e => {
       message.success('修改成功');
-      this.searchByCondition({}, dispatch)
+      dispatch({
+        type: 'dailyPost/updateItem',
+        payload: {data, currentIndex}
+      })
+      // this.searchByCondition({}, dispatch)
     });
     this.setState({
       modalVisible: false,
@@ -233,10 +241,11 @@ export default class TableList extends PureComponent {
     })
   }
 
-  handleSetExpress = currentItem => {
+  handleSetExpress = (currentItem,currentIndex) => {
     this.setState({
       modalVisible: true,
-      currentItem
+      currentItem,
+      currentIndex
     });
 
   }
@@ -414,7 +423,7 @@ export default class TableList extends PureComponent {
         dataIndex: 'id',
         render: (id, item, index) => (
           <Fragment>
-            {item.address_id ? <a onClick={() => this.handleSetExpress(item)}>快递</a> : ''}
+            {item.address_id ? <a onClick={() => this.handleSetExpress(item,index)}>快递</a> : ''}
             {item.address_id ? <Divider type="vertical" /> : ''}
             {item.status == 1 ? <Popconfirm title="确认核销码" onConfirm={() => this.handleVerify(id)}><a>核销</a></Popconfirm> : '已核销'}
           </Fragment>

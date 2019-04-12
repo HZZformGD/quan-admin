@@ -24,11 +24,11 @@ export default {
     javascriptEnabled: true,
   },
   disableDynamicImport: true,
-  publicPath: '/',
+  publicPath: '/admin',
   hash: true,
   proxy: {
     '/': {
-      target: 'http://q8.xizi.com', //http://ed-admin.dev.xizi.com
+      target: 'http://ed-admin.dev.xizi.com', //http://ed-admin.dev.xizi.com
       changeOrigin: true,
     },
   },

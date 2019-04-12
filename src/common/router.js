@@ -240,6 +240,11 @@ export const getRouterData = app => {
         import('../routes/PoCenter/Advert')
       ),
     },
+    '/po-center/shutup-manage': {
+      component: dynamicWrapper(app, ['poCenter/shutup'], () =>
+        import('../routes/PoCenter/Shutup')
+      ),
+    },
     '/app/notice-manage': {
       component: dynamicWrapper(app, ['app/notice'], () =>
         import('../routes/App/Notice')

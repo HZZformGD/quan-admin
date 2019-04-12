@@ -648,4 +648,18 @@ export async function delConfig(params) {
     body: params,
   });
 }
-
+export async function ShutupList(params) {
+  return request(`/poadmin/shutup/shutup-list?page=${params.page}&size=${params.size}&search_uid=${params.search_uid}`,{});
+}
+export async function shutupRelieve(params) {
+  return request('/poadmin/shutup/shutup-relieve', {
+    method: 'POST',
+    body: params,
+  });
+}
+export async function shutupAdd(params) {
+  return request('/poadmin/shutup/shutup-add', {
+    method: 'POST',
+    body: params,
+  });
+}

@@ -837,6 +837,7 @@ export default class CardList extends PureComponent {
             <p>收藏数：{data.collect_count}</p>
             <p>点赞数：{data.praise_count}</p>
             <p style={{ cursor: 'pointer' }}><Link to={`/po-center/comment-list/${data.id}/${current}`}>评论数：{data.reply_num}</Link></p>
+            <p>时间：{moment(data.dateline * 1000).format("YYYY-MM-DD HH:mm:ss")}</p>
           </div>
           <div className={styles.labelBox}>
             {data.label_id.map((element, index) => (

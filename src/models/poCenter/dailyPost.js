@@ -78,6 +78,9 @@ export default {
     update(state, action) {
       state.data.list[action.payload.currentIndex].express = action.payload.data.express
       state.data.list[action.payload.currentIndex].express_code = action.payload.data.express_code
+      state.data.list[action.payload.currentIndex].contacts = action.payload.data.contacts
+      state.data.list[action.payload.currentIndex].address = action.payload.data.address
+      state.data.list[action.payload.currentIndex].phone = action.payload.data.phone
       return {
         ...state
       }

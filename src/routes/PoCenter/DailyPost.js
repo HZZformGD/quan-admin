@@ -44,13 +44,25 @@ const CreateForm = Form.create()(props => {
         ...fieldsValue,
         address_id: currentItem.address_id
       }
-      currentItem.storage  = fieldsValue
+      currentItem.storage = fieldsValue
       form.resetFields();
       handleAdd(data);
     });
   };
 
 
+
+  const defaultExpressContacts = {
+    initialValue: currentItem ? currentItem.contacts : '',
+  }
+
+  const defaultExpressAddress = {
+    initialValue: currentItem ? currentItem.address : '',
+  }
+
+  const defaultExpressPhone = {
+    initialValue: currentItem ? currentItem.phone : '',
+  }
 
   const defaultExpressDecorator = {
     initialValue: currentItem ? currentItem.express : '',
@@ -60,7 +72,6 @@ const CreateForm = Form.create()(props => {
   const defaultExpressCodeDecorator = {
     initialValue: currentItem ? currentItem.express_code : '',
     rules: [{ required: true, message: '快递公司不能为空' }],
-
   }
 
 
@@ -71,6 +82,15 @@ const CreateForm = Form.create()(props => {
       onOk={okHandle}
       onCancel={() => handleModalVisible()}
     >
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="联系人">
+        {form.getFieldDecorator('contacts', defaultExpressContacts)(<Input placeholder="联系人" />)}
+      </FormItem>
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="地址">
+        {form.getFieldDecorator('address', defaultExpressAddress)(<Input placeholder="地址" />)}
+      </FormItem>
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="手机号码">
+        {form.getFieldDecorator('phone', defaultExpressPhone)(<Input placeholder="手机号码" />)}
+      </FormItem>
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="快递公司">
         {form.getFieldDecorator('express', defaultExpressDecorator)(<Input placeholder="快递公司" />)}
       </FormItem>
@@ -212,7 +232,7 @@ export default class TableList extends PureComponent {
       message.success('修改成功');
       dispatch({
         type: 'dailyPost/updateItem',
-        payload: {data, currentIndex}
+        payload: { data, currentIndex }
       })
       // this.searchByCondition({}, dispatch)
     });
@@ -241,7 +261,7 @@ export default class TableList extends PureComponent {
     })
   }
 
-  handleSetExpress = (currentItem,currentIndex) => {
+  handleSetExpress = (currentItem, currentIndex) => {
     this.setState({
       modalVisible: true,
       currentItem,
@@ -253,7 +273,7 @@ export default class TableList extends PureComponent {
   handlePageChange = (pagination) => {
     const { dispatch } = this.props;
     let { phone, prize, status, verify_code } = this.props.form.getFieldsValue()
-    this.searchByCondition({ page: pagination.current,phone,prize,status,verify_code }, dispatch)
+    this.searchByCondition({ page: pagination.current, phone, prize, status, verify_code }, dispatch)
   }
 
   renderSimpleForm() {
@@ -423,7 +443,7 @@ export default class TableList extends PureComponent {
         dataIndex: 'id',
         render: (id, item, index) => (
           <Fragment>
-            {item.address_id ? <a onClick={() => this.handleSetExpress(item,index)}>快递</a> : ''}
+            {item.address_id ? <a onClick={() => this.handleSetExpress(item, index)}>编辑</a> : ''}
             {item.address_id ? <Divider type="vertical" /> : ''}
             {item.status == 1 ? <Popconfirm title="确认核销码" onConfirm={() => this.handleVerify(id)}><a>核销</a></Popconfirm> : '已核销'}
           </Fragment>

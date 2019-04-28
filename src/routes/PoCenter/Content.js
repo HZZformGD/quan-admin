@@ -126,7 +126,8 @@ export default class CardList extends PureComponent {
     let label_id = '';
     if(location.query){
       label_id =  location.query.label_id || '';
-    }    
+    }   
+    console.log(this.state.current) 
     this.setState({
       current:page
     })
@@ -631,8 +632,9 @@ export default class CardList extends PureComponent {
       });
   };
   searchFun = () => {
-    this.getList();
-    this.setState({ current: 1 })
+    this.setState({ current: 1,page:1 },()=>{
+      this.getList();
+    })
   };
   editImageConent = (id) => {
     this.props
@@ -780,6 +782,7 @@ export default class CardList extends PureComponent {
           page,
           current: page
         });
+        console.log(page)
         document.body.scrollTop = 0;
         this.getList(page);
       },

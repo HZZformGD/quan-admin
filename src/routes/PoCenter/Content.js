@@ -127,7 +127,6 @@ export default class CardList extends PureComponent {
     if(location.query){
       label_id =  location.query.label_id || '';
     }   
-    console.log(this.state.current) 
     this.setState({
       current:page
     })
@@ -782,7 +781,6 @@ export default class CardList extends PureComponent {
           page,
           current: page
         });
-        console.log(page)
         document.body.scrollTop = 0;
         this.getList(page);
       },

@@ -319,7 +319,7 @@ export async function statusCategory(params) {
 export async function getLabelList(params) {
   return request(
     `/poadmin/label/label-list?page=${params.page}&size=${params.size}&label_name=${params.label_name}&type_location=${
-      params.type_location
+    params.type_location
     }&type_recommend=${params.type_recommend}&label_type=${params.label_type}&type_goods=${params.type_goods}&type_top=${params.type_top}&label_sort=${params.label_sort}`,
     {}
   );
@@ -368,7 +368,7 @@ export async function getPoList(params) {
   }
   return request(
     `/poadmin/po/po-list?page=${params.page}&size=${params.size}&sort=${params.sort}&prop=${params.prop}&category_id=${
-      params.category_id
+    params.category_id
     }&tag=${params.tag}&content=${params.content}&uname=${params.uname}&label_id=${params.label_id}`,
     {}
   );
@@ -460,7 +460,7 @@ export async function setLabel(params) {
   });
 }
 export async function extendDetail(params) {
-  return request('/poadmin/po/extend-detail?post_id='+params.id,{});
+  return request('/poadmin/po/extend-detail?post_id=' + params.id, {});
 }
 export async function extendAdd(params) {
   return request('/poadmin/po/extend-add', {
@@ -560,14 +560,14 @@ export async function statusAdvert(params) {
 }
 
 export async function queryDailyData(params) {
-  return request('/poadmin/daily-post/confirm-list',{
+  return request('/poadmin/daily-post/confirm-list', {
     method: 'POST',
     body: params,
     noToken: false,
   })
 }
 export async function changeDailyData(params) {
-  return request('/poadmin/daily-post/confirm',{
+  return request('/poadmin/daily-post/confirm', {
     method: 'POST',
     body: params,
     noToken: false,
@@ -575,7 +575,7 @@ export async function changeDailyData(params) {
 }
 
 export async function editDailyExpress(params) {
-  return request('/poadmin/daily-post/set-user-address',{
+  return request('/poadmin/daily-post/set-user-address', {
     method: 'POST',
     body: params,
     noToken: false,
@@ -583,7 +583,7 @@ export async function editDailyExpress(params) {
 }
 
 export async function appNoticeList(params) {
-  return request(`/app/notice/list?page=${params.page}&size=${params.size}&title=${params.title}&notice_type=${params.notice_type}`,{});
+  return request(`/app/notice/list?page=${params.page}&size=${params.size}&title=${params.title}&notice_type=${params.notice_type}`, {});
 }
 export async function statusNotice(params) {
   return request('/app/notice/update-status', {
@@ -604,7 +604,7 @@ export async function editNotice(params) {
   });
 }
 export async function appScrolladList(params) {
-  return request(`/app/scrollad/list?page=${params.page}&size=${params.size}`,{});
+  return request(`/app/scrollad/list?page=${params.page}&size=${params.size}`, {});
 }
 export async function editScrollad(params) {
   return request('/app/scrollad/edit', {
@@ -619,7 +619,7 @@ export async function statusScrollad(params) {
   });
 }
 export async function startUpList(params) {
-  return request(`/app/startup/list?page=${params.page}&size=${params.size}`,{});
+  return request(`/app/startup/list?page=${params.page}&size=${params.size}`, {});
 }
 export async function editStartUp(params) {
   return request('/app/startup/edit', {
@@ -634,7 +634,7 @@ export async function statusStartUp(params) {
   });
 }
 export async function configList(params) {
-  return request(`/app/config/list?page=${params.page}&size=${params.size}`,{});
+  return request(`/app/config/list?page=${params.page}&size=${params.size}`, {});
 }
 export async function editConfig(params) {
   return request('/app/config/edit', {
@@ -649,7 +649,7 @@ export async function delConfig(params) {
   });
 }
 export async function ShutupList(params) {
-  return request(`/poadmin/shutup/shutup-list?page=${params.page}&size=${params.size}&search_uid=${params.search_uid}`,{});
+  return request(`/poadmin/shutup/shutup-list?page=${params.page}&size=${params.size}&search_uid=${params.search_uid}`, {});
 }
 export async function shutupRelieve(params) {
   return request('/poadmin/shutup/shutup-relieve', {
@@ -663,3 +663,17 @@ export async function shutupAdd(params) {
     body: params,
   });
 }
+export async function queryPrizeList(params) {
+  console.info(params)
+  return request(`/signin/prize/index?page=${params.page}`, {
+    method: 'POST',
+    body: params
+  })
+}
+export async function addPrize(params) {
+  return request('signin/prize/add', {
+    method: 'POST',
+    body: params
+  })
+}
+

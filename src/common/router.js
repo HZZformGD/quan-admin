@@ -269,6 +269,13 @@ export const getRouterData = app => {
         import('../routes/App/AppConfig')
       ),
     },
+    '/signin-manager/prize-list': {
+      component: dynamicWrapper(app, ['signin/prize'], () =>
+        import('../routes/SignIn/PrizeList')
+      )
+    }
+
+
     // '/user/:id': {
     //   component: dynamicWrapper(app, [], () => import('../routes/User/SomeComponent')),
     // },
